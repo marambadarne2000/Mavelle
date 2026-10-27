@@ -25,7 +25,7 @@ class PurchaseE2ETest extends BrowserTest {
   open("#register");english(driver,wait);new LoginPage(driver,wait).submit(email,FixtureApi.PASSWORD);wait.until(ExpectedConditions.urlContains("#login"));
   open("#basket");wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".basket-empty")));
   selectProduct(product);add();wait.until(ExpectedConditions.urlContains("#login"));assertTrue(driver.findElement(Ui.id("basket-link")).getText().contains("(0)"));
-  new LoginPage(driver,wait).submit(email,FixtureApi.PASSWORD);wait.until(ExpectedConditions.urlContains("#collection"));wait.until(d->d.findElement(Ui.id("basket-link")).getText().contains("(1)"));
+  new LoginPage(driver,wait).submit(email,FixtureApi.PASSWORD);wait.until(ExpectedConditions.urlContains("#collection"));wait.until(ExpectedConditions.textToBePresentInElementLocated(Ui.id("basket-link"),"(1)"));
   basket();var basket=new BasketPage(driver,wait);basket.quantity(product.id(),2);basket.subtotal("20.00");driver.navigate().refresh();basket.ready();assertEquals("2",driver.findElement(By.id("quantity-"+product.id())).getAttribute("value"));
   basket.checkout();var checkout=new CheckoutPage(driver,wait);checkout.requiredFieldsPreventSubmit();checkout.shipping();String number=checkout.confirm();assertTrue(number.startsWith("MG-"));assertEquals(2,api.stock(product));
   assertTrue(driver.findElement(Ui.id("basket-link")).getText().contains("(0)"));assertEquals(true,js("return document.documentElement.scrollWidth<=innerWidth"));
@@ -37,20 +37,20 @@ class PurchaseE2ETest extends BrowserTest {
  @Test void lastUnitCannotBeAddedFromAStaleSecondBrowser()throws Exception{
   var product=api.product(1);String a=api.customer(),b=api.customer();var other=createBrowser();var otherWait=new WebDriverWait(other,Duration.ofSeconds(15));
   try{
-   login(driver,wait,a,FixtureApi.PASSWORD);selectProduct(product);add();wait.until(d->d.findElement(Ui.id("basket-link")).getText().contains("(1)"));
+   login(driver,wait,a,FixtureApi.PASSWORD);selectProduct(product);add();wait.until(ExpectedConditions.textToBePresentInElementLocated(Ui.id("basket-link"),"(1)"));
    login(other,otherWait,b,FixtureApi.PASSWORD);other.get(base+"/#collection");var otherStore=new StorePage(other,otherWait);otherStore.ready();otherStore.search(product.name());otherStore.onlyProduct(product.name());
    buy();assertEquals(0,api.stock(product));Ui.click(other,otherWait,By.cssSelector("[data-testid=product-card] [data-testid=add-to-basket]"));
-   otherWait.until(d->d.findElement(By.cssSelector(".basket-feedback")).getText().toLowerCase().contains("stock"));assertTrue(other.findElement(Ui.id("basket-link")).getText().contains("(0)"));
+   otherWait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".basket-feedback"),"stock"));assertTrue(other.findElement(Ui.id("basket-link")).getText().contains("(0)"));
   }finally{other.quit();}
  }
  @Test void changedPriceIsReviewedAndRecordedAtCheckout()throws Exception{
   var product=api.product(3);login(driver,wait,api.customer(),FixtureApi.PASSWORD);selectProduct(product);add();basket();var basket=new BasketPage(driver,wait);basket.subtotal("10.00");api.price(product,"12.50");basket.refresh();basket.subtotal("12.50");wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".basket-price-update")));
   basket.checkout();var checkout=new CheckoutPage(driver,wait);checkout.shipping();String number=checkout.confirm();assertEquals(0,api.get("/api/admin/orders/"+number).get("order").get("items").get(0).get("unitPrice").decimalValue().compareTo(new java.math.BigDecimal("12.50")));
-  api.price(product,"99.00");driver.navigate().refresh();wait.until(d->d.findElement(By.cssSelector(".order-confirmation .checkout-total strong")).getText().contains("12.50"));
+  api.price(product,"99.00");driver.navigate().refresh();wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".order-confirmation .checkout-total strong"),"12.50"));
  }
  @Test void soldOutAndDeactivatedProductsBlockCheckout()throws Exception{
   var product=api.product(2);login(driver,wait,api.customer(),FixtureApi.PASSWORD);selectProduct(product);add();basket();api.stock(product,0);new BasketPage(driver,wait).refresh();wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".basket-item-issue")));assertTrue(driver.findElements(By.cssSelector("a[href='#checkout']")).isEmpty());
-  api.inactive(product);new BasketPage(driver,wait).refresh();wait.until(d->d.findElement(By.cssSelector(".basket-item h2")).getText().contains("Unavailable"));Ui.click(driver,wait,Ui.id("cart-remove"));wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".basket-empty")));
+  api.inactive(product);new BasketPage(driver,wait).refresh();wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".basket-item h2"),"Unavailable"));Ui.click(driver,wait,Ui.id("cart-remove"));wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".basket-empty")));
  }
  @Test void administratorSeesCustomerOrderAndCancellationRestoresStock()throws Exception{
   var product=api.product(2);login(driver,wait,api.customer(),FixtureApi.PASSWORD);selectProduct(product);add();var manager=createBrowser();var managerWait=new WebDriverWait(manager,Duration.ofSeconds(15));

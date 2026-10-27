@@ -14,6 +14,7 @@ class StorefrontTest extends BrowserTest {
  void catalogSearchDialogAndResponsiveLayout(int width,int height,String language,String query,String name){
   viewport(width,height);open("#collection");var store=new StorePage(driver,wait);store.ready();store.language(language);store.search(query);store.onlyProduct(name);assertEquals((long)width,js("return window.innerWidth"));
   assertEquals(language.equals("en")?"ltr":"rtl",driver.findElement(By.tagName("html")).getAttribute("dir"));
+  assertEquals(true,js("return matchMedia('(prefers-reduced-motion: reduce)').matches"));
   assertEquals(true,js("return document.documentElement.scrollWidth <= window.innerWidth"));store.firstDetails();
   var close=driver.findElement(By.cssSelector("dialog .close"));wait.until(d->close.equals(d.switchTo().activeElement()));close.sendKeys(Keys.chord(Keys.SHIFT,Keys.TAB));
   assertEquals(true,js("return !!document.activeElement.closest('dialog')"));driver.switchTo().activeElement().sendKeys(Keys.TAB);assertEquals(close,driver.switchTo().activeElement());

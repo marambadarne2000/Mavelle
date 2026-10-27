@@ -28,10 +28,10 @@ public abstract class BrowserTest {
  protected WebDriver createBrowser(){
   WebDriver browser;
   boolean headless=Boolean.parseBoolean(System.getProperty("headless","true"));
-  if(System.getProperty("browser","chrome").equals("edge")){var options=new EdgeOptions();if(headless)options.addArguments("--headless=new");options.addArguments("--window-size=1280,900");browser=new EdgeDriver(options);}
-  else{var options=new ChromeOptions();if(headless)options.addArguments("--headless=new");options.addArguments("--window-size=1280,900","--disable-search-engine-choice-screen");options.setExperimentalOption("prefs",java.util.Map.of("credentials_enable_service",false,"profile.password_manager_enabled",false));browser=new ChromeDriver(options);}
-  browser.manage().timeouts().implicitlyWait(Duration.ZERO);browser.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(25));
-  ((ChromiumDriver)browser).executeCdpCommand("Emulation.setEmulatedMedia",java.util.Map.of("features",java.util.List.of(java.util.Map.of("name","prefers-reduced-motion","value","reduce"))));return browser;
+  if(System.getProperty("browser","chrome").equals("edge")){var options=new EdgeOptions();if(headless)options.addArguments("--headless=new");options.addArguments("--window-size=1280,900","--force-prefers-reduced-motion","--no-first-run","--no-default-browser-check");browser=new EdgeDriver(options);}
+  else{var options=new ChromeOptions();if(headless)options.addArguments("--headless=new");options.addArguments("--window-size=1280,900","--disable-search-engine-choice-screen","--force-prefers-reduced-motion","--no-first-run","--no-default-browser-check");options.setExperimentalOption("prefs",java.util.Map.of("credentials_enable_service",false,"profile.password_manager_enabled",false));browser=new ChromeDriver(options);}
+  try{browser.manage().timeouts().implicitlyWait(Duration.ZERO);browser.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(25));return browser;}
+  catch(RuntimeException error){try{browser.quit();}catch(WebDriverException cleanup){error.addSuppressed(cleanup);}throw error;}
  }
  @AfterEach void stop(){if(driver!=null)driver.quit();}
  protected void open(String route){driver.get(base+"/"+route);}
