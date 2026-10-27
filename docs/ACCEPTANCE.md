@@ -81,3 +81,14 @@ Before implementing state-changing endpoints, add authentication, CSRF protectio
 | E2E-04 | Sold-out/deactivated item blocks checkout and remains removable | Browser + isolated inventory fixtures | Passed |
 | E2E-05 | Admin sees purchase and cancels; customer sees status and stock restored | Two WebDrivers | Passed |
 | E2E-06 | Isolated setup/cleanup preserves regular demo | Schema count 0; fixture count in public 0 | Passed |
+
+
+## CI gates
+
+| ID | Requirement | Evidence | State |
+|---|---|---|---|
+| CI-01 | Valid workflow with immutable Action pins and bounded permissions | actionlint + GitHub workflow | Configured and validated |
+| CI-02 | Source secret and private/generated path checks | Gitleaks + 3 policy regressions | Passed locally; hosted security job passed |
+| CI-03 | Frontend lint/types/tests/build/audit | Local rehearsal + hosted frontend job | Passed |
+| CI-04 | Java and real PostgreSQL | Local rehearsal + hosted backend job | Passed |
+| CI-05 | Full isolated Selenium with reports, failure screenshots and cleanup | Latest PR head run on Actions | Live status linked in CI.md |
