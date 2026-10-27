@@ -1,0 +1,30 @@
+{
+  "name": "maramigo-storefront",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test": "tsc --strict --target ES2022 --module ESNext --moduleResolution Bundler --skipLibCheck --rootDir src --outDir .test-build src/cart/model.ts src/route.ts src/messages.ts src/localization-core.ts && node test/build-ui.cjs && node --test test/cart-model.test.mjs test/localization.test.mjs test/usability.test.mjs",
+    "dev": "vite --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
+    "lint": "eslint src --max-warnings=0"
+  },
+  "dependencies": {
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "recharts": "3.10.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@types/react": "19.0.3",
+    "@types/react-dom": "19.0.2",
+    "esbuild": "0.25.12",
+    "eslint": "9.39.5",
+    "globals": "17.13.0",
+    "jsdom": "26.1.0",
+    "typescript": "5.7.3",
+    "typescript-eslint": "8.72.1",
+    "vite": "6.4.5"
+  }
+}

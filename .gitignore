@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.test-build/
+target/
+.env
+.env.*
+!.env.example
+.runtime/
+.tools/
+*.zip
+*.log
+artifacts/
+__pycache__/

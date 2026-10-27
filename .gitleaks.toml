@@ -1,0 +1,7 @@
+title = "Maramigo source secret scanning"
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Local secrets, dependency caches and generated output are excluded from source publication and scanned separately by the repository path policy."
+paths = ['''(^|/)(\.git|\.runtime|\.tools|node_modules|target|dist|artifacts|\.test-build)(/|$)''']

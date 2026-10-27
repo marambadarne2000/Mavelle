@@ -1,0 +1,15 @@
+# Dashboard — stage 14
+
+`GET /api/admin/dashboard?from=YYYY-MM-DD&to=YYYY-MM-DD&threshold=5` requires ADMIN. Defaults are today in Asia/Jerusalem and the previous 29 days, inclusive. The maximum range is 366 calendar days; reversed ranges fail with 400. The integer stock threshold is 0–100, inclusive.
+
+The response includes the actual range, timezone, ILS currency, threshold, order count, cancelled count, non-cancelled demo order value, low-stock count/list, daily points and generation timestamp. The order count includes cancelled orders. Value sums purchase-time order totals for orders whose current status is not CANCELLED. These are demo order values, not actual revenue or collected payments.
+
+Orders are selected by creation timestamp from local midnight at `from` through, but excluding, local midnight after `to`. Conversion uses Asia/Jerusalem including daylight-saving changes. Daily grouping uses the same zone. Every date is returned, with explicit zero points where no orders exist. Cancellation changes the value in the original order's creation bucket; this is not a cancellation-date financial ledger.
+
+Stock is current and independent of the date filter. Only active products with stock at or below the threshold are counted; sold-out products are included. The list is limited to the 20 lowest stocks with ID as tie breaker, while the count covers all matches. Open product management for the full inventory. The response uses a read-only REPEATABLE_READ transaction so chart totals and stock counts share a database snapshot.
+
+The interface requests an update on entry and schedules the next update five seconds after each request finishes. Requests never overlap. Timeout is 15 seconds. Unmount, access changes and filter changes abort obsolete requests; old responses cannot replace newer filter data. Failed refreshes retain prior successful data for the same filters and show a stale-data warning, with the last successful server timestamp. New filter ranges clear the old snapshot. Manual refresh is available.
+
+Recharts is pinned in package.json/lockfile. The chart is loaded only for the administrator dashboard. It has a keyboard accessibility layer and an expandable table of the same daily data. Chart behavior and responsive sizing follow the [official Recharts documentation](https://recharts.github.io/en-US/api/ResponsiveContainer/).
+
+Verification: PostgreSQL tests cover ADMIN-only access, range/threshold validation, empty-date zero filling, Jerusalem midnight boundaries, cancellation exclusion, active/sold-out inventory, and administrator stock deduction competing with checkout. Browser verification covered default data, an empty historical range, a zero threshold and automatic updates. A separate synthetic ILS 10 order changed existing value 1413 → 1423; cancellation returned it to 1413. The fixture's two units were restored and the fixture product deactivated. Existing products and orders were left unchanged by that check. Network-outage behavior is implemented but was not manually injected in the browser.
