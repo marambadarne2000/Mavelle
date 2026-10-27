@@ -1,0 +1,18 @@
+[
+  {
+    "package": "org.springframework:spring-webmvc",
+    "version": "6.2.19",
+    "id": "GHSA-j9f9-w8pj-32f8",
+    "expires": "2026-11-27",
+    "reason": "Reviewed 2026-10-27: application exposes JSON REST controllers and no server-sent event streams, SseEmitter, ServerSentEvent or fragment rendering. The affected SSE fragment-rendering path is not used. Maven Central has no later 6.2 maintenance version; moving to Spring 7 requires a separate Boot/Java compatibility migration. Reassess if SSE or server-rendered fragments are introduced.",
+    "evidence": "backend/src/main/java; docs/DEPENDENCY_SECURITY.md"
+  },
+  {
+    "package": "org.springframework:spring-webmvc",
+    "version": "6.2.19",
+    "id": "GHSA-pc63-qcmh-9cmg",
+    "expires": "2026-11-27",
+    "reason": "Reviewed 2026-10-27: application uses React and JSON REST responses, with no XsltView, XSLT templates, XML transformation or user-selectable XSLT view resolver. The affected XsltView path is not used. Reassess on view/rendering changes; this does not claim the dependency itself is patched.",
+    "evidence": "backend/src/main/java; docs/DEPENDENCY_SECURITY.md"
+  }
+]

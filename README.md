@@ -76,6 +76,12 @@ Windows shortcuts: `scripts/Start-Demo.ps1` starts Compose after checking prereq
 
 ## Verification
 
+Java dependency security: `./scripts/Audit-Java.ps1` resolves backend and automation
+dependencies and queries OSV. The [review](docs/DEPENDENCY_SECURITY.md) records
+maintenance updates and two findings on unused Spring rendering paths, retained
+with exact-version reviews expiring 2026-11-27. Reports distinguish a clean scan
+from a pass with reviewed findings. Network or inventory failures fail the check.
+
 ```powershell
 cd backend
 mvn test

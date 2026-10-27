@@ -4,6 +4,8 @@ $projectRoot=Split-Path -Parent $PSScriptRoot
 $jar=Join-Path $projectRoot 'backend/target/maramigo-api-0.1.0.jar'
 if(!(Test-Path -LiteralPath $jar)){throw 'Build the backend first with Start-Local.ps1 -Restart -Build.'}
 $newest=(Get-ChildItem (Join-Path $projectRoot 'backend/src/main') -Recurse -File | Sort-Object LastWriteTime -Descending | Select-Object -First 1).LastWriteTime
+$pomModified=(Get-Item (Join-Path $projectRoot 'backend/pom.xml')).LastWriteTime
+if($pomModified -gt $newest){$newest=$pomModified}
 if($newest -gt (Get-Item $jar).LastWriteTime){throw 'Backend JAR is stale. Rebuild with Start-Local.ps1 -Restart -Build before full E2E.'}
 & (Join-Path $PSScriptRoot 'Start-Database.ps1')
 $config=Get-Content (Join-Path $projectRoot '.runtime/local.json') -Raw|ConvertFrom-Json

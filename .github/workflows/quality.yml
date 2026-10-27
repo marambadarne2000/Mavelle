@@ -66,6 +66,12 @@ jobs:
       - name: Unit and real PostgreSQL tests
         run: mvn -B verify -Pintegration
         working-directory: backend
+      - name: Java dependency audit and scanner regressions
+        shell: pwsh
+        run: |
+          python scripts/test_java_audit.py
+          if ($LASTEXITCODE -ne 0) { throw 'Dependency scanner regressions failed.' }
+          ./scripts/Audit-Java.ps1
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
@@ -73,6 +79,7 @@ jobs:
           path: |
             backend/target/surefire-reports/
             backend/target/failsafe-reports/
+            artifacts/security/java-osv.json
           retention-days: 7
 
   frontend:

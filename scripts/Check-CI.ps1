@@ -16,6 +16,9 @@ try{
  foreach($command in @('lint','typecheck')){& npm --prefix frontend run $command;if($LASTEXITCODE -ne 0){throw "Frontend $command failed."}}
  & npm --prefix frontend audit --registry=https://registry.npmjs.org --audit-level=high
  if($LASTEXITCODE -ne 0){throw 'Dependency audit failed.'}
+ python scripts/test_java_audit.py
+ if($LASTEXITCODE -ne 0){throw 'Java audit regression tests failed.'}
+ & (Join-Path $PSScriptRoot 'Audit-Java.ps1')
  & (Join-Path $PSScriptRoot 'Check.ps1') -Integration
  if(!$SkipBrowser){& (Join-Path $PSScriptRoot 'Test-Automation.ps1') -Full; & (Join-Path $PSScriptRoot 'Write-TestSummary.ps1')}
  else{Write-Host 'Browser verification was explicitly skipped; previous browser reports are not counted.'}
