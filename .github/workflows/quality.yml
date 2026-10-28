@@ -156,6 +156,7 @@ jobs:
           name: selenium-reports-and-screenshots
           path: |
             automation/target/full-reports/
+            automation/target/accessibility/
             automation/target/screenshots/
           if-no-files-found: warn
           retention-days: 7

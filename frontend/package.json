@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "engines": { "node": "^22.13.0 || >=24" },
+  "engines": {
+    "node": "^22.13.0 || >=24"
+  },
   "scripts": {
     "test": "tsc --strict --target ES2022 --module ESNext --moduleResolution Bundler --skipLibCheck --rootDir src --outDir .test-build src/cart/model.ts src/route.ts src/messages.ts src/localization-core.ts && node test/build-ui.cjs && node --test test/cart-model.test.mjs test/localization.test.mjs test/usability.test.mjs",
     "dev": "vite --host 127.0.0.1",
@@ -20,6 +22,7 @@
     "@eslint/js": "9.39.5",
     "@types/react": "19.0.3",
     "@types/react-dom": "19.0.2",
+    "axe-core": "4.14.0",
     "esbuild": "0.25.12",
     "eslint": "9.39.5",
     "globals": "17.13.0",

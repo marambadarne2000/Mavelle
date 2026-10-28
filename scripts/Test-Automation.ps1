@@ -1,7 +1,8 @@
-param([ValidateSet('chrome','edge')][string]$Browser='chrome',[switch]$Visible,[switch]$Full)
+param([ValidateSet('chrome','edge')][string]$Browser='chrome',[switch]$Visible,[switch]$Full,[switch]$AccessibilityOnly)
 $ErrorActionPreference='Stop'
 $projectRoot=Split-Path -Parent $PSScriptRoot
-if($Full){& (Join-Path $PSScriptRoot 'Test-FullAutomation.ps1') -Browser $Browser -Visible:$Visible;return}
+if($AccessibilityOnly -and !$Full){throw 'Accessibility matrix requires the isolated -Full launcher.'}
+if($Full){& (Join-Path $PSScriptRoot 'Test-FullAutomation.ps1') -Browser $Browser -Visible:$Visible -AccessibilityOnly:$AccessibilityOnly;return}
 $env:SE_CACHE_PATH=Join-Path $projectRoot '.tools/selenium'
 $env:SE_AVOID_STATS='true'
 $maven=Join-Path $projectRoot '.tools/apache-maven-3.9.9/bin/mvn.cmd'

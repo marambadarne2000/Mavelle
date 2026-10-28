@@ -24,7 +24,7 @@ Six Chrome cases passed with no skipped tests:
 | Invalid login | Unique synthetic nonexistent email, focused error, enabled retry |
 | Skip navigation | First Tab reaches skip; Enter focuses content without changing route |
 
-Each smoke case uses a fresh browser profile and changes no products, orders or stock. Public checks assume seeded demo names and stores still exist. The full mode runs those six cases plus six isolated purchase cases (12 total):
+Each smoke case uses a fresh browser profile and changes no products, orders or stock. Public checks assume seeded demo names and stores still exist. The full mode runs those six cases plus six isolated purchase cases and six accessibility matrix cases (18 total). The purchase cases cover:
 
 | Purchase journey | Assertions |
 |---|---|
@@ -50,6 +50,6 @@ mvn -Dtest=DiagnosticsProbe -DreportDirectory=target/diagnostic-probe test
 
 Only this command is expected to return nonzero and create `deliberateFailureProducesScreenshot-*.png`. It was verified, followed by a passing normal suite. Its report is isolated from normal reports.
 
-Verified: Chrome 156 with matching ChromeDriver 156. Selenium emits a warning that its nearest typed CDP module is 155; these WebDriver tests and raw viewport commands passed. Edge and cloud CI remain unverified.
+Verified: Chrome 156 with matching ChromeDriver 156. Selenium emits a warning that its nearest typed CDP module is 155; these WebDriver tests and raw viewport commands passed. Edge remains unverified. Hosted checks and artifacts are recorded on the private repository's Actions page; inspect the current head rather than assuming a previous run covers new code.
 
-Both smoke and full purchase suites have passed locally. CI integration and cross-browser expansion are next. Full purchase flow currently uses English labels with language-independent selectors; public smoke additionally checks Hebrew and Arabic. No E2E coverage percentage is claimed.
+Full purchase flow uses language-independent selectors. The accessibility matrix also completes checkout and visits account, order and administrator views in English, Hebrew and Arabic at 1280px and 390px. It adds six cases with 17 sampled views each. Run only that matrix using `Test-Automation.ps1 -Full -AccessibilityOnly`; its JUnit reports use `target/accessibility-reports/`, while per-view axe results use `target/accessibility/`. See [matrix coverage and limits](../docs/ACCESSIBILITY_MATRIX.md). Targeted mode does not certify a new run of the other 12 cases. No E2E coverage percentage or full WCAG certification is claimed.

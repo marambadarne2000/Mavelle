@@ -1,5 +1,19 @@
 # Usability and keyboard review
 
+## Expanded browser review — 2026-10-28
+
+The [accessibility matrix](ACCESSIBILITY_MATRIX.md) adds English/Hebrew/Arabic at
+1280×900 and 390×900: 17 rendered states per journey, 102 samples, with locally
+loaded axe-core 4.14.0, overflow and real checkout Tab-order checks. It found and
+led to fixes for product label/name mismatch, an unlandmarked announcement,
+duplicate unnamed checkout/disclaimer landmarks, long mobile account text and
+the Hebrew basket-removal label. The gold palette and business rules were
+preserved. Reports retain incomplete checks (including gradient contrast) for
+human review; those are not counted as passed checks. Screen-reader, zoom,
+additional device/browser and unsampled dynamic-state review remain open.
+
+## Earlier bounded review
+
 Implemented: first-stop skip navigation; content focus after route changes; translated document titles; unknown-route recovery; safe company-link fallback while metadata loads; focused login errors; duplicate-login submission protection; larger mobile controls and 16px mobile input text; telephone input semantics; stable selectors for authentication, basket, checkout, product/stock forms, order status and dashboard filters.
 
 The product dialog explicitly wraps Tab/Shift+Tab, excludes disabled controls, closes with Escape and restores focus to its opener. A real browser check exposed backward traversal leaving the dialog before the explicit wrapper was added. Both DOM tests and actual browser/Selenium checks verified the correction.

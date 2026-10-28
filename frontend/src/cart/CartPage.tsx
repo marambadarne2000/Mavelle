@@ -98,7 +98,7 @@ export function CartPage() {
             {changedPrices.includes(row.productId) && <p className="basket-price-update">{t("Price updated. Please review.")}</p>}
             {row.issue && <p className="basket-item-issue">{t(row.issue === 'unavailable' ? 'This product is no longer available.' : row.issue === 'out-of-stock' ? 'This product is out of stock.' : 'Requested quantity exceeds current stock.')}</p>}
             {row.product ? <QuantityEditor item={row} product={row.product}/> : <p>{t("Requested quantity: ")}{row.quantity}</p>}
-            <button data-testid="cart-remove" data-product-id={row.productId} className="basket-text-button" aria-label={t(`Remove ${row.product?.name ?? 'unavailable product'} from basket`)} onClick={() => basket.remove(row.productId)}>{t("Remove")}</button>
+            <button data-testid="cart-remove" data-product-id={row.productId} className="basket-text-button" aria-label={`${t("Remove")}: ${t(row.product?.name ?? "unavailable product")}`} onClick={() => basket.remove(row.productId)}>{t("Remove")}</button>
           </div><div className="basket-line-total">{row.issue ? '—' : money.format(row.lineTotal! / 100)}</div>
         </article>)}
       </section><aside className="basket-summary" aria-label={t("Basket summary")}><p className="eyebrow">{t("THE LITTLE DETAILS")}</p><h2>{t("Your selection")}</h2><div className="basket-subtotal"><span>{t("Available items subtotal")}</span><strong data-testid="basket-subtotal">{money.format(resolved.subtotal / 100)}</strong></div>

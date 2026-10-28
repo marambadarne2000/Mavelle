@@ -1,4 +1,4 @@
-param([ValidateSet('chrome','edge')][string]$Browser='chrome',[switch]$Visible)
+param([ValidateSet('chrome','edge')][string]$Browser='chrome',[switch]$Visible,[switch]$AccessibilityOnly)
 $ErrorActionPreference='Stop'
 $projectRoot=Split-Path -Parent $PSScriptRoot
 . (Join-Path $PSScriptRoot 'Node-Runtime.ps1')
@@ -44,10 +44,14 @@ try{
  if(!$ready){throw 'Isolated frontend startup failed'}
  $maven=Join-Path $projectRoot '.tools/apache-maven-3.9.9/bin/mvn.cmd';if(!(Test-Path $maven)){$maven=(Get-Command mvn.cmd).Source}
  $headless=if($Visible){'false'}else{'true'}
+ [string[]]$selection=@()
+ if($AccessibilityOnly){$selection=@('-Dtest=AccessibilityE2ETest')}
+ $reportDirectory=if($AccessibilityOnly){'target/accessibility-reports'}else{'target/full-reports'}
  Push-Location (Join-Path $projectRoot 'automation')
- try{& $maven '-Dmaven.repo.local=../.tools/repository' '-Pfull-e2e' '-DreportDirectory=target/full-reports' "-DbaseUrl=http://127.0.0.1:$webPort" "-Dbrowser=$Browser" "-Dheadless=$headless" test;$result=$LASTEXITCODE}finally{Pop-Location}
- if($result -ne 0){throw 'Full E2E failed. See automation/target/full-reports and target/screenshots.'}
- Write-Host 'PASS: isolated full E2E. The normal demo application and data were not used.'
+ try{& $maven '-Dmaven.repo.local=../.tools/repository' '-Pfull-e2e' "-DreportDirectory=$reportDirectory" "-DbaseUrl=http://127.0.0.1:$webPort" "-Dbrowser=$Browser" "-Dheadless=$headless" @selection test;$result=$LASTEXITCODE}finally{Pop-Location}
+ if($result -ne 0){throw "Isolated E2E failed. See automation/$reportDirectory, target/accessibility and target/screenshots."}
+ if($AccessibilityOnly){Write-Host 'PASS: isolated accessibility matrix only. Other suites were not selected.'}
+ else{Write-Host 'PASS: isolated full E2E. The normal demo application and data were not used.'}
 }finally{
  foreach($process in @($frontend,$backend)){if($null -ne $process -and !$process.HasExited){Stop-Process -Id $process.Id -ErrorAction SilentlyContinue;$null=$process.WaitForExit(10000)}}
  if($created){& $psql -h 127.0.0.1 -p $config.port -U $config.user -d $config.database -v ON_ERROR_STOP=1 -c "DROP SCHEMA $schema CASCADE" | Out-Null;if($LASTEXITCODE -ne 0){Write-Warning "Cleanup failed for isolated schema $schema"}else{Write-Host 'Isolated schema removed.'}}

@@ -85,6 +85,12 @@ Before implementing state-changing endpoints, add authentication, CSRF protectio
 
 ## CI gates
 
+Accessibility matrix: `AccessibilityE2ETest` samples 17 rendered states in three
+languages and two Chrome viewports (102 samples), checks axe rules, overflow and
+checkout Tab order. The six-case targeted run passed after label/landmark/wrapping
+fixes; hosted full-suite results are linked on Actions. Incomplete checks and
+remaining human review are documented in ACCESSIBILITY_MATRIX.md.
+
 | ID | Requirement | Evidence | State |
 |---|---|---|---|
 | CI-01 | Valid workflow with immutable Action pins and bounded permissions | actionlint + GitHub workflow | Configured and validated |
