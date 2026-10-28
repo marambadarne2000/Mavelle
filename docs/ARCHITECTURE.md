@@ -1,8 +1,8 @@
-# Architecture decisions — version 1
+# Architecture decisions — current implementation
 
 ## Scope fixed for the first release
 
-English UI, ILS, whole item quantities, no product variants, simulated checkout only.
+Hebrew/Arabic/English UI with RTL/LTR, ILS, whole item quantities, no product variants, simulated checkout only.
 No card information, payment processing, tax invoice, email or shipping integration.
 Order totals contain product prices only. Shipping details are stored as an order snapshot.
 The storefront uses black, cream and champagne with original CSS illustrations until licensed product photos are selected.
@@ -14,10 +14,11 @@ One backend deployment with separate catalog, accounts, inventory and orders mod
 Flyway owns schema changes; Hibernate validates and never updates schemas automatically.
 Docker Compose is for local demonstration, not a production hosting configuration.
 
-## Planned relationship model
+## Implemented relationship model
 
 ```mermaid
 erDiagram
+    COMPANIES ||--o{ PRODUCTS : offers
     USERS ||--o{ ORDERS : places
     ORDERS ||--|{ ORDER_ITEMS : contains
     PRODUCTS ||--o{ ORDER_ITEMS : references
@@ -26,7 +27,7 @@ erDiagram
     USERS o|--o{ INVENTORY_MOVEMENTS : performs
 ```
 
-PRODUCTS, USERS and INVENTORY_MOVEMENTS are implemented. Order tables and order movement references will be migrated with their owning feature. Demo catalog data is a repeatable Flyway migration with ON CONFLICT DO NOTHING, so later versioned migrations can run normally without resetting inventory. Product rows use an optimistic version and row locks for administrative edits and stock adjustments.
+COMPANIES, PRODUCTS, USERS, ORDERS, ORDER_ITEMS, INVENTORY_MOVEMENTS and ORDER_STATUS_HISTORY are implemented, alongside Flyway migration history. Demo catalog data is a repeatable Flyway migration with ON CONFLICT DO NOTHING, so later versioned migrations can run normally without resetting inventory. Product rows use an optimistic version and row locks for administrative edits and stock adjustments. See the feature contracts for implemented API details; local setup and recovery are documented in FRESH_SETUP.md and RECOVERY.md.
 
 ## Contracts fixed before implementing checkout
 

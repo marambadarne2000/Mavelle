@@ -11,7 +11,7 @@ def problem(name: str) -> str | None:
         return 'private or generated directory'
     if path.name == '.env' or (path.name.startswith('.env.') and path.name != '.env.example'):
         return 'private environment file'
-    if path.suffix.lower() in {'.zip', '.jar', '.class', '.pfx', '.p12', '.key'}:
+    if path.suffix.lower() in {'.zip', '.tar', '.dump', '.backup', '.jar', '.class', '.pfx', '.p12', '.key'}:
         return 'binary archive or private key container'
     return None
 

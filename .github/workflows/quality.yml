@@ -36,6 +36,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Private/generated files included in sources.' }
           python scripts/test_repository_policy.py
           if ($LASTEXITCODE -ne 0) { throw 'Repository policy tests failed.' }
+          ./scripts/Test-RecoveryGuards.ps1
       - name: Scan source for secrets with redacted output
         run: |
           New-Item -ItemType Directory -Path artifacts/security -Force | Out-Null

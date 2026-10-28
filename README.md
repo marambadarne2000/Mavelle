@@ -25,6 +25,10 @@ For product management, sign in as the generated demo administrator, open **My a
 
 ## Windows without Docker (the verified local route)
 
+For a fresh installation, follow the complete [Windows setup and troubleshooting
+guide](docs/FRESH_SETUP.md). [Backup/recovery instructions](docs/RECOVERY.md)
+cover local snapshots, checksum verification and isolated restore tests.
+
 Requires PowerShell 7, JDK 17, Maven, Node and installed npm dependencies. On the authoring machine, portable PostgreSQL and Maven have already been prepared in ignored `.tools/`.
 
 ```powershell

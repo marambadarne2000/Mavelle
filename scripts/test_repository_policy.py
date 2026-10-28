@@ -13,7 +13,7 @@ class RepositoryPolicyTest(unittest.TestCase):
                 self.assertIsNone(problem(path))
 
     def test_windows_paths_and_key_archives_are_rejected(self):
-        for path in (r'frontend\node_modules\lib.js', 'private.pfx', 'server.key', 'tools.zip'):
+        for path in (r'frontend\node_modules\lib.js', 'private.pfx', 'server.key', 'tools.zip', 'database.dump', 'export.backup', 'sources.tar'):
             with self.subTest(path=path):
                 self.assertIsNotNone(problem(path))
 
