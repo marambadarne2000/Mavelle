@@ -1,6 +1,8 @@
 param([ValidateSet('chrome','edge')][string]$Browser='chrome',[switch]$Visible)
 $ErrorActionPreference='Stop'
 $projectRoot=Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot 'Node-Runtime.ps1')
+Enable-ProjectNode
 $jar=Join-Path $projectRoot 'backend/target/maramigo-api-0.1.0.jar'
 if(!(Test-Path -LiteralPath $jar)){throw 'Build the backend first with Start-Local.ps1 -Restart -Build.'}
 $newest=(Get-ChildItem (Join-Path $projectRoot 'backend/src/main') -Recurse -File | Sort-Object LastWriteTime -Descending | Select-Object -First 1).LastWriteTime

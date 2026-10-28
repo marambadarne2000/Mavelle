@@ -1,6 +1,8 @@
 param([switch]$Integration,[switch]$Automation)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot 'Node-Runtime.ps1')
+Enable-ProjectNode
 $mavenCommand = Get-Command mvn.cmd -ErrorAction SilentlyContinue
 $localMaven = Join-Path $projectRoot '.tools\apache-maven-3.9.9\bin\mvn.cmd'
 if ($mavenCommand) { $mavenPath = $mavenCommand.Source }

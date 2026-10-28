@@ -73,7 +73,10 @@ The real local recovery test:
 4. Checks that valid synthetic user insertion works, then requires the exact
    role/status CHECK constraints and order/user foreign key to reject three
    invalid writes. These probes run only in the recovery database and roll back.
-5. Removes only the generated recovery database in `finally`, retains the backup,
+5. Starts a separate Java server on a free loopback port against the restored
+   database, verifies health and the catalog API, and stops that server. Requires
+   the built backend JAR, as produced by Start-Local -Build.
+6. Removes only the generated recovery database in `finally`, retains the backup,
    and writes a private `.runtime/recovery/<run>/result.json` with cleanup status.
 
 Table fingerprints use ordered row hashes for equality, not cryptographic

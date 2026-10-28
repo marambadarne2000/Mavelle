@@ -1,6 +1,8 @@
 param([switch]$SkipBrowser)
 $ErrorActionPreference='Stop'
 $projectRoot=Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot 'Node-Runtime.ps1')
+Enable-ProjectNode
 Push-Location $projectRoot
 try{
  & (Join-Path $PSScriptRoot 'Setup-QualityTools.ps1')

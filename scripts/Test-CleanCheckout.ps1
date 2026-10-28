@@ -1,5 +1,7 @@
 $ErrorActionPreference='Stop'
 $projectRoot=Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot 'Node-Runtime.ps1')
+Enable-ProjectNode
 $run=Join-Path $projectRoot ('.tools/clean-checkouts/'+[guid]::NewGuid().ToString('N'))
 $source=Join-Path $run 'source'
 $null=New-Item -ItemType Directory -Path $source
@@ -9,6 +11,7 @@ try{
  $revision=(& git rev-parse HEAD).Trim()
  if($LASTEXITCODE -ne 0){throw 'Git revision unavailable.'}
  $report.revision=$revision
+ $report.nodeVersion=(& node --version).Trim()
  $archive=Join-Path $run 'source.tar'
  & git archive --format=tar --output=$archive HEAD
  if($LASTEXITCODE -ne 0){throw 'Source export failed.'}

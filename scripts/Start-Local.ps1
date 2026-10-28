@@ -1,6 +1,8 @@
 param([switch]$Build, [switch]$Restart)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot 'Node-Runtime.ps1')
+Enable-ProjectNode
 if ($Restart) { & (Join-Path $PSScriptRoot 'Stop-Local.ps1') }
 function Test-Port([int]$Port) {
     $client = New-Object System.Net.Sockets.TcpClient

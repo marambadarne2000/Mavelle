@@ -2,7 +2,13 @@
 
 ## Prerequisites
 
-Install Git, PowerShell 7, JDK 17, Node.js 22 with npm and Maven 3.9 on PATH.
+Install Git, PowerShell 7, JDK 17, Node.js 22.13+ (or 24+) with npm and Maven 3.9 on PATH.
+Windows can instead prepare the pinned portable Node 22.23.4 with
+`./scripts/Setup-PortableNode.ps1`; its official archive SHA-256 is verified before
+extraction. Project PowerShell launch/check scripts prefer this local runtime
+without modifying the system installation. Raw npm commands require a compatible
+Node on PATH; dot-source `scripts/Node-Runtime.ps1` and call `Enable-ProjectNode`
+to select the portable runtime in the current terminal.
 PostgreSQL is prepared separately by the checksum-verified project script.
 Internet access is required for npm, Maven Central and the vendor archive.
 Chrome is needed for Selenium. Docker is optional for the portable Windows
@@ -17,6 +23,9 @@ your GitHub access.
 ```powershell
 git clone --branch codex/maramigo https://github.com/marambadarne2000/Maramigo.git
 cd Maramigo
+./scripts/Setup-PortableNode.ps1
+. ./scripts/Node-Runtime.ps1
+Enable-ProjectNode
 npm --prefix frontend ci --registry=https://registry.npmjs.org
 ./scripts/Setup-PortablePostgres.ps1
 ./scripts/Start-Local.ps1 -Build
