@@ -1,6 +1,6 @@
 import {createContext,useCallback,useContext,useEffect,useRef,useState,type ReactNode} from 'react';
 import {write,check} from './api';
-export type SessionUser={id:number;email:string;role:'CUSTOMER'|'ADMIN'};
+export type SessionUser={id:number;email:string;role:'CUSTOMER'|'ADMIN'|'EMPLOYEE'};
 type Intent={kind:'add';productId:number;returnTo:string}|{kind:'return';returnTo:string};
 type Session={user:SessionUser|null;loading:boolean;refresh:()=>Promise<SessionUser|null>;signedIn:(user:SessionUser)=>void;logout:()=>Promise<void>;requireLogin:(intent?:Intent)=>void;takeIntent:()=>Intent|null;cancelIntent:()=>void;destination:()=>string};
 const Context=createContext<Session|null>(null);

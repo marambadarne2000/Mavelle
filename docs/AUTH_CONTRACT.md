@@ -4,12 +4,23 @@ Implemented after the catalog/database/browser gate passed. Verified with real P
 
 ## Session-based API
 
+The single-owner/employee extension is specified in [OWNER_STAFF_CONTRACT.md](OWNER_STAFF_CONTRACT.md).
+`ADMIN` now means the sole owner (database-enforced); `EMPLOYEE` is invitation-only.
+Customer, owner and employee UI portals are separate. Login accepts an optional
+`portal=customer|owner|staff`; mismatched valid credentials return 403 and clear
+the new session. Existing trusted smoke/fixture API clients can omit the portal.
+`POST /api/auth/staff-register` is public but requires CSRF and a valid, unused,
+email-bound invitation. All `/api/admin/**` endpoints require the owner;
+`/api/staff/**` requires EMPLOYEE or ADMIN. Customer orders/checkout require
+CUSTOMER or ADMIN. Disabled accounts are rejected on login and existing sessions
+lose access on their next request.
+
 - `GET /api/auth/csrf`: public, returns `{ token, headerName }`. The token is stored in the HTTP session. Fetch it before state-changing requests and again after login/logout.
 - `POST /api/auth/register`: CSRF-protected JSON `{ email, password }`; creates CUSTOMER only; 201 with `{ id, email, role }`. No automatic login. Duplicate normalized email → 409; invalid input → 400. Unknown JSON fields must not grant privileges.
-- `POST /api/auth/login`: CSRF-protected `application/x-www-form-urlencoded`, fields `username` (email) and `password`. Success → 200 user view, failure → 401 generic message. Spring Security manages session fixation protection and the security context.
+- `POST /api/auth/login`: CSRF-protected `application/x-www-form-urlencoded`, fields `username` (email), `password` and optional `portal`. Success → 200 user view, wrong credentials → 401 generic message, wrong portal → 403 with session invalidation. Spring Security manages session fixation protection and the security context.
 - `GET /api/auth/me`: 200 user view when authenticated, otherwise 401.
 - `POST /api/auth/logout`: CSRF-protected; invalidates session, clears security context and cookie; 204. Refresh CSRF before a later login.
-- `GET /api/admin/identity`: authenticated ADMIN only, returns the administrator user view. This minimal gate proves role enforcement before administrative product writes exist.
+- `GET /api/admin/identity`: authenticated ADMIN (sole owner) only, returns the owner user view.
 
 Email is trimmed and lowercased using Locale.ROOT; max 254 characters, ASCII format with a dotted domain, unique database constraint. Password: at least 12 Unicode characters and at most 72 UTF-8 bytes, no trimming or silent truncation, hashed with BCrypt cost 12. Registration responses and application logs never include passwords or hashes. No password reset endpoint is in scope.
 

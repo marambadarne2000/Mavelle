@@ -21,7 +21,8 @@ class AccessibilityE2ETest extends BrowserTest {
  private String language;private int width;
  private void route(String route,String ready){open(route);wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(ready)));}
  private void language(){new StorePage(driver,wait).language(language);}
- private void login(String email,String password){route("#login","[data-testid=auth-email]");language();new LoginPage(driver,wait).submit(email,password);wait.until(ExpectedConditions.urlContains("#account"));wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".account-home")));}
+ private void login(String email,String password){boolean owner=email.equals(FixtureApi.adminEmail());route(owner?"#owner-login":"#login","[data-testid=auth-email]");language();new LoginPage(driver,wait).submit(email,password);wait.until(ExpectedConditions.urlToBe(base+(owner?"/#owner":"/#account")));if(owner){wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("business-profile")));auditOwner();}route("#account",".account-home");}
+ private void auditOwner(){try{audit("owner-workspace");}catch(Exception e){throw new IllegalStateException(e);}}
  private void audit(String view)throws Exception{
   wait.until(d->Boolean.TRUE.equals(js("return document.fonts.status==='loaded'")));
   if(!Boolean.TRUE.equals(js("return document.documentElement.scrollWidth<=innerWidth")))problems.add(view+": horizontal overflow");
@@ -52,6 +53,7 @@ class AccessibilityE2ETest extends BrowserTest {
   route("#store/aurea-living","[data-testid=product-card]");audit("store");
   route("#login","[data-testid=auth-email]");audit("login");
   route("#register","[data-testid=auth-email]");audit("register");
+  route("#owner-login","[data-testid=auth-email]");audit("owner-login");route("#staff-login","[data-testid=auth-email]");audit("employee-login");route("#staff-register","[data-testid=staff-registration]");audit("employee-registration");
   route("#basket",".basket-empty");audit("empty-basket");
   route("#missing-page","main h1");audit("missing-page");
   login(customer,FixtureApi.PASSWORD);audit("customer-account");

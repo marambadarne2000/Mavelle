@@ -19,6 +19,10 @@ Docker Compose is for local demonstration, not a production hosting configuratio
 ```mermaid
 erDiagram
     COMPANIES ||--o{ PRODUCTS : offers
+    USERS ||--o| BUSINESS_PROFILE : owns
+    USERS ||--o| STAFF_PROFILES : has
+    USERS ||--o{ STAFF_INVITATIONS : creates
+    STAFF_INVITATIONS ||--o| STAFF_PROFILES : activates
     USERS ||--o{ ORDERS : places
     ORDERS ||--|{ ORDER_ITEMS : contains
     PRODUCTS ||--o{ ORDER_ITEMS : references

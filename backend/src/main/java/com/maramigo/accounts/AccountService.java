@@ -23,7 +23,8 @@ public class AccountService implements UserDetailsService {
     public record UserView(Long id, String email, String role) {
         public static UserView of(UserAccount u) { return new UserView(u.getId(), u.getEmail(), u.getRole()); }
     }
-    public record Principal(Long id, String email, String password, String role) implements UserDetails {
+    public record Principal(Long id, String email, String password, String role, boolean enabled) implements UserDetails {
+        @Override public boolean isEnabled() { return enabled; }
         @Override public String getUsername() { return email; }
         @Override public String getPassword() { return password; }
         @Override public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -43,6 +44,6 @@ public class AccountService implements UserDetailsService {
     @Override public UserDetails loadUserByUsername(String email) {
         var account = users.findByEmail(normalize(email))
             .orElseThrow(() -> new UsernameNotFoundException("Invalid email or password"));
-        return new Principal(account.getId(), account.getEmail(), account.getPasswordHash(), account.getRole());
+        return new Principal(account.getId(), account.getEmail(), account.getPasswordHash(), account.getRole(), account.isEnabled());
     }
 }

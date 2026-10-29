@@ -85,8 +85,8 @@ Before implementing state-changing endpoints, add authentication, CSRF protectio
 
 ## CI gates
 
-Accessibility matrix: `AccessibilityE2ETest` samples 17 rendered states in three
-languages and two Chrome viewports (102 samples), checks axe rules, overflow and
+Accessibility matrix: `AccessibilityE2ETest` samples 21 rendered states in three
+languages and two Chrome viewports (126 samples), checks axe rules, overflow and
 checkout Tab order. The six-case targeted run passed after label/landmark/wrapping
 fixes; hosted full-suite results are linked on Actions. Incomplete checks and
 remaining human review are documented in ACCESSIBILITY_MATRIX.md.
@@ -98,3 +98,7 @@ remaining human review are documented in ACCESSIBILITY_MATRIX.md.
 | CI-03 | Frontend lint/types/tests/build/audit | Local rehearsal + hosted frontend job | Passed |
 | CI-04 | Java and real PostgreSQL | Local rehearsal + hosted backend job | Passed |
 | CI-05 | Full isolated Selenium with reports, failure screenshots and cleanup | Latest PR head run on Actions | Live status linked in CI.md |
+
+## Single owner and employee fulfilment
+
+OwnerStaffIT verifies the database owner slot, invitation hashing/email binding/expiry/revocation/races, portal session cleanup, concurrent revoked-session rejection, staff financial redaction and allowed shipping transitions. OwnerStaffE2ETest verifies the full owner → invited employee → customer tracking → revocation lifecycle at desktop/mobile widths. See OWNER_STAFF_CONTRACT.md for permission boundaries and remaining payment/identity limitations.

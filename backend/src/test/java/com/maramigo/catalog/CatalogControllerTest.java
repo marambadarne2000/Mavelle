@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CatalogControllerTest {
     @Autowired MockMvc mvc;
     @MockitoBean ProductRepository products;
+    @MockitoBean com.maramigo.accounts.UserRepository users;
     @MockitoBean org.springframework.security.core.userdetails.UserDetailsService userDetails;
 
     @Test void unknownOrInactiveProductIsNotFound() throws Exception {

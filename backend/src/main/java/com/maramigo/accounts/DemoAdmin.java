@@ -15,7 +15,7 @@ public class DemoAdmin {
             if (email.isBlank() && password.isBlank()) return;
             if (email.isBlank() || !AccountService.validPassword(password)) throw new IllegalArgumentException("Demo admin configuration is incomplete or password is invalid.");
             String normalized = AccountService.normalize(email);
-            if (users.findByEmail(normalized).isEmpty()) users.saveAndFlush(new UserAccount(normalized, passwords.encode(password), "ADMIN"));
+            if (users.findByEmail(normalized).isEmpty() && !users.existsByRole("ADMIN")) users.saveAndFlush(new UserAccount(normalized, passwords.encode(password), "ADMIN"));
         };
     }
 }

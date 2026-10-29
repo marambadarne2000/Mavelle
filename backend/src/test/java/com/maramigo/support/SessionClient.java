@@ -34,4 +34,11 @@ public final class SessionClient {
         var response=http.send(request,HttpResponse.BodyHandlers.ofString());
         if (response.statusCode()!=200) throw new AssertionError("Test login failed with HTTP "+response.statusCode());
     }
+    public HttpResponse<String> loginPortal(String email,String password,String portal)throws Exception{
+        var token=json.readTree(get("/api/auth/csrf").body());
+        return http.send(HttpRequest.newBuilder(URI.create(base+"/api/auth/login"))
+            .header("Content-Type","application/x-www-form-urlencoded")
+            .header(token.get("headerName").asText(),token.get("token").asText())
+            .POST(HttpRequest.BodyPublishers.ofString("username="+URLEncoder.encode(email,StandardCharsets.UTF_8)+"&password="+URLEncoder.encode(password,StandardCharsets.UTF_8)+"&portal="+portal)).build(),HttpResponse.BodyHandlers.ofString());
+    }
 }

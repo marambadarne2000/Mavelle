@@ -2,13 +2,13 @@
 
 The isolated full suite includes `AccessibilityE2ETest`: six independent Chrome
 journeys, combining English/Hebrew/Arabic with exact 1280×900 and 390×900 CSS
-viewports. Each journey checks 17 rendered states (102 samples total):
+viewports. Each journey now checks 21 rendered states (126 samples total):
 
 | Area | Rendered states |
 | --- | --- |
-| Public | home, open product dialog, store catalog, login, registration, empty basket, missing-page recovery |
+| Public | home, open product dialog, store catalog, customer login, customer registration, owner login, employee login, employee activation, empty basket, missing-page recovery |
 | Customer | account, populated basket, shipping checkout, order confirmation, order history |
-| Administrator | account, populated dashboard, existing-product/stock editor, order detail/status editor, visible cancellation confirmation |
+| Owner | owner workspace, account, populated dashboard, existing-product/stock editor, order detail/status editor, visible cancellation confirmation |
 
 Each sample checks document language/direction, document horizontal overflow and
 axe-core 4.14.0 rules tagged `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`,
@@ -33,9 +33,10 @@ not sent to a scanning service. Implementation: [official axe API](https://githu
 ```
 
 Install frontend dependencies first (`npm ci` on supported Node). Full mode
-includes 18 Selenium cases: six smoke, six purchase and six accessibility matrix
-journeys. The complete application count becomes 83: 38 backend + 27 frontend +
-18 Selenium. The targeted mode is six cases, not a fresh pass of the other 12.
+includes 20 Selenium cases: six smoke, six purchase, six accessibility matrix
+journeys and two owner/employee workflows. The complete application count is 92:
+45 backend + 27 frontend + 20 Selenium. The targeted mode is six cases, not a
+fresh pass of the other 14.
 
 Per-sample results: `automation/target/accessibility/<language>-<width>.json`.
 They record the axe version, sampled view, violations and `incomplete` checks;
@@ -45,10 +46,12 @@ uploaded with Selenium CI artifacts for seven days. Targeted JUnit results use
 
 ## Problems found and corrected
 
-The final targeted local run passed all six journeys with 102 sampled states,
-zero reported violations and no document overflow. Incomplete checks remain in
-the reports. Original smoke/purchase cases passed separately after the initial
-fixes; the hosted full run is the source of truth for all 18 cases on one commit.
+The latest isolated full run passed all 20 Selenium cases. Its six accessibility
+journeys sampled 126 rendered states with zero reported violations and no document
+overflow. Incomplete checks remain in the reports. The hosted full run is the
+source of truth for all 20 cases on one commit. The separate owner/employee
+functional workflow currently uses English at both widths; employee-workspace
+screen-reader/RTL review is not claimed by that two-case test.
 
 Selected synthetic evidence: [Hebrew mobile checkout](screenshots/accessibility-checkout-he-mobile.png)
 and [Arabic mobile dashboard](screenshots/accessibility-dashboard-ar-mobile.png).

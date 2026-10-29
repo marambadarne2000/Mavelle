@@ -12,7 +12,7 @@ class PurchaseE2ETest extends BrowserTest {
  private FixtureApi api;
  @BeforeEach void fixture()throws Exception{api=new FixtureApi(base);}
  private void english(WebDriver browser,WebDriverWait waiting){waiting.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".language-picker select")));new Select(browser.findElement(By.cssSelector(".language-picker select"))).selectByValue("en");waiting.until(d->"en".equals(d.findElement(By.tagName("html")).getAttribute("lang")));}
- private void login(WebDriver browser,WebDriverWait waiting,String email,String password){browser.get(base+"/#login");english(browser,waiting);new LoginPage(browser,waiting).submit(email,password);waiting.until(ExpectedConditions.urlContains("#account"));}
+ private void login(WebDriver browser,WebDriverWait waiting,String email,String password){boolean owner=email.equals(FixtureApi.adminEmail());browser.get(base+(owner?"/#owner-login":"/#login"));english(browser,waiting);new LoginPage(browser,waiting).submit(email,password);waiting.until(ExpectedConditions.urlToBe(base+(owner?"/#owner":"/#account")));}
  private void selectProduct(FixtureApi.Product product){open("#collection");english(driver,wait);var store=new StorePage(driver,wait);store.ready();store.search(product.name());store.onlyProduct(product.name());}
  private void add(){Ui.click(driver,wait,By.cssSelector("[data-testid=product-card] [data-testid=add-to-basket]"));}
  private void basket(){Ui.click(driver,wait,Ui.id("basket-link"));new BasketPage(driver,wait).ready();}

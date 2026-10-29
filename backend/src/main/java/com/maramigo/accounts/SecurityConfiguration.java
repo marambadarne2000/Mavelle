@@ -17,13 +17,15 @@ import jakarta.servlet.DispatcherType;
 @Configuration
 public class SecurityConfiguration {
     @Bean PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(12); }
-    @Bean SecurityFilterChain security(HttpSecurity http, ObjectMapper json,
+    @Bean SecurityFilterChain security(HttpSecurity http, ObjectMapper json, UserRepository users,
             @Value("${maramigo.login-limit:10}") int limit) throws Exception {
         http.authorizeHttpRequests(auth -> auth
             .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
             .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**", "/api/companies", "/actuator/health", "/api/auth/csrf").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/staff-register").permitAll()
+            .requestMatchers("/api/staff/**").hasAnyRole("ADMIN","EMPLOYEE")
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
+            .requestMatchers("/api/orders", "/api/orders/**").hasAnyRole("CUSTOMER","ADMIN")
             .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .requestCache(cache -> cache.disable())
@@ -38,6 +40,14 @@ public class SecurityConfiguration {
                 }))
             .formLogin(form -> form.loginProcessingUrl("/api/auth/login")
                 .successHandler((request, response, authentication) -> {
+                    var user=(AccountService.Principal)authentication.getPrincipal();
+                    String portal=request.getParameter("portal");
+                    String expected=switch(portal==null?"":portal){case "customer"->"CUSTOMER";case "owner"->"ADMIN";case "staff"->"EMPLOYEE";case ""->user.role();default->"INVALID";};
+                    if(!expected.equals(user.role())){
+                        org.springframework.security.core.context.SecurityContextHolder.clearContext();
+                        var session=request.getSession(false);if(session!=null){try{session.invalidate();}catch(IllegalStateException alreadyInvalidated){/* Concurrent logout already cleared the session. */}}
+                        response.setStatus(403);response.setContentType("application/json");response.getWriter().write("{\"detail\":\"This account cannot use this sign-in area.\"}");return;
+                    }
                     response.setContentType("application/json");
                     json.writeValue(response.getWriter(), ((AccountService.Principal)authentication.getPrincipal()).view());
                 })
@@ -47,7 +57,8 @@ public class SecurityConfiguration {
                 }))
             .logout(logout -> logout.logoutUrl("/api/auth/logout").deleteCookies("JSESSIONID")
                 .logoutSuccessHandler((request, response, authentication) -> response.setStatus(204)))
-            .addFilterBefore(new LoginRateLimiter(Clock.systemUTC(), limit), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(new LoginRateLimiter(Clock.systemUTC(), limit), UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(new ActiveAccountFilter(users), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

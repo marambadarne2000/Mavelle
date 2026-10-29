@@ -11,6 +11,7 @@ public class UserAccount {
     private String email;
     private String passwordHash;
     private String role;
+    private boolean enabled = true;
     protected UserAccount() {}
     public UserAccount(String email, String passwordHash, String role) {
         this.email = email; this.passwordHash = passwordHash; this.role = role;
@@ -19,4 +20,5 @@ public class UserAccount {
     public String getEmail() { return email; }
     public String getPasswordHash() { return passwordHash; }
     public String getRole() { return role; }
+    public boolean isEnabled() { return enabled; }
 }
