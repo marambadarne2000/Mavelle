@@ -76,7 +76,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function add(productId: number) {
-    if(session.user?.role==='EMPLOYEE'){setMessage({kind:'error',text:'Use a customer account to shop.'});return;}
+    if((session.user?.role==='EMPLOYEE'||session.user?.role==='MERCHANT')){setMessage({kind:'error',text:'Use a customer account to shop.'});return;}
     if (pending.current.has(productId)) return;
     const operation = Symbol('basket-add');
     pending.current.set(productId, operation); setAdding([...pending.current.keys()]); setMessage(null);

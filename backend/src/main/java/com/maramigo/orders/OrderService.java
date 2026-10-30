@@ -36,6 +36,7 @@ public class OrderService {
         for(var line:lines){
             var p=products.findLockedById(line.productId()).orElseThrow(()->fail(HttpStatus.CONFLICT,"A product is no longer available. Refresh your basket."));
             if(!p.isActive())throw fail(HttpStatus.CONFLICT,"A product is no longer available. Refresh your basket.");
+            if(!"APPROVED".equals(jdbc.queryForObject("SELECT status FROM companies WHERE id=?",String.class,p.getCompanyId())))throw fail(HttpStatus.CONFLICT,"This store is not currently accepting orders. Refresh your basket.");
             if(p.getPrice().compareTo(line.expectedPrice())!=0)throw fail(HttpStatus.CONFLICT,"Prices changed. Refresh your basket and confirm the updated prices.");
             if(p.getStockQuantity()<line.quantity())throw fail(HttpStatus.CONFLICT,"There is not enough stock. Refresh your basket.");
             total=total.add(p.getPrice().multiply(BigDecimal.valueOf(line.quantity()))); locked.add(p);
@@ -45,7 +46,8 @@ public class OrderService {
         for(int i=0;i<lines.size();i++){
             var line=lines.get(i);var p=locked.get(i);
             String company=companies.findById(p.getCompanyId()).orElseThrow().getName();
-            jdbc.update("INSERT INTO order_items(order_id,product_id,sku,name,company_name,unit_price,quantity) VALUES (?,?,?,?,?,?,?)",id,p.getId(),p.getSku(),p.getName(),company,p.getPrice(),line.quantity());
+            jdbc.update("INSERT INTO order_items(order_id,product_id,sku,name,company_name,unit_price,quantity,company_id) VALUES (?,?,?,?,?,?,?,?)",id,p.getId(),p.getSku(),p.getName(),company,p.getPrice(),line.quantity(),p.getCompanyId());
+            jdbc.update("INSERT INTO merchant_orders(order_id,company_id) VALUES (?,?) ON CONFLICT DO NOTHING",id,p.getCompanyId());
             p.adjustStock(-line.quantity());
             jdbc.update("INSERT INTO inventory_movements(product_id,actor_id,quantity_delta,reason,order_id) VALUES (?,?,?,?,?)",p.getId(),userId,-line.quantity(),"Order "+number,id);
         }

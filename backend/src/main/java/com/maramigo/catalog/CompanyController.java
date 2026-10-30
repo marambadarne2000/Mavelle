@@ -8,5 +8,5 @@ public class CompanyController {
     private final CompanyRepository companies;
     public CompanyController(CompanyRepository companies){this.companies=companies;}
     public record View(Long id,String slug,String name,String description,String monogram,boolean demo){}
-    @GetMapping public List<View> list(){return companies.findAll(Sort.by("id")).stream().map(c->new View(c.getId(),c.getSlug(),c.getName(),c.getDescription(),c.getMonogram(),c.isDemo())).toList();}
+    @GetMapping public List<View> list(){return companies.findAll(Sort.by("id")).stream().filter(c->"APPROVED".equals(c.getStatus())).map(c->new View(c.getId(),c.getSlug(),c.getName(),c.getDescription(),c.getMonogram(),c.isDemo())).toList();}
 }

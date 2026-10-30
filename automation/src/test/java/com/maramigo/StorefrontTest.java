@@ -30,9 +30,10 @@ class StorefrontTest extends BrowserTest {
  }
  @Test void invalidLoginIsFocusedAndFormRemainsUsable(){
   open("#login");var login=new LoginPage(driver,wait);login.submit("invalid-"+java.util.UUID.randomUUID()+"@example.test","Synthetic-invalid-password");var error=login.error();assertEquals(error,driver.switchTo().activeElement());assertTrue(driver.findElement(By.cssSelector("[data-testid=auth-submit]")).isEnabled());
-  new StorePage(driver,wait).language("en");Ui.click(driver,wait,Ui.id("owner-entry"));wait.until(ExpectedConditions.urlToBe(base+"/#owner-login"));wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("auth-email")));
-  try{var folder=java.nio.file.Path.of("target","screenshots");java.nio.file.Files.createDirectories(folder);java.nio.file.Files.write(folder.resolve("owner-sign-in-entry.png"),((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES));}catch(java.io.IOException e){throw new IllegalStateException("Could not save owner entry evidence",e);}
-  Ui.click(driver,wait,Ui.id("staff-entry"));wait.until(ExpectedConditions.urlToBe(base+"/#staff-login"));Ui.click(driver,wait,By.cssSelector("a[href='#staff-register']"));wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("staff-registration")));
+  new StorePage(driver,wait).language("en");assertTrue(driver.findElements(Ui.id("owner-entry")).isEmpty());assertTrue(driver.findElements(Ui.id("staff-entry")).isEmpty());
+  Ui.click(driver,wait,Ui.id("business-entry"));wait.until(ExpectedConditions.urlToBe(base+"/#join-business"));wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("business-registration")));
+  open("#login");Ui.click(driver,wait,By.cssSelector("a[href='#staff-register']"));wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("staff-registration")));
+
 
  }
  @Test void skipNavigationWorksWithoutChangingRoute(){

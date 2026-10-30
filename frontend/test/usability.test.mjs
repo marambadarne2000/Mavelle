@@ -4,7 +4,7 @@ const dom=new JSDOM('<!doctype html><html><body><div id="root"></div></body></ht
 for(const key of ['window','document','HTMLElement','HTMLInputElement','Event','MouseEvent','localStorage'])Object.defineProperty(globalThis,key,{value:dom.window[key],configurable:true});
 globalThis.IS_REACT_ACT_ENVIRONMENT=true;localStorage.setItem('maramigo.language','en');
 globalThis.ResizeObserver=class{observe(){}unobserve(){}disconnect(){}};
-const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab}=await import('../.test-build/ui.mjs');
+const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration}=await import('../.test-build/ui.mjs');
 let root;const host=document.getElementById('root');
 test.afterEach(async()=>{if(root)await act(async()=>root.unmount());root=null;});
 async function render(element){root=createRoot(host);await act(async()=>root.render(element));}
@@ -30,6 +30,37 @@ test('sign-in fields have accessible labels and correct autocomplete',async()=>{
  globalThis.fetch=async()=>response({},401);await render(shell());
  const email=host.querySelector('[data-testid=auth-email]'),password=host.querySelector('[data-testid=auth-password]');
  assert.match(email.labels[0].textContent,/Email address/);assert.match(password.labels[0].textContent,/Password/);assert.equal(email.autocomplete,'username');assert.equal(password.autocomplete,'current-password');assert.equal(password.type,'password');
+});
+
+test('unified sign-in routes all four server roles without sending a client-selected portal',async()=>{
+ for(const [role,destination] of [['CUSTOMER','#account'],['MERCHANT','#merchant'],['ADMIN','#marketplace-admin'],['EMPLOYEE','#staff-orders']]){
+  let payload;globalThis.fetch=async(path,options)=>path==='/api/auth/me'?response({},401):path==='/api/auth/csrf'?response({headerName:'X-CSRF-TOKEN',token:'token'}):(payload=options.body,response({id:7,email:'test@example.test',role}));
+  window.location.hash='#login';await render(shell());assert.equal(host.querySelector('.portal-switch'),null);
+  await act(async()=>host.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
+  assert.equal(window.location.hash,destination);assert.equal(new URLSearchParams(payload).has('portal'),false);
+  await act(async()=>root.unmount());root=null;
+ }
+});
+
+test('business onboarding requests contact details and confirmation without raw card bank or national ID fields',async()=>{
+ await render(React.createElement(I18nProvider,null,React.createElement(BusinessRegistration)));
+ for(const name of ['ownerName','businessName','email','phone','password','confirmPassword'])assert.ok(host.querySelector('[data-testid=join-'+name+']'));
+ assert.ok(host.querySelector('input[type=checkbox][required]'));assert.match(host.textContent,/monthly subscription plus sales commission/);
+ assert.doesNotMatch(host.innerHTML,/name="(?:cardNumber|cvv|bankAccount|nationalId)"/);assert.equal(host.querySelector('[data-testid=join-confirmPassword]').autocomplete,'new-password');
+});
+
+test('customer favorites delete uses the personal endpoint and refreshes the empty state',async()=>{
+ let removed=false;globalThis.fetch=async(path,options)=>{
+  if(path==='/api/auth/me')return response({id:9,email:'buyer@example.test',role:'CUSTOMER'});
+  if(path==='/api/customer/profile')return response({fullName:'',phone:'',address:'',city:''});
+  if(path==='/api/auth/csrf')return response({headerName:'X-CSRF-TOKEN',token:'token'});
+  if(path==='/api/customer/favorites/11'){assert.equal(options.method,'DELETE');removed=true;return new Response(null,{status:200});}
+  if(path==='/api/customer/favorites')return response(removed?[]:[{id:11,name:'Synthetic favorite',price:10,slug:'shop-test',company_name:'Test',active:true,status:'APPROVED'}]);
+  throw Error('Unexpected URL '+path);
+ };
+ await render(React.createElement(I18nProvider,null,React.createElement(SessionProvider,null,React.createElement(CustomerCenter))));
+ await act(async()=>[...host.querySelectorAll('button')].find(b=>b.textContent==='Favorites').click());assert.match(host.textContent,/Synthetic favorite/);
+ await act(async()=>[...host.querySelectorAll('button')].find(b=>b.textContent==='Remove').click());assert.equal(removed,true);assert.match(host.textContent,/Your favorites list is empty/);
 });
 test('pending sign-in sends once, disables fields and recovers with a focused server error',async()=>{
  let complete,loginCalls=0,csrfCalls=0;

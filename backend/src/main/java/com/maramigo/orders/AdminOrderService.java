@@ -56,6 +56,8 @@ public class AdminOrderService {
             products.flush();
         }
         jdbc.update("UPDATE orders SET status=?,version=version+1,updated_at=CURRENT_TIMESTAMP WHERE id=?",change.status(),row.id());
+        jdbc.update("INSERT INTO merchant_order_history(order_id,company_id,actor_id,from_status,to_status,reason) SELECT order_id,company_id,?,status,?,? FROM merchant_orders WHERE order_id=? AND status<>?",actorId,change.status(),change.reason(),row.id(),change.status());
+        jdbc.update("UPDATE merchant_orders SET status=?,version=version+1 WHERE order_id=? AND status<>?",change.status(),row.id(),change.status());
         jdbc.update("INSERT INTO order_status_history(order_id,actor_id,from_status,to_status,reason) VALUES (?,?,?,?,?)",row.id(),actorId,row.status(),change.status(),change.reason());
         return detail(number,new Header(row.id(),row.userId(),row.version()+1,change.status()));
     }

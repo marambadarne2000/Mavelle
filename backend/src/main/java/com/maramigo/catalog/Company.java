@@ -10,6 +10,8 @@ public class Company {
     private String description;
     private String monogram;
     private boolean demo;
+    private String status;
+    public String getStatus(){return status;}
     protected Company() {}
     public Long getId(){return id;}
     public String getSlug(){return slug;}

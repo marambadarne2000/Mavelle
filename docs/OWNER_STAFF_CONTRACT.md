@@ -1,3 +1,5 @@
+> Update, 30 October 2026: the marketplace model and unified visible sign-in supersede the earlier single-merchant/separate-portal description below. See [MARKETPLACE_CONTRACT.md](MARKETPLACE_CONTRACT.md). Existing employee permission boundaries and owner provisioning still apply.
+
 # Single owner, employees and customers
 
 ## Operating model

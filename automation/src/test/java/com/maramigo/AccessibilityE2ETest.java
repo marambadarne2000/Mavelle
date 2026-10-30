@@ -21,7 +21,7 @@ class AccessibilityE2ETest extends BrowserTest {
  private String language;private int width;
  private void route(String route,String ready){open(route);wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(ready)));}
  private void language(){new StorePage(driver,wait).language(language);}
- private void login(String email,String password){boolean owner=email.equals(FixtureApi.adminEmail());route(owner?"#owner-login":"#login","[data-testid=auth-email]");language();new LoginPage(driver,wait).submit(email,password);wait.until(ExpectedConditions.urlToBe(base+(owner?"/#owner":"/#account")));if(owner){wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("business-profile")));auditOwner();}route("#account",".account-home");}
+ private void login(String email,String password){boolean owner=email.equals(FixtureApi.adminEmail());route(owner?"#owner-login":"#login","[data-testid=auth-email]");language();new LoginPage(driver,wait).submit(email,password);wait.until(ExpectedConditions.urlToBe(base+(owner?"/#marketplace-admin":"/#account")));if(owner){route("#owner","[data-testid=business-profile]");auditOwner();}route("#account",".account-home");}
  private void auditOwner(){try{audit("owner-workspace");}catch(Exception e){throw new IllegalStateException(e);}}
  private void audit(String view)throws Exception{
   wait.until(d->Boolean.TRUE.equals(js("return document.fonts.status==='loaded'")));
@@ -53,6 +53,7 @@ class AccessibilityE2ETest extends BrowserTest {
   route("#store/aurea-living","[data-testid=product-card]");audit("store");
   route("#login","[data-testid=auth-email]");audit("login");
   route("#register","[data-testid=auth-email]");audit("register");
+  route("#join-business","[data-testid=business-registration]");audit("business-registration");
   route("#owner-login","[data-testid=auth-email]");audit("owner-login");route("#staff-login","[data-testid=auth-email]");audit("employee-login");route("#staff-register","[data-testid=staff-registration]");audit("employee-registration");
   route("#basket",".basket-empty");audit("empty-basket");
   route("#missing-page","main h1");audit("missing-page");
@@ -68,6 +69,7 @@ class AccessibilityE2ETest extends BrowserTest {
   route("#orders",".order-list");audit("customer-orders");
   route("#account","[data-testid=logout]");Ui.click(driver,wait,Ui.id("logout"));wait.until(ExpectedConditions.urlContains("#home"));
   login(FixtureApi.adminEmail(),FixtureApi.adminPassword());audit("administrator-account");
+  route("#marketplace-admin","main h1");audit("marketplace-admin");
   route("#dashboard","[data-testid=dashboard-low-stock]");audit("dashboard");screenshot("dashboard");
   route("#admin","[data-testid=admin-product-row]");Ui.fill(driver,wait,By.cssSelector(".admin-card input[type=search]"),product.name());
   wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("[data-testid=admin-product-row]"),1));Ui.click(driver,wait,Ui.id("admin-product-row"));wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("stock-adjustment-form")));audit("product-and-stock-editor");

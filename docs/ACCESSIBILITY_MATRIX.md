@@ -2,13 +2,13 @@
 
 The isolated full suite includes `AccessibilityE2ETest`: six independent Chrome
 journeys, combining English/Hebrew/Arabic with exact 1280×900 and 390×900 CSS
-viewports. Each journey now checks 21 rendered states (126 samples total):
+viewports. Each journey now checks 23 rendered states (138 samples total):
 
 | Area | Rendered states |
 | --- | --- |
-| Public | home, open product dialog, store catalog, customer login, customer registration, owner login, employee login, employee activation, empty basket, missing-page recovery |
+| Public | home, open product dialog, store catalog, customer login, customer registration, business registration, owner login alias, employee login alias, employee activation, empty basket, missing-page recovery |
 | Customer | account, populated basket, shipping checkout, order confirmation, order history |
-| Owner | owner workspace, account, populated dashboard, existing-product/stock editor, order detail/status editor, visible cancellation confirmation |
+| Owner | owner workspace, account, marketplace management, populated dashboard, existing-product/stock editor, order detail/status editor, visible cancellation confirmation |
 
 Each sample checks document language/direction, document horizontal overflow and
 axe-core 4.14.0 rules tagged `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`,
@@ -33,10 +33,10 @@ not sent to a scanning service. Implementation: [official axe API](https://githu
 ```
 
 Install frontend dependencies first (`npm ci` on supported Node). Full mode
-includes 20 Selenium cases: six smoke, six purchase, six accessibility matrix
-journeys and two owner/employee workflows. The complete application count is 92:
-45 backend + 27 frontend + 20 Selenium. The targeted mode is six cases, not a
-fresh pass of the other 14.
+includes 22 Selenium cases: six smoke, six purchase, six accessibility matrix
+journeys, two owner/employee workflows and two marketplace workflows. The complete application count is 106:
+54 backend + 30 frontend + 22 Selenium. The targeted mode is six cases, not a
+fresh pass of the other 16.
 
 Per-sample results: `automation/target/accessibility/<language>-<width>.json`.
 They record the axe version, sampled view, violations and `incomplete` checks;
@@ -46,12 +46,16 @@ uploaded with Selenium CI artifacts for seven days. Targeted JUnit results use
 
 ## Problems found and corrected
 
-The latest isolated full run passed all 20 Selenium cases. Its six accessibility
-journeys sampled 126 rendered states with zero reported violations and no document
-overflow. Incomplete checks remain in the reports. The hosted full run is the
-source of truth for all 20 cases on one commit. The separate owner/employee
-functional workflow currently uses English at both widths; employee-workspace
-screen-reader/RTL review is not claimed by that two-case test.
+The gate requires all 22 Selenium cases to pass on one revision. Its multilingual
+matrix samples 138 states; four further English merchant overview/catalog samples
+are recorded as `marketplace-*.json`. All violations fail the corresponding test.
+Incomplete checks remain in reports. Check the hosted run for that commit and the
+retained local reports rather than inferring success from a case count. The
+owner/employee and merchant functional workflows use English at both widths;
+merchant/employee screen-reader and full RTL audits are not claimed by them.
+
+Marketplace checks found and corrected gold text on a cream background and a
+header that overflowed at 390px after adding the business application link.
 
 Selected synthetic evidence: [Hebrew mobile checkout](screenshots/accessibility-checkout-he-mobile.png)
 and [Arabic mobile dashboard](screenshots/accessibility-dashboard-ar-mobile.png).

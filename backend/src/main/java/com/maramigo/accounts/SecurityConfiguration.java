@@ -22,7 +22,9 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests(auth -> auth
             .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
             .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**", "/api/companies", "/actuator/health", "/api/auth/csrf").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/staff-register").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/staff-register", "/api/auth/business-register").permitAll()
+            .requestMatchers("/api/merchant/**").hasRole("MERCHANT")
+            .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
             .requestMatchers("/api/staff/**").hasAnyRole("ADMIN","EMPLOYEE")
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .requestMatchers("/api/orders", "/api/orders/**").hasAnyRole("CUSTOMER","ADMIN")

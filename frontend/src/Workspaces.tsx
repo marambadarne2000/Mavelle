@@ -5,11 +5,6 @@ import {t,useLanguage,formatDate} from './i18n';
 import {FormFeedback} from './FormFeedback';
 import './workspaces.css';
 
-export function PortalSwitcher(){return <nav className="portal-switch" aria-label={t('Choose your sign-in area')}>
- <a href="#login" data-testid="customer-entry"><strong>{t('Customers')}</strong><span>{t('Shop and track your orders')}</span></a>
- <a href="#staff-login" data-testid="staff-entry"><strong>{t('Employees')}</strong><span>{t('Orders and deliveries only')}</span></a>
- <a href="#owner-login" data-testid="owner-entry"><strong>{t('Site owner')}</strong><span>{t('One owner. Full business control.')}</span></a>
- </nav>;}
 type Business={ownerName:string;businessName:string;registrationNumber:string;contactEmail:string;phone:string};
 type Employee={id:number;email:string;fullName:string;enabled:boolean};
 type Invite={id:number;email:string;fullName:string;expiresAt:string};
@@ -27,7 +22,7 @@ export function OwnerWorkspace(){
  if(session.loading)return <main className="simple-page"><p>{t('Loading your account…')}</p></main>;
  if(!allowed)return <main className="simple-page"><h1>{t('Site owner access required.')}</h1><p>{t('The owner account is configured once. Public registration cannot create another owner.')}</p><a className="gold-button" href="#owner-login">{t('Owner sign-in')}</a></main>;
  return <main className="owner-workspace simple-page"><p className="eyebrow">{t('MARAMIGO / OWNER')}</p><h1>{t('Your business. Your control.')}</h1><p>{t('Single site owner: Maram Abbas')}</p>
- <nav className="workspace-links" aria-label={t('Business management')}><a href="#dashboard">{t('Dashboard')}</a><a href="#admin">{t('Product management')}</a><a href="#admin-orders">{t('Order management')}</a></nav>
+ <nav className="workspace-links" aria-label={t('Business management')}><a href="#marketplace-admin">{t('Marketplace management')}</a><a href="#dashboard">{t('Dashboard')}</a><a href="#admin">{t('Product management')}</a><a href="#admin-orders">{t('Order management')}</a></nav>
  <p className="workspace-note">{t('Demo orders are not income. Payment collection is not connected yet.')}</p><FormFeedback error={error}/>{notice&&<p role="status">{t(notice)}</p>}
  {loading?<p role="status">{t('Loading business details…')}</p>:<div className="owner-columns">
  <section className="workspace-card"><h2>{t('Business identity')}</h2><p>{t('Business details are self-reported, not verified proof of legal ownership.')}</p>
@@ -43,7 +38,7 @@ export function OwnerWorkspace(){
 export function StaffRegistrationPage({token=''}:{token?:string}){
  useLanguage();const [code,setCode]=useState(token),[email,setEmail]=useState(''),[password,setPassword]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState('');
  async function submit(event:FormEvent){event.preventDefault();if(busy)return;setBusy(true);setError('');try{await check(await write('/api/auth/staff-register',JSON.stringify({token:code,email:email.trim(),password}),'application/json'));setPassword('');setCode('');window.location.replace('#staff-login');}catch(e){setError(e instanceof Error?e.message:'The request failed. Please try again.');}finally{setBusy(false);}}
- return <main className="simple-page staff-workspace"><PortalSwitcher/><p className="eyebrow">{t('MARAMIGO / TEAM')}</p><h1>{t('Accept your employee invitation')}</h1><p>{t('Only the site owner can invite employees. Use the work email named in your invitation.')}</p><form className="workspace-card staff-registration" data-testid="staff-registration" onSubmit={submit}><fieldset disabled={busy}><label>{t('Invitation code')}<input data-testid="staff-code" type="password" required pattern="[A-Za-z0-9_-]{43}" value={code} onChange={e=>setCode(e.target.value)}/></label><label>{t('Work email')}<input data-testid="staff-email" type="email" required maxLength={254} autoComplete="username" value={email} onChange={e=>setEmail(e.target.value)}/></label><label>{t('Password')}<input data-testid="staff-password" type="password" autoComplete="new-password" required minLength={12} value={password} onChange={e=>setPassword(e.target.value)}/></label><p>{t('At least 12 characters; maximum 72 UTF-8 bytes.')}</p><button className="gold-button" data-testid="staff-register-submit">{t('Activate employee account')}</button></fieldset><FormFeedback error={error}/></form></main>;
+ return <main className="simple-page staff-workspace"><p className="eyebrow">{t('MARAMIGO / TEAM')}</p><h1>{t('Accept your employee invitation')}</h1><p>{t('Only the site owner can invite employees. Use the work email named in your invitation.')}</p><form className="workspace-card staff-registration" data-testid="staff-registration" onSubmit={submit}><fieldset disabled={busy}><label>{t('Invitation code')}<input data-testid="staff-code" type="password" required pattern="[A-Za-z0-9_-]{43}" value={code} onChange={e=>setCode(e.target.value)}/></label><label>{t('Work email')}<input data-testid="staff-email" type="email" required maxLength={254} autoComplete="username" value={email} onChange={e=>setEmail(e.target.value)}/></label><label>{t('Password')}<input data-testid="staff-password" type="password" autoComplete="new-password" required minLength={12} value={password} onChange={e=>setPassword(e.target.value)}/></label><p>{t('At least 12 characters; maximum 72 UTF-8 bytes.')}</p><button className="gold-button" data-testid="staff-register-submit">{t('Activate employee account')}</button></fieldset><FormFeedback error={error}/></form></main>;
 }
 
 type WorkSummary={orderNumber:string;status:string;createdAt:string};

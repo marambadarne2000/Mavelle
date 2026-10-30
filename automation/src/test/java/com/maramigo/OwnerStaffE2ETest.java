@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("purchase")
 class OwnerStaffE2ETest extends BrowserTest {
  private void english(WebDriver d,WebDriverWait w){w.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".language-picker select")));new StorePage(d,w).language("en");}
- private void login(WebDriver d,WebDriverWait w,String email,String password,String portal){d.get(base+"/#"+portal);english(d,w);new LoginPage(d,w).submit(email,password);w.until(ExpectedConditions.urlToBe(base+(portal.equals("owner-login")?"/#owner":portal.equals("staff-login")?"/#staff-orders":"/#account")));}
+ private void login(WebDriver d,WebDriverWait w,String email,String password,String portal){d.get(base+"/#"+portal);english(d,w);new LoginPage(d,w).submit(email,password);w.until(ExpectedConditions.urlToBe(base+(portal.equals("owner-login")?"/#marketplace-admin":portal.equals("staff-login")?"/#staff-orders":"/#account")));}
  private void logout(){open("#account");wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("logout")));Ui.click(driver,wait,Ui.id("logout"));wait.until(ExpectedConditions.urlContains("#home"));}
  private void evidence(WebDriver d,String name)throws Exception{var path=Path.of("target","screenshots");Files.createDirectories(path);Files.write(path.resolve(name+".png"),((TakesScreenshot)d).getScreenshotAs(OutputType.BYTES));}
  @ParameterizedTest @ValueSource(ints={1280,390})
  void ownerInvitesEmployeeWhoFulfilsWithoutFinancialAccess(int width)throws Exception{
   viewport(width,900);var api=new FixtureApi(base);var product=api.product(4);String customer=api.customer(),employee="employee-"+UUID.randomUUID()+"@example.test";
-  login(driver,wait,FixtureApi.adminEmail(),FixtureApi.adminPassword(),"owner-login");wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("business-profile")));
+  login(driver,wait,FixtureApi.adminEmail(),FixtureApi.adminPassword(),"owner-login");open("#owner");wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("business-profile")));
   for(var field:Map.of("ownerName","Synthetic Owner","businessName","Synthetic Store","registrationNumber","DEMO-ONLY","contactEmail","business@example.test","phone","0500000000").entrySet())Ui.fill(driver,wait,Ui.id("business-"+field.getKey()),field.getValue());
   Ui.click(driver,wait,By.cssSelector("[data-testid=business-profile] button"));wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("main [role=status]"),"Business details saved."));
   Ui.fill(driver,wait,Ui.id("invite-name"),"Synthetic Employee");Ui.fill(driver,wait,Ui.id("invite-email"),employee);Ui.click(driver,wait,By.cssSelector("[data-testid=employee-invite] button"));
@@ -41,7 +41,7 @@ class OwnerStaffE2ETest extends BrowserTest {
    workerWait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("staff-status-form")));Ui.fill(worker,workerWait,Ui.id("staff-status-reason"),"Synthetic delivery");Ui.click(worker,workerWait,Ui.id("staff-status-submit"));workerWait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("[data-testid=staff-order-detail] [data-status=DELIVERED]")));
    assertEquals(true,((JavascriptExecutor)worker).executeScript("return document.documentElement.scrollWidth<=innerWidth"));evidence(worker,"employee-workspace-"+width);
    driver.navigate().refresh();wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".order-confirmation [data-status=DELIVERED]")));
-   logout();login(driver,wait,FixtureApi.adminEmail(),FixtureApi.adminPassword(),"owner-login");wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("business-profile")));
+   logout();login(driver,wait,FixtureApi.adminEmail(),FixtureApi.adminPassword(),"owner-login");open("#owner");wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("business-profile")));
    long employeeId=0;for(var e:api.get("/api/admin/owner/employees"))if(e.get("email").asText().equals(employee))employeeId=e.get("id").asLong();assertTrue(employeeId>0);
    By access=By.cssSelector("[data-testid=employee-access][data-employee-id='"+employeeId+"']");Ui.click(driver,wait,access);wait.until(ExpectedConditions.textToBePresentInElementLocated(access,"Restore access"));
    assertEquals(true,js("return document.documentElement.scrollWidth<=innerWidth"));evidence(driver,"owner-workspace-"+width);

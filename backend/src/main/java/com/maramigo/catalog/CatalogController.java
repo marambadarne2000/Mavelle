@@ -31,7 +31,7 @@ public class CatalogController {
     @GetMapping
     public CatalogPage list(@RequestParam(defaultValue = "") @Size(max = 100) String search,
             @RequestParam(required=false) @Positive Long companyId,
-            @RequestParam(defaultValue = "") @Pattern(regexp="|Living|Wear|Accessories|Wellness") String category,
+            @RequestParam(defaultValue = "") @Pattern(regexp="|Living|Wear|Accessories|Wellness|Makeup|Games|Other") String category,
             @RequestParam(defaultValue = "featured") @Pattern(regexp="featured|price-asc|price-desc|name") String sort,
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "12") @Min(1) @Max(48) int size) {
