@@ -82,9 +82,11 @@ refresh and errors. Prices at checkout do not change because of announcement cop
 
 ## Commercial model and remaining production work
 
-The user selected **monthly subscription plus transaction commission**. Merchant
-billing screens disclose both and explicitly report NOT_CONFIGURED; there is no
-invented rate, subscription charge, balance, collection, transfer or payout.
+The user selected **monthly subscription plus transaction commission** and asked
+the agent to choose initial rates. `/api/business-plan` proposes DRAFT ILS 99/month
+plus 5%, inclusive of applicable VAT, with UNVERIFIED tax status and charges
+disabled. These are commercial draft rates, not statutory rates. No subscription
+charge, balance, collection, transfer or payout is implemented.
 Gross demo order values are not revenue, merchant balances or platform commission.
 Identity, bank/card capture, split settlement, recurring invoices, signed/idempotent
 webhooks, reconciliation, refunds, taxes and disputes need a configured provider
@@ -104,3 +106,5 @@ profiles/favorites; purchased-store conversations; delivered-only reviews; offer
 expiry/tenant restrictions and truthful billing state. Browser journeys cover
 registration, approval gating, catalog, favorites, announcements, checkout and
 fulfilment on desktop/mobile. Current execution results are in STATUS_HE.md.
+
+Israeli launch sources, the draft commercial basis and remaining activation conditions: [ISRAEL_LAUNCH_READINESS_HE.md](ISRAEL_LAUNCH_READINESS_HE.md). PayMe is a candidate only, not connected or commercially approved.

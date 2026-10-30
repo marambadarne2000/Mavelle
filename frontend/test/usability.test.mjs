@@ -43,9 +43,10 @@ test('unified sign-in routes all four server roles without sending a client-sele
 });
 
 test('business onboarding requests contact details and confirmation without raw card bank or national ID fields',async()=>{
+ globalThis.fetch=async()=>response({monthlyFee:99,commissionPercent:5,status:'DRAFT',chargesEnabled:false});
  await render(React.createElement(I18nProvider,null,React.createElement(BusinessRegistration)));
  for(const name of ['ownerName','businessName','email','phone','password','confirmPassword'])assert.ok(host.querySelector('[data-testid=join-'+name+']'));
- assert.ok(host.querySelector('input[type=checkbox][required]'));assert.match(host.textContent,/monthly subscription plus sales commission/);
+ assert.ok(host.querySelector('input[type=checkbox][required]'));assert.match(host.textContent,/Draft launch plan/);assert.match(host.textContent,/99.00/);assert.match(host.textContent,/5%/);
  assert.doesNotMatch(host.innerHTML,/name="(?:cardNumber|cvv|bankAccount|nationalId)"/);assert.equal(host.querySelector('[data-testid=join-confirmPassword]').autocomplete,'new-password');
 });
 

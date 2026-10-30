@@ -1,4 +1,9 @@
 export const marketplaceRows:[string,string,string][]=[
+['Draft launch plan — no charges','תעריף השקה מוצע — ללא חיוב','خطة إطلاق مقترحة — دون رسوم فعلية'],
+['Proposed rates include applicable VAT. Tax status and invoicing must be verified before activation.','התעריפים המוצעים כוללים מע״מ ככל שחל. יש לאמת את מעמד המס והפקת המסמכים לפני הפעלה.','الأسعار المقترحة تشمل الضريبة إن انطبقت. يجب التحقق من الوضع الضريبي والفواتير قبل التفعيل.'],
+['Commission is proposed on settled product value after discounts and refunds, excluding shipping. No commission is collected in this demo.','העמלה המוצעת מחושבת על תמורת מוצרים ששולמה, לאחר הנחות והחזרים וללא משלוח. לא נגבית עמלה בהדגמה.','العمولة المقترحة على قيمة المنتجات المدفوعة بعد الخصومات والمبالغ المستردة ودون الشحن. لا تُحصّل عمولة في العرض التجريبي.'],
+['Activation requires verified business details, an approved payment provider and explicit subscription consent.','הפעלה דורשת פרטי עסק מאומתים, ספק תשלום מאושר והסכמה מפורשת למנוי.','يتطلب التفعيل بيانات عمل موثقة ومزود دفع معتمدًا وموافقة صريحة على الاشتراك.'],
+['Home goods','כלים ומוצרים לבית','أدوات ومنتجات منزلية'],
 ['Customer feedback','משוב מלקוחות','تقييمات العملاء'],
 ['Price','מחיר','السعر'],['Save product','שמירת מוצר','حفظ المنتج'],['Stock','מלאי','المخزون'],['Update stock','עדכון מלאי','تحديث المخزون'],['Delete','מחיקה','حذف'],
 ['One sign-in for customers, businesses and the platform team.','כניסה אחת ללקוחות, לבעלי עסקים ולצוות הפלטפורמה.','دخول واحد للعملاء وأصحاب الأعمال وفريق المنصة.'],
