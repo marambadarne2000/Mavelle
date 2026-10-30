@@ -96,7 +96,7 @@ function App() {
         window.scrollTo(0, 0); }, [route]);
     useEffect(() => { const abort = new AbortController(); fetch('/api/companies', { signal: abort.signal }).then(async (r) => { if (!r.ok)
         throw new Error('Could not load stores.'); setCompanies(await r.json() as Company[]); setStoreError(''); }).catch(e => { if (!abort.signal.aborted)
-        setStoreError(e.message); }); return () => abort.abort(); }, [refresh]);
+        setStoreError(e.message); }); return () => abort.abort(); }, [refresh,route,session.user?.id]);
     const storeRoute = route.startsWith('#store/');
     const company = storeRoute ? companies.find(c => c.slug === route.slice(7)) : undefined;
     const staffToken=route.match(/^#staff-register\/([A-Za-z0-9_-]{43})$/)?.[1];
