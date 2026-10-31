@@ -1,3 +1,5 @@
+> Current marketplace scope and gap audit: [REQUIREMENTS_AUDIT_HE.md](../REQUIREMENTS_AUDIT_HE.md). Merchant ownership, mixed-order fulfilment and announcement visibility are detailed in MARKETPLACE_CONTRACT.md and DISCOVERY_NAVIGATION.md.
+
 # Architecture decisions — current implementation
 
 ## Scope fixed for the first release
@@ -51,14 +53,37 @@ COMPANIES, PRODUCTS, USERS, ORDERS, ORDER_ITEMS, INVENTORY_MOVEMENTS and ORDER_S
 `GET /api/products?search=&category=&sort=featured&page=0&size=12`
 
 Response: `{ items: [{ id, sku, name, description, category, price, stockQuantity }], total, page, size }`.
-Search is case insensitive and trimmed; maximum 100 characters. Optional category is Living, Wear, Accessories or Wellness. Sort is featured (ID), price-asc, price-desc or name, with an ID tie-breaker. Page is zero based; size 1–48.
+Search is case insensitive and trimmed; maximum 100 characters. Optional category is Living, Wear, Accessories, Wellness, Makeup, Games or Other. Sort is featured (ID), price-asc, price-desc or name, with an ID tie-breaker. Page is zero based; size 1–48.
 
 `GET /api/products/{id}` returns an active product, otherwise 404.
 `GET /actuator/health` returns minimal health status (backend port only).
-Public catalog endpoints remain read-only. Accounts/session endpoints are implemented as specified in AUTH_CONTRACT.md. Administrative product writes and stock history are implemented as specified in PRODUCT_ADMIN_CONTRACT.md. Basket behavior is implemented in the frontend as specified in CART_CONTRACT.md. `GET /api/products/lookup?ids=1,2` provides current public data for 1–50 requested IDs, omitting unknown/inactive products. The server does not persist the browser basket or reserve stock. Checkout/order endpoints are implemented as specified in ORDER_CONTRACT.md; administrator status transitions, history and stock restoration are specified in ADMIN_ORDER_CONTRACT.md.
+Public catalog endpoints remain read-only. Accounts/session endpoints are implemented as specified in AUTH_CONTRACT.md. Administrative product writes and stock history are implemented as specified in PRODUCT_ADMIN_CONTRACT.md. Basket behavior is implemented in the frontend as specified in CART_CONTRACT.md. `GET /api/products/lookup?ids=1,2` provides current public data for 1–50 requested IDs, omitting unknown/inactive or non-approved-store products. The server does not persist the browser basket or reserve stock. Checkout/order endpoints are implemented as specified in ORDER_CONTRACT.md; administrator status transitions, history and stock restoration are specified in ADMIN_ORDER_CONTRACT.md.
 
 ## Quality gates
 
 Unit/MVC tests: `mvn test`. Real PostgreSQL integration tests: `mvn verify -Pintegration` (Docker or explicit TEST_DB_* connection).
-Frontend: `npm test` compiles the pure TypeScript basket model and runs Node's built-in test runner; `npm run build` includes strict TypeScript checking. Selenium will be implemented after the tested purchase workflow exists.
+Frontend: `npm test` compiles the pure TypeScript basket model and runs Node's built-in test runner; `npm run build` includes strict TypeScript checking. Selenium Java/JUnit now covers isolated customer, merchant, platform-owner and employee journeys; see automation/README.md.
 Do not count test compilation as a passing integration test. Do not mark future features complete.
+
+## Marketplace relationships added in V8/V9
+
+```mermaid
+erDiagram
+    USERS ||--o| MERCHANT_STORES : owns
+    COMPANIES ||--o| MERCHANT_STORES : identifies
+    COMPANIES ||--o{ PRODUCTS : offers
+    USERS ||--o{ ORDERS : places
+    ORDERS ||--|{ ORDER_ITEMS : snapshots
+    COMPANIES ||--o{ ORDER_ITEMS : snapshot_owner
+    ORDERS ||--|{ MERCHANT_ORDERS : partitions
+    COMPANIES ||--o{ MERCHANT_ORDERS : fulfils
+    MERCHANT_ORDERS ||--o{ MERCHANT_ORDER_HISTORY : audits
+    COMPANIES ||--o{ STORE_OFFERS : publishes
+    USERS ||--o{ FAVORITES : saves
+    PRODUCTS ||--o{ FAVORITES : referenced_by
+    COMPANIES ||--o{ STORE_MESSAGES : receives
+    USERS ||--o{ STORE_MESSAGES : participates
+    COMPANIES ||--o{ STORE_REVIEWS : receives
+```
+
+The application remains one modular backend deployment, not independent microservices. A confirmed checkout clears only its completed client request key; uncertain retries retain the original key. Favorite mutations serialize per customer. Application restart leaves PostgreSQL running; explicit Stop-Local can still stop all local services.

@@ -33,10 +33,10 @@ not sent to a scanning service. Implementation: [official axe API](https://githu
 ```
 
 Install frontend dependencies first (`npm ci` on supported Node). Full mode
-includes 23 Selenium cases: seven smoke, six purchase, six accessibility matrix
-journeys, two owner/employee workflows and two marketplace workflows. The complete application count is 112:
-55 backend + 34 frontend + 23 Selenium. The targeted mode is six cases, not a
-fresh pass of the other 17.
+includes 24 Selenium cases: seven smoke, six purchase, six accessibility matrix
+journeys, two owner/employee workflows and two marketplace workflows. The complete application count is 115:
+56 backend + 35 frontend + 24 Selenium. The targeted mode is six cases, not a
+fresh pass of the other 18.
 
 Per-sample results: `automation/target/accessibility/<language>-<width>.json`.
 They record the axe version, sampled view, violations and `incomplete` checks;
@@ -46,7 +46,7 @@ uploaded with Selenium CI artifacts for seven days. Targeted JUnit results use
 
 ## Problems found and corrected
 
-The gate requires all 23 Selenium cases to pass on one revision. Its multilingual
+The gate requires all 24 Selenium cases to pass on one revision. Its multilingual
 matrix samples 138 states; four further English merchant overview/catalog samples
 are recorded as `marketplace-*.json`. All violations fail the corresponding test.
 Incomplete checks remain in reports. Check the hosted run for that commit and the

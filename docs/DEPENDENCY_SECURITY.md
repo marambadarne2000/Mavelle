@@ -61,3 +61,9 @@ or a claim that the application is safe for unrestricted public deployment.
 Frontend dependency review remains `npm audit --audit-level=high` against the
 official npm registry. Source secrets use Gitleaks with redacted output. Neither
 scan replaces authentication, transaction and browser acceptance tests.
+
+## Tooling and scanner audit — 2026-10-31
+
+The new [minimatch advisory](https://github.com/advisories/GHSA-g3hv-75wg-m249) is addressed by moving ESLint to 10.14.0 / @eslint/js 10.0.1 and pinning the modern minimatch dependency to 11.0.1. This removes the legacy function-based minimatch dependency rather than forcing its incompatible API into ESLint 9. typescript-eslint 8.72.1 declares ESLint 10 compatibility. The project Node runtime meets the new linter engine requirement. A clean npm installation, lint, typecheck, build, UI tests and npm audit are checked; this is development tooling, not a runtime advertising script.
+
+frontend/.npmrc selects the HTTPS public registry without touching global npm settings. The local Java scanner now uses an actual argument array, runs from each module and restores its working directory even on error. This fixes native Maven invocation errors while preserving failure on incomplete scans. Two existing Spring MVC findings remain explicitly reviewed, not patched; the scan output and expiry policy above still apply.

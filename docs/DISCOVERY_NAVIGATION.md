@@ -15,7 +15,7 @@ does not grant privileges. Anchored sections have clearance below the toolbar.
 
 Home now combines an automatically rotating spotlight, collection suggestions,
 approved-store links and current public store announcements. Carousel changes
-every six seconds, offers previous/next and pause/resume controls, pauses while
+every 4.5 seconds, offers previous/next and pause/resume controls, pauses while
 hovered or keyboard-focused and does not advance in a hidden tab. Reduced-motion
 preferences disable automatic rotation and CSS movement; manual controls remain.
 Focus stays on controls, and automatic changes are not repeatedly announced by
@@ -41,6 +41,8 @@ Verification adds a real PostgreSQL/HTTP public/private/expiry/suspension test,
 four UI cases for back navigation, role shortcuts, manual/reduced motion and
 pause/resume/focus, and a mobile browser navigation case. Marketplace browser
 journeys also exercise explicit public publication and Home display. The suite
-now comprises 55 backend + 34 frontend + 23 Selenium = 112 tests; results for a
+now comprises 56 backend + 35 frontend + 24 Selenium = 115 tests; results for a
 specific revision must come from the matching run, not an old report. Existing
 multilingual accessibility coverage includes the new shared navigation and Home.
+
+Audit update: the decorative ring cycle is 5.5 seconds and slide entrance is 0.5 seconds. Pause, hover/focus and reduced-motion behavior remain intact.

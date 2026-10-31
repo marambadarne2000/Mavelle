@@ -85,7 +85,7 @@ function App() {
     const basket = useCart();
     const [route, setRoute] = useState(window.location.hash || '#home');
     const previousRoute=useRef(route);
-    useEffect(()=>{if(session.user?.role==='EMPLOYEE'&&(['#basket','#checkout','#orders'].includes(route)||route.startsWith('#order/')))window.location.hash='#staff-orders';},[session.user?.role,route]);
+    useEffect(()=>{if((session.user?.role==='EMPLOYEE'||session.user?.role==='MERCHANT')&&(['#basket','#checkout','#orders'].includes(route)||route.startsWith('#order/')))window.location.hash=session.user.role==='MERCHANT'?'#merchant':'#staff-orders';},[session.user?.role,route]);
     const [companies, setCompanies] = useState<Company[]>([]);
     const [storeError, setStoreError] = useState('');
     const [refresh, setRefresh] = useState(0);

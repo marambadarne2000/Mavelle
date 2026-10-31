@@ -59,3 +59,5 @@ OwnerStaffE2ETest adds desktop/mobile business-profile save, invitation activati
 MarketplaceE2ETest adds two isolated desktop/mobile cases: public business registration, pending store, owner approval through the UI, merchant catalog creation, announcements, customer favorites/purchase, timed-feed visibility and per-store shipping/delivery. It also runs four English merchant overview/catalog axe samples. The full suite now contains 22 cases.
 
 Navigation/discovery update: the full suite has 23 cases (seven public smoke). A new mobile case covers direct-page Back fallback, carousel next/previous, reduced motion, store navigation and return. Marketplace tests explicitly opt in a public announcement and verify its Home display.
+
+Audit regression: the full suite is now 24 cases. A fresh identical purchase must create a different order and deduct stock again; uncertain retries remain idempotent. Merchant routes reject customer basket/checkout/order screens.

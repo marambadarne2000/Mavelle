@@ -4,7 +4,7 @@ const dom=new JSDOM('<!doctype html><html><body><div id="root"></div></body></ht
 for(const key of ['window','document','HTMLElement','HTMLInputElement','Event','MouseEvent','localStorage'])Object.defineProperty(globalThis,key,{value:dom.window[key],configurable:true});
 globalThis.IS_REACT_ACT_ENVIRONMENT=true;localStorage.setItem('maramigo.language','en');
 globalThis.ResizeObserver=class{observe(){}unobserve(){}disconnect(){}};
-const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration,PageTools,HomeDiscovery}=await import('../.test-build/ui.mjs');
+const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration,PageTools,HomeDiscovery,CartProvider,CartProbe}=await import('../.test-build/ui.mjs');
 let root;const host=document.getElementById('root');
 test.afterEach(async()=>{if(root)await act(async()=>root.unmount());root=null;});
 async function render(element){root=createRoot(host);await act(async()=>root.render(element));}
@@ -125,7 +125,7 @@ test('automatic discovery advances and can be paused, resumed and paused by keyb
  window.setInterval=(fn,delay)=>{const key=++id;timers.set(key,{fn,delay});return key;};window.clearInterval=key=>timers.delete(key);
  try{
   await render(React.createElement(I18nProvider,null,React.createElement(HomeDiscovery,{companies:demoCompanies})));
-  const tick=()=>[...timers.values()].find(t=>t.delay===6000);
+  const tick=()=>[...timers.values()].find(t=>t.delay===4500);
   assert.ok(tick());await act(async()=>tick().fn());assert.match(host.querySelector('[data-testid=discovery-slide]').textContent,/Second Store/);
   await act(async()=>host.querySelector('[data-testid=discovery-pause]').click());assert.equal(tick(),undefined);
   await act(async()=>host.querySelector('[data-testid=discovery-pause]').click());assert.ok(tick());
@@ -133,4 +133,11 @@ test('automatic discovery advances and can be paused, resumed and paused by keyb
   await act(async()=>link.dispatchEvent(new dom.window.FocusEvent('focusout',{bubbles:true,relatedTarget:null})));assert.ok(tick());
   await act(async()=>root.unmount());root=null;
  }finally{window.setInterval=originalSet;window.clearInterval=originalClear;delete document.hidden;}
+});
+
+test('basket rechecks the refreshed server role before adding after another session changes identity',async()=>{
+ localStorage.clear();let meReads=0,productReads=0;
+ globalThis.fetch=async path=>{if(path==='/api/auth/me'){meReads++;return response({id:meReads===1?1:2,email:'session@example.test',role:meReads===1?'CUSTOMER':'MERCHANT'});}if(path==='/api/products/1'){productReads++;return response({id:1,name:'Test',price:10,stockQuantity:5,active:true});}throw Error('Unexpected URL '+path);};
+ await render(React.createElement(I18nProvider,null,React.createElement(SessionProvider,null,React.createElement(CartProvider,null,React.createElement(CartProbe)))));
+ await act(async()=>host.querySelector('[data-testid=probe-add]').click());assert.equal(productReads,0);assert.equal(host.querySelector('[data-testid=probe-count]').textContent,'0');assert.equal(host.querySelector('[data-testid=probe-message]').textContent,'Use a customer account to shop.');
 });

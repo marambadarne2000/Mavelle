@@ -89,4 +89,16 @@ class MarketplaceIT {
   jdbc.update("UPDATE store_offers SET starts_at=CURRENT_TIMESTAMP-interval '1 day',ends_at=CURRENT_TIMESTAMP-interval '1 second' WHERE title=?",publicTitle);assertThat(guest.get("/api/discovery/announcements").body()).doesNotContain(publicTitle);
  }
 
+ @Test void favoritesRemainIdempotentAtCapacityAndConcurrentAddsCannotExceedTheLimit()throws Exception{
+  var c=customer();var me=json.readTree(c.get("/api/auth/me").body());long id=me.get("id").asLong();
+  var other=new SessionClient(port,json);other.login(me.get("email").asText(),PASSWORD);
+  var ids=jdbc.queryForList("INSERT INTO products(sku,name,description,category,price,stock_quantity,active,company_id) SELECT ?||'-'||n,'Capacity test','Test','Living',1,1,true,1 FROM generate_series(1,201)n RETURNING id",Long.class,"CAP-"+UUID.randomUUID().toString().toUpperCase(Locale.ROOT));
+  jdbc.batchUpdate("INSERT INTO favorites(user_id,product_id) VALUES (?,?)",ids.subList(0,199).stream().map(product->new Object[]{id,product}).toList());
+  var pool=java.util.concurrent.Executors.newFixedThreadPool(2);
+  try{var a=pool.submit(()->c.send("PUT","/api/customer/favorites/"+ids.get(199),null,true).statusCode());var b=pool.submit(()->other.send("PUT","/api/customer/favorites/"+ids.get(200),null,true).statusCode());assertThat(List.of(a.get(),b.get())).containsExactlyInAnyOrder(200,409);}finally{pool.shutdownNow();}
+  assertThat(jdbc.queryForObject("SELECT count(*) FROM favorites WHERE user_id=?",Long.class,id)).isEqualTo(200);
+  assertThat(c.send("PUT","/api/customer/favorites/"+ids.get(0),null,true).statusCode()).isEqualTo(200);
+  assertThat(c.send("DELETE","/api/customer/favorites",null,true).statusCode()).isEqualTo(200);assertThat(c.get("/api/customer/favorites").body()).isEqualTo("[]");
+ }
+
 }

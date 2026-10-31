@@ -84,6 +84,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const user=await session.refresh();
       if(pending.current.get(productId)!==operation)return;
       if(!user){session.requireLogin({kind:'add',productId,returnTo:window.location.hash||'#collection'});return;}
+      if(user.role==='EMPLOYEE'||user.role==='MERCHANT'){setMessage({kind:'error',text:'Use a customer account to shop.'});return;}
       const response = await fetch(`/api/products/${productId}`, { signal: AbortSignal.timeout(15000) });
       if (response.status === 404) throw new Error('This item is no longer available. Please refresh the collection.');
       await check(response);

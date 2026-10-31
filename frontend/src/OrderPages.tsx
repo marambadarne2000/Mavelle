@@ -115,6 +115,8 @@ export function CheckoutPage() {
             const order = await response.json() as Order;
             if (!order.orderNumber?.startsWith('MG-') || !Array.isArray(order.items) || !order.items.length)
                 throw new Error('The order response could not be verified.');
+            try { sessionStorage.removeItem('maramigo.checkout'); } catch { }
+            frozen.current = null;
             basket.fulfill(attempt.items);
             setUnknown(false);
             window.location.hash = '#order/' + encodeURIComponent(order.orderNumber);

@@ -48,6 +48,12 @@ class PurchaseE2ETest extends BrowserTest {
   basket.checkout();var checkout=new CheckoutPage(driver,wait);checkout.shipping();String number=checkout.confirm();assertEquals(0,api.get("/api/admin/orders/"+number).get("order").get("items").get(0).get("unitPrice").decimalValue().compareTo(new java.math.BigDecimal("12.50")));
   api.price(product,"99.00");driver.navigate().refresh();wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".order-confirmation .checkout-total strong"),"12.50"));
  }
+ @Test void aNewIdenticalPurchaseGetsANewOrderAndDeductsStockAgain()throws Exception{
+  var product=api.product(3);login(driver,wait,api.customer(),FixtureApi.PASSWORD);selectProduct(product);add();wait.until(ExpectedConditions.textToBePresentInElementLocated(Ui.id("basket-link"),"(1)"));String first=buy();
+  assertEquals(null,js("return sessionStorage.getItem('maramigo.checkout')"));assertEquals(2,api.stock(product));
+  selectProduct(product);add();wait.until(ExpectedConditions.textToBePresentInElementLocated(Ui.id("basket-link"),"(1)"));String second=buy();assertNotEquals(first,second);assertEquals(1,api.stock(product));
+  open("#orders");wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("a[href='#order/"+first+"']")));assertFalse(driver.findElements(By.cssSelector("a[href='#order/"+second+"']")).isEmpty());
+ }
  @Test void soldOutAndDeactivatedProductsBlockCheckout()throws Exception{
   var product=api.product(2);login(driver,wait,api.customer(),FixtureApi.PASSWORD);selectProduct(product);add();basket();api.stock(product,0);new BasketPage(driver,wait).refresh();wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".basket-item-issue")));assertTrue(driver.findElements(By.cssSelector("a[href='#checkout']")).isEmpty());
   api.inactive(product);new BasketPage(driver,wait).refresh();wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".basket-item h2"),"Unavailable"));Ui.click(driver,wait,Ui.id("cart-remove"));wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".basket-empty")));
