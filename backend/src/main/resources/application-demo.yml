@@ -1,3 +1,9 @@
 spring:
   flyway:
     locations: classpath:db/migration,classpath:db/demo
+
+maramigo:
+  verification-required: ${ACCOUNT_VERIFICATION_REQUIRED:false}
+  mail:
+    mode: ${ACCOUNT_MAIL_MODE:file}
+    base-url: ${ACCOUNT_PUBLIC_URL:http://127.0.0.1:5173}

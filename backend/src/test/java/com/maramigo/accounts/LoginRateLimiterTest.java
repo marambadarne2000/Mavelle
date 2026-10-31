@@ -7,16 +7,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 /** @author Maram Abbas */
 class LoginRateLimiterTest {
     @Test void throttledHttpRequestsReturnRetryAfterInsteadOfReachingAuthentication() throws Exception {
+        for(String path:java.util.List.of("/api/auth/login","/api/auth/forgot-password","/api/auth/verification-request","/api/auth/reset-password","/api/auth/verify-email")){
         var limiter = new LoginRateLimiter(Clock.systemUTC(), 1);
         for (int i=0; i<2; i++) {
-            var request = new org.springframework.mock.web.MockHttpServletRequest("POST", "/api/auth/login");
-            request.setServletPath("/api/auth/login"); request.setRemoteAddr("127.0.0.1");
+            var request = new org.springframework.mock.web.MockHttpServletRequest("POST", path);
+            request.setServletPath(path); request.setRemoteAddr("127.0.0.1");
             var response = new org.springframework.mock.web.MockHttpServletResponse();
             final boolean[] called = {false};
             limiter.doFilter(request, response, (req, res) -> called[0] = true);
             if (i == 0) assertThat(called[0]).isTrue();
             else { assertThat(called[0]).isFalse(); assertThat(response.getStatus()).isEqualTo(429); assertThat(response.getHeader("Retry-After")).isNotBlank(); }
         }
+    }
     }
     @Test void limitsArePerAddressAndExpireAtTheWindowBoundary() {
         AtomicLong time = new AtomicLong(1_000_000);

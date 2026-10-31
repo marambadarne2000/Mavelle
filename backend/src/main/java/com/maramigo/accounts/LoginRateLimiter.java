@@ -25,13 +25,13 @@ public class LoginRateLimiter extends OncePerRequestFilter {
         return 0;
     }
     @Override protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !"POST".equals(request.getMethod()) || !"/api/auth/login".equals(request.getServletPath());
+        return !"POST".equals(request.getMethod()) || !java.util.Set.of("/api/auth/login", "/api/auth/forgot-password", "/api/auth/verification-request", "/api/auth/reset-password", "/api/auth/verify-email").contains(request.getServletPath());
     }
     @Override protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         long seconds = retryAfter(request.getRemoteAddr());
         if (seconds > 0) {
             response.setStatus(429); response.setHeader("Retry-After", Long.toString(seconds));
-            response.setContentType("application/json"); response.getWriter().write("{\"detail\":\"Too many login attempts. Please try again later.\"}");
+            response.setContentType("application/json"); response.getWriter().write("{\"detail\":\"Too many account attempts. Please try again later.\"}");
         } else { chain.doFilter(request, response); }
     }
 }

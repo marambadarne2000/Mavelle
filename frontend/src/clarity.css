@@ -17,3 +17,4 @@ body{color:var(--ink);background:var(--paper)}
 /* Long account identifiers remain readable inside narrow LTR/RTL layouts. */
 .account-home{min-width:0}.account-home>p{overflow-wrap:anywhere}
 .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.account-security h2{color:#ffde43}.account-security .outline-button{color:#ffde43;background:#13151c;border-color:#d4af37}.account-security .outline-button:hover,.account-security .outline-button:focus-visible{color:#13151c;background:#ffde43}

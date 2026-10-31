@@ -87,3 +87,8 @@ erDiagram
 ```
 
 The application remains one modular backend deployment, not independent microservices. A confirmed checkout clears only its completed client request key; uncertain retries retain the original key. Favorite mutations serialize per customer. Application restart leaves PostgreSQL running; explicit Stop-Local can still stop all local services.
+
+
+## Account lifecycle (V10)
+
+`users.email_verified` starts false for existing and new users; `auth_version` is compared on authenticated requests and increased on password reset. `account_tokens` stores only token hashes, user ownership, purpose, creation/expiry/consumption timestamps. Requests are queued with bounded in-memory workers; consumption and issuance share the user row lock. See [account security](ACCOUNT_SECURITY_HE.md) for API flows, non-durable queue limitations and SMTP/demo configuration.

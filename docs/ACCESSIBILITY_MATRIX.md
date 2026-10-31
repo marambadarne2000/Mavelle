@@ -2,11 +2,11 @@
 
 The isolated full suite includes `AccessibilityE2ETest`: six independent Chrome
 journeys, combining English/Hebrew/Arabic with exact 1280×900 and 390×900 CSS
-viewports. Each journey now checks 23 rendered states (138 samples total):
+viewports. Each journey now checks 26 rendered states (156 samples total):
 
 | Area | Rendered states |
 | --- | --- |
-| Public | home, open product dialog, store catalog, customer login, customer registration, business registration, owner login alias, employee login alias, employee activation, empty basket, missing-page recovery |
+| Public | home, open product dialog, store catalog, customer login, customer registration, forgot password, email verification confirmation, new password, business registration, owner login alias, employee login alias, employee activation, empty basket, missing-page recovery |
 | Customer | account, populated basket, shipping checkout, order confirmation, order history |
 | Owner | owner workspace, account, marketplace management, populated dashboard, existing-product/stock editor, order detail/status editor, visible cancellation confirmation |
 
@@ -33,9 +33,9 @@ not sent to a scanning service. Implementation: [official axe API](https://githu
 ```
 
 Install frontend dependencies first (`npm ci` on supported Node). Full mode
-includes 24 Selenium cases: seven smoke, six purchase, six accessibility matrix
-journeys, two owner/employee workflows and two marketplace workflows. The complete application count is 115:
-56 backend + 35 frontend + 24 Selenium. The targeted mode is six cases, not a
+includes 24 Selenium cases: seven smoke, seven purchase, six accessibility matrix
+journeys, two owner/employee workflows and two marketplace workflows. The complete application count is 128:
+66 backend + 38 frontend + 24 Selenium. The targeted mode is six cases, not a
 fresh pass of the other 18.
 
 Per-sample results: `automation/target/accessibility/<language>-<width>.json`.
@@ -47,7 +47,7 @@ uploaded with Selenium CI artifacts for seven days. Targeted JUnit results use
 ## Problems found and corrected
 
 The gate requires all 24 Selenium cases to pass on one revision. Its multilingual
-matrix samples 138 states; four further English merchant overview/catalog samples
+matrix samples 156 states; four further English merchant overview/catalog samples
 are recorded as `marketplace-*.json`. All violations fail the corresponding test.
 Incomplete checks remain in reports. Check the hosted run for that commit and the
 retained local reports rather than inferring success from a case count. The
@@ -89,3 +89,5 @@ iOS/Safari devices. Screen-reader interaction, text/browser zoom, the complete
 network-failure matrix, additional browsers/devices, new-product form state,
 expanded chart tables and every possible order status still need human or
 additional targeted review before making full accessibility claims.
+
+Account security added three public states per language/viewport. The first run found insufficient contrast in the new dark account-security panel; explicit bright gold headings/links correct that issue without suppressing axe rules.

@@ -12,7 +12,7 @@ final class ActiveAccountFilter extends OncePerRequestFilter {
  ActiveAccountFilter(UserRepository users){this.users=users;}
  @Override protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response,FilterChain chain)throws ServletException,IOException{
   var authentication=SecurityContextHolder.getContext().getAuthentication();
-  if(authentication!=null && authentication.getPrincipal() instanceof AccountService.Principal actor && !users.existsByIdAndEnabledTrue(actor.id())){
+  if(authentication!=null && authentication.getPrincipal() instanceof AccountService.Principal actor && !users.findById(actor.id()).filter(u -> u.isEnabled() && u.getAuthVersion()==actor.authVersion()).isPresent()){
    SecurityContextHolder.clearContext();var session=request.getSession(false);
    if(session!=null){try{session.invalidate();}catch(IllegalStateException alreadyInvalidated){/* Another concurrent request already invalidated this session. */}}
    response.setStatus(401);response.setContentType("application/json");response.getWriter().write("{\"detail\":\"Please sign in to continue.\"}");return;

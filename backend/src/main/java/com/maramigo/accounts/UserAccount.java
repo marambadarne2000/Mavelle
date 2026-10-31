@@ -12,6 +12,8 @@ public class UserAccount {
     private String passwordHash;
     private String role;
     private boolean enabled = true;
+    private boolean emailVerified;
+    private long authVersion;
     protected UserAccount() {}
     public UserAccount(String email, String passwordHash, String role) {
         this.email = email; this.passwordHash = passwordHash; this.role = role;
@@ -20,5 +22,7 @@ public class UserAccount {
     public String getEmail() { return email; }
     public String getPasswordHash() { return passwordHash; }
     public String getRole() { return role; }
+    public boolean isEmailVerified() { return emailVerified; }
+    public long getAuthVersion() { return authVersion; }
     public boolean isEnabled() { return enabled; }
 }

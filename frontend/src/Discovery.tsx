@@ -6,7 +6,7 @@ import {t,useLanguage,formatMoney} from './i18n';
 import './discovery.css';
 
 export function dashboardRoute(role?:string){return role==='ADMIN'?'#marketplace-admin':role==='MERCHANT'?'#merchant':role==='EMPLOYEE'?'#staff-orders':role==='CUSTOMER'?'#account':'#login';}
-function safeRoute(route:string){return route.startsWith('#staff-register/')?'#staff-register':knownRoute(route)?route:'#home';}
+function safeRoute(route:string){return /^#(?:staff-register|reset-password|verify-email)\//.test(route)?route.slice(0,route.indexOf('/')):knownRoute(route)?route:'#home';}
 export function PageTools({route}:{route:string}){
  useLanguage();const session=useSession();const trail=useRef<string[]>([]);
  useEffect(()=>{const next=safeRoute(route),past=trail.current;if(past.at(-1)!==next)trail.current=[...past,next].slice(-50);},[route]);

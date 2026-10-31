@@ -1,3 +1,4 @@
+import {AccountSecurity} from './AccountSecurity';
 import {useRef} from 'react';
 import {FormFeedback} from './FormFeedback';
 import {t,useLanguage} from './i18n';
@@ -49,6 +50,8 @@ export function AuthPage({ register = false }: {
     const title=register?'Make yourself at home.':'Welcome back.';
     return <main className="auth-page"><section className="auth-intro"><p className="eyebrow">{t('MARAMIGO / YOUR WORLD')}</p><h1>{t(title)}</h1><p>{t('One sign-in for customers, businesses and the platform team.')}</p><div className="auth-emblem" aria-hidden="true">{t("m.")}</div></section>
     <section className="auth-card"><h2>{t(register?'Create an account':'Sign in')}</h2><form onSubmit={submit} data-testid="auth-form" aria-busy={busy}><fieldset disabled={busy}><label>{t('Email address')}<input data-testid="auth-email" type="email" autoComplete="username" required maxLength={254} value={email} onChange={e=>setEmail(e.target.value)}/></label><label>{t('Password')}<input data-testid="auth-password" type="password" autoComplete={register?'new-password':'current-password'} required value={password} onChange={e=>setPassword(e.target.value)}/></label>{register&&<p>{t('At least 12 characters; maximum 72 UTF-8 bytes.')}</p>}<button className="gold-button" data-testid="auth-submit" type="submit">{t(busy?'Please wait…':register?'Create account':'Sign in')}</button></fieldset></form><FormFeedback error={error}/>{notice&&<p role="status">{t(notice)}</p>}
+    {register&&<p>{t('After registration, verify your email using the verification link below.')}</p>}
+    <a className="auth-switch" href="#forgot-password">{t('Forgot your password?')}</a><a className="auth-switch" href="#verify-email">{t('Verify your email')}</a>
     <a className="auth-switch" href={register?'#login':'#register'}>{t(register?'Already have an account? Sign in':'New here? Create an account')}</a>
     <a className="auth-switch" data-testid="business-entry" href="#join-business">{t('Join with your business')}</a>
     <a className="auth-switch" href="#staff-register">{t('Have an invitation? Activate your work account')}</a>
@@ -58,9 +61,9 @@ export function AuthPage({ register = false }: {
 export function AccountPage(){useLanguage();const session=useSession();const [error,setError]=useState('');
  if(session.loading)return <main className="simple-page"><p>{t('Loading your account…')}</p></main>;
  if(!session.user)return <main className="simple-page"><h1>{t('Please sign in to continue.')}</h1><a className="gold-button" href="#login">{t('Sign in')}</a></main>;
- if(session.user.role==='CUSTOMER')return <CustomerCenter key={session.user.id}/>;
+ if(session.user.role==='CUSTOMER')return <><CustomerCenter key={session.user.id}/><AccountSecurity key={'security-'+session.user.id}/></>;
  return <main className="simple-page account-home"><p className="eyebrow">{t(session.user.role==='ADMIN'?'MARAMIGO / OWNER':session.user.role==='EMPLOYEE'?'MARAMIGO / TEAM':'YOUR MARAMIGO')}</p><h1>{t('My account')}</h1><p dir="ltr">{session.user.email}</p><div className="account-actions">
  {session.user.role==='EMPLOYEE'?<a className="gold-button" href="#staff-orders">{t('Orders & deliveries')}</a>:session.user.role==='MERCHANT'?<a className="gold-button" href="#merchant">{t('My business dashboard')}</a>:<><a className="gold-button" href="#orders">{t('My orders')}</a><a className="outline-button" href="#basket">{t('My basket')}</a></>}
  {session.user.role==='ADMIN'&&<><a className="gold-button" href="#marketplace-admin">{t('Marketplace management')}</a><a className="gold-button" href="#owner">{t('Business & employees')}</a><a className="gold-button" href="#dashboard">{t('Dashboard')}</a><a className="outline-button" href="#admin">{t('Product management')}</a><a className="outline-button" href="#admin-orders">{t('Order management')}</a></>}
- <button data-testid="logout" className="outline-button" onClick={()=>session.logout().catch(e=>setError(e.message))}>{t('Sign out')}</button></div><FormFeedback error={error}/></main>;
+ <button data-testid="logout" className="outline-button" onClick={()=>session.logout().catch(e=>setError(e.message))}>{t('Sign out')}</button></div><FormFeedback error={error}/><AccountSecurity key={session.user.id}/></main>;
 }

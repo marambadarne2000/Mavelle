@@ -53,6 +53,9 @@ class AccessibilityE2ETest extends BrowserTest {
   route("#store/aurea-living","[data-testid=product-card]");audit("store");
   route("#login","[data-testid=auth-email]");audit("login");
   route("#register","[data-testid=auth-email]");audit("register");
+  route("#forgot-password","[data-testid=account-recovery] form");audit("forgot-password");
+  route("#verify-email/"+"A".repeat(43),"[data-testid=account-recovery] form");audit("verify-email-confirmation");
+  route("#reset-password/"+"A".repeat(43),"[data-testid=account-recovery] form");audit("reset-password");
   route("#join-business","[data-testid=business-registration]");audit("business-registration");
   route("#owner-login","[data-testid=auth-email]");audit("owner-login");route("#staff-login","[data-testid=auth-email]");audit("employee-login");route("#staff-register","[data-testid=staff-registration]");audit("employee-registration");
   route("#basket",".basket-empty");audit("empty-basket");

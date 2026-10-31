@@ -32,3 +32,15 @@ server:
   error:
     include-message: never
     include-stacktrace: never
+
+maramigo:
+  verification-required: ${ACCOUNT_VERIFICATION_REQUIRED:true}
+  mail:
+    mode: ${ACCOUNT_MAIL_MODE:disabled}
+    base-url: ${ACCOUNT_PUBLIC_URL:https://localhost}
+    directory: ${ACCOUNT_MAIL_DIRECTORY:.runtime/mail}
+    from: ${ACCOUNT_MAIL_FROM:}
+    host: ${ACCOUNT_MAIL_HOST:}
+    port: ${ACCOUNT_MAIL_PORT:587}
+    username: ${ACCOUNT_MAIL_USERNAME:}
+    password: ${ACCOUNT_MAIL_PASSWORD:}

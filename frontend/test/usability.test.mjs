@@ -4,7 +4,7 @@ const dom=new JSDOM('<!doctype html><html><body><div id="root"></div></body></ht
 for(const key of ['window','document','HTMLElement','HTMLInputElement','Event','MouseEvent','localStorage'])Object.defineProperty(globalThis,key,{value:dom.window[key],configurable:true});
 globalThis.IS_REACT_ACT_ENVIRONMENT=true;localStorage.setItem('maramigo.language','en');
 globalThis.ResizeObserver=class{observe(){}unobserve(){}disconnect(){}};
-const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration,PageTools,HomeDiscovery,CartProvider,CartProbe}=await import('../.test-build/ui.mjs');
+const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration,PageTools,HomeDiscovery,CartProvider,CartProbe,AccountRecoveryPage}=await import('../.test-build/ui.mjs');
 let root;const host=document.getElementById('root');
 test.afterEach(async()=>{if(root)await act(async()=>root.unmount());root=null;});
 async function render(element){root=createRoot(host);await act(async()=>root.render(element));}
@@ -140,4 +140,30 @@ test('basket rechecks the refreshed server role before adding after another sess
  globalThis.fetch=async path=>{if(path==='/api/auth/me'){meReads++;return response({id:meReads===1?1:2,email:'session@example.test',role:meReads===1?'CUSTOMER':'MERCHANT'});}if(path==='/api/products/1'){productReads++;return response({id:1,name:'Test',price:10,stockQuantity:5,active:true});}throw Error('Unexpected URL '+path);};
  await render(React.createElement(I18nProvider,null,React.createElement(SessionProvider,null,React.createElement(CartProvider,null,React.createElement(CartProbe)))));
  await act(async()=>host.querySelector('[data-testid=probe-add]').click());assert.equal(productReads,0);assert.equal(host.querySelector('[data-testid=probe-count]').textContent,'0');assert.equal(host.querySelector('[data-testid=probe-message]').textContent,'Use a customer account to shop.');
+});
+
+
+test('recovery request uses a generic response and explains local delivery',async()=>{
+ const calls=[];globalThis.fetch=async(url,options)=>{calls.push([String(url),options]);return response(String(url).endsWith('/options')?{deliveryMode:'file',verificationRequired:false}:String(url).endsWith('/csrf')?{token:'csrf',headerName:'X-CSRF-TOKEN'}:null,options?.method==='POST'?202:200);};
+ await render(React.createElement(I18nProvider,null,React.createElement(AccountRecoveryPage,{kind:'reset'})));
+ assert.match(host.textContent,/not sent to an email inbox/);
+ await act(async()=>host.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
+ assert.match(host.querySelector('[role=status]').textContent,/If this address belongs/);assert.ok(calls.some(([url,options])=>url==='/api/auth/forgot-password'&&options?.method==='POST'));
+});
+
+test('verification waits for explicit confirmation and removes the used link from the address',async()=>{
+ const token='A'.repeat(43);window.history.replaceState(null,'','#verify-email/'+token);const calls=[];
+ globalThis.fetch=async(url,options)=>{calls.push([String(url),options]);return options?.method==='POST'?new Response(null,{status:204}):response(String(url).endsWith('/csrf')?{token:'csrf',headerName:'X-CSRF-TOKEN'}:{deliveryMode:'file',verificationRequired:false});};
+ await render(React.createElement(I18nProvider,null,React.createElement(AccountRecoveryPage,{kind:'verify',token})));
+ assert.equal(calls.filter(([,options])=>options?.method==='POST').length,0);
+ await act(async()=>host.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
+ assert.match(host.textContent,/Email verified/);assert.equal(window.location.hash,'#verify-email');assert.equal(host.querySelector('form'),null);
+});
+
+test('weak reset passwords are rejected locally and link routes reject malformed tokens',async()=>{
+ const calls=[];globalThis.fetch=async(url)=>{calls.push(String(url));return response({deliveryMode:'file',verificationRequired:false});};
+ await render(React.createElement(I18nProvider,null,React.createElement(AccountRecoveryPage,{kind:'reset',token:'A'.repeat(43)})));
+ await act(async()=>host.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
+ assert.match(host.querySelector('[role=alert]').textContent,/Passwords must match/);assert.equal(calls.includes('/api/auth/reset-password'),false);
+ for(const kind of ['reset-password','verify-email']){assert.ok(knownRoute('#'+kind+'/'+'A'.repeat(43)));assert.equal(knownRoute('#'+kind+'/bad'),false);}
 });

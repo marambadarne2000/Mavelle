@@ -1,5 +1,6 @@
 export function knownRoute(route:string):boolean{
- return ['','#home','#collection','#stores','#story','#login','#register','#account','#basket','#checkout','#orders','#admin','#admin-orders','#dashboard','#owner-login','#staff-login','#staff-register','#owner','#staff-orders','#join-business','#merchant','#marketplace-admin'].includes(route)
+ return ['#forgot-password','#reset-password','#verify-email','','#home','#collection','#stores','#story','#login','#register','#account','#basket','#checkout','#orders','#admin','#admin-orders','#dashboard','#owner-login','#staff-login','#staff-register','#owner','#staff-orders','#join-business','#merchant','#marketplace-admin'].includes(route)
+  || /^#(?:reset-password|verify-email)\/[A-Za-z0-9_-]{43}$/.test(route)
   || /^#staff-register\/[A-Za-z0-9_-]{43}$/.test(route)
   || /^#store\/[a-z0-9-]+$/.test(route) || /^#order\/MG-[a-zA-Z0-9-]+$/.test(route);
 }

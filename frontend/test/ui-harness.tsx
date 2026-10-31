@@ -10,3 +10,5 @@ export {PageTools,HomeDiscovery,dashboardRoute} from '../src/Discovery';
 import {useCart} from '../src/cart/CartContext';
 export {CartProvider} from '../src/cart/CartContext';
 export function CartProbe(){const cart=useCart();return <div><button data-testid="probe-add" onClick={()=>void cart.add(1)}>Add</button><span data-testid="probe-count">{cart.items.length}</span><p data-testid="probe-message">{cart.message?.text}</p></div>;}
+
+export {AccountRecoveryPage} from '../src/AccountSecurity';

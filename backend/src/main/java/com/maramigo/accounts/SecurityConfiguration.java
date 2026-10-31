@@ -21,8 +21,8 @@ public class SecurityConfiguration {
             @Value("${maramigo.login-limit:10}") int limit) throws Exception {
         http.authorizeHttpRequests(auth -> auth
             .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**", "/api/companies", "/api/business-plan", "/api/discovery/announcements", "/actuator/health", "/api/auth/csrf").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/staff-register", "/api/auth/business-register").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**", "/api/companies", "/api/business-plan", "/api/discovery/announcements", "/actuator/health", "/api/auth/csrf", "/api/auth/options").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/staff-register", "/api/auth/business-register", "/api/auth/forgot-password", "/api/auth/verification-request", "/api/auth/reset-password", "/api/auth/verify-email").permitAll()
             .requestMatchers("/api/merchant/**").hasRole("MERCHANT")
             .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
             .requestMatchers("/api/staff/**").hasAnyRole("ADMIN","EMPLOYEE")
