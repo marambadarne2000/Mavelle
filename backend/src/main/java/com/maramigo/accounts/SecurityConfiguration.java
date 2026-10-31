@@ -21,7 +21,7 @@ public class SecurityConfiguration {
             @Value("${maramigo.login-limit:10}") int limit) throws Exception {
         http.authorizeHttpRequests(auth -> auth
             .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**", "/api/companies", "/api/business-plan", "/actuator/health", "/api/auth/csrf").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**", "/api/companies", "/api/business-plan", "/api/discovery/announcements", "/actuator/health", "/api/auth/csrf").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/staff-register", "/api/auth/business-register").permitAll()
             .requestMatchers("/api/merchant/**").hasRole("MERCHANT")
             .requestMatchers("/api/customer/**").hasRole("CUSTOMER")

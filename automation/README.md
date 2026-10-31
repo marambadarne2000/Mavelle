@@ -57,3 +57,5 @@ Full purchase flow uses language-independent selectors. The accessibility matrix
 OwnerStaffE2ETest adds desktop/mobile business-profile save, invitation activation, employee fulfilment without financial fields, customer tracking and employee revocation. All fixtures remain isolated. Public smoke also verifies owner and employee entry links on the normal sign-in page.
 
 MarketplaceE2ETest adds two isolated desktop/mobile cases: public business registration, pending store, owner approval through the UI, merchant catalog creation, announcements, customer favorites/purchase, timed-feed visibility and per-store shipping/delivery. It also runs four English merchant overview/catalog axe samples. The full suite now contains 22 cases.
+
+Navigation/discovery update: the full suite has 23 cases (seven public smoke). A new mobile case covers direct-page Back fallback, carousel next/previous, reduced motion, store navigation and return. Marketplace tests explicitly opt in a public announcement and verify its Home display.

@@ -5,3 +5,5 @@ export {FormFeedback} from '../src/FormFeedback';
 export {Dashboard} from '../src/Dashboard';
 export {trapDialogTab} from '../src/focus';
 export {CustomerCenter,BusinessRegistration} from '../src/Marketplace';
+
+export {PageTools,HomeDiscovery,dashboardRoute} from '../src/Discovery';

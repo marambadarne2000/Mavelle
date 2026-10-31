@@ -10,6 +10,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Read-only journeys use a fresh browser and never change customer orders. @author Maram Abbas */
 class StorefrontTest extends BrowserTest {
+ @Test void pageShortcutsAndDiscoveryWorkOnMobile(){
+  viewport(390,900);open("#join-business");new StorePage(driver,wait).language("en");wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("page-tools")));
+  assertTrue(driver.findElement(Ui.id("personal-dashboard")).getAttribute("href").endsWith("#login"));Ui.click(driver,wait,Ui.id("page-back"));wait.until(ExpectedConditions.urlToBe(base+"/#home"));
+  var slide=wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("discovery-slide")));String first=slide.findElement(By.tagName("h3")).getText();
+  Ui.click(driver,wait,Ui.id("discovery-next"));wait.until(d->!d.findElement(Ui.id("discovery-slide")).findElement(By.tagName("h3")).getText().equals(first));
+  Ui.click(driver,wait,Ui.id("discovery-previous"));wait.until(ExpectedConditions.textToBePresentInElementLocated(Ui.id("discovery-slide"),first));
+  assertTrue(driver.findElements(Ui.id("discovery-pause")).isEmpty());assertEquals("false",driver.findElement(Ui.id("home-discovery")).getAttribute("data-playing"));
+  Ui.click(driver,wait,By.cssSelector("[data-testid=discovery-slide] a"));wait.until(ExpectedConditions.urlContains("#store/"));wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".store-hero h1")));
+  Ui.click(driver,wait,Ui.id("page-back"));wait.until(ExpectedConditions.urlToBe(base+"/#home"));assertEquals(true,js("return document.documentElement.scrollWidth<=innerWidth"));
+ }
  @ParameterizedTest @CsvSource({"1280,900,en,SILK,The Silk Pillow","390,844,he,כרית,כרית המשי","390,844,ar,وسادة الحرير,وسادة الحرير"})
  void catalogSearchDialogAndResponsiveLayout(int width,int height,String language,String query,String name){
   viewport(width,height);open("#collection");var store=new StorePage(driver,wait);store.ready();store.language(language);store.search(query);store.onlyProduct(name);assertEquals((long)width,js("return window.innerWidth"));

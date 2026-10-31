@@ -75,7 +75,7 @@ They are currently private customer feedback, not a public review feed. Messages
 are retained as support correspondence; deleting an account/message and retention
 policies require a separate production privacy workflow.
 
-Offers are dated store announcements, not automatic discounts. The customer feed
+Offers are dated store announcements, not automatic discounts. V9 adds explicit public Home publication; existing announcements default to the original customer audience. See DISCOVERY_NAVIGATION.md. The customer feed
 includes only active announcements from APPROVED stores they bought from, limited
 to 30. It refreshes every two minutes while its page is visible, with manual
 refresh and errors. Prices at checkout do not change because of announcement copy.

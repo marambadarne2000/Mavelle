@@ -76,4 +76,17 @@ class MarketplaceIT {
   var plan=json.readTree(new SessionClient(port,json).get("/api/business-plan").body());assertThat(plan.get("monthlyFee").decimalValue()).isEqualByComparingTo("99.00");assertThat(plan.get("commissionPercent").decimalValue()).isEqualByComparingTo("5.00");assertThat(plan.get("chargesEnabled").asBoolean()).isFalse();assertThat(plan.get("taxStatus").asText()).isEqualTo("UNVERIFIED");
   var summary=json.readTree(a.client().get("/api/merchant/summary").body());assertThat(summary.get("billingModel").asText()).isEqualTo("SUBSCRIPTION_AND_COMMISSION");assertThat(summary.get("paymentsConnected").asBoolean()).isFalse();
  }
+ @Test void publicDiscoveryOnlyShowsExplicitlyPublicActiveApprovedAnnouncements()throws Exception{
+  var m=merchant(true);var guest=new SessionClient(port,json);String privateTitle="Private buyer announcement "+UUID.randomUUID(),publicTitle="Public discovery "+UUID.randomUUID();
+  var data=new HashMap<String,Object>();data.put("title",privateTitle);data.put("body","Synthetic announcement");data.put("startsAt","2026-01-01T00:00:00Z");data.put("endsAt","2099-01-01T00:00:00Z");
+  assertThat(m.client().send("POST","/api/merchant/offers",data,true).statusCode()).isEqualTo(200);
+  assertThat(guest.get("/api/discovery/announcements").statusCode()).isEqualTo(200);assertThat(guest.get("/api/discovery/announcements").body()).doesNotContain(privateTitle);
+  data.put("title",publicTitle);data.put("publicAdvertisement",true);assertThat(m.client().send("POST","/api/merchant/offers",data,true).statusCode()).isEqualTo(200);
+  String body=guest.get("/api/discovery/announcements").body();assertThat(body).contains(publicTitle).doesNotContain(privateTitle,m.email(),"phone","registrationNumber");
+  assertThat(m.client().get("/api/merchant/offers").body()).contains("public_advertisement");
+  owner().send("PATCH","/api/admin/stores/"+m.company(),Map.of("status","SUSPENDED","reason","Synthetic moderation"),true);assertThat(guest.get("/api/discovery/announcements").body()).doesNotContain(publicTitle);
+  owner().send("PATCH","/api/admin/stores/"+m.company(),Map.of("status","APPROVED","reason","Synthetic restoration"),true);
+  jdbc.update("UPDATE store_offers SET starts_at=CURRENT_TIMESTAMP-interval '1 day',ends_at=CURRENT_TIMESTAMP-interval '1 second' WHERE title=?",publicTitle);assertThat(guest.get("/api/discovery/announcements").body()).doesNotContain(publicTitle);
+ }
+
 }

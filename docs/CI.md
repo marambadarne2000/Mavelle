@@ -6,8 +6,8 @@ The `Application quality gate` workflow runs on pushes, pull requests and manual
 |---|---|---|
 | Workflow and source safety | Ubuntu | checksum-verified actionlint, repository path policy plus 3 regression tests, redacted Gitleaks scan |
 | Java and PostgreSQL integration | Ubuntu | 7 unit/MVC + 38 real PostgreSQL HTTP tests, using Testcontainers/Docker; backend/automation Maven dependency audit and five scanner regressions |
-| TypeScript, lint and usability | Ubuntu | locked npm install, ESLint, TypeScript, 30 frontend tests, production build and npm audit |
-| Isolated Chrome purchase journeys | Windows | current Java artifact, verified portable PostgreSQL, disposable schema/servers, 22 Selenium cases including 138 multilingual accessibility/responsive samples, four merchant samples, marketplace onboarding and owner/employee fulfilment |
+| TypeScript, lint and usability | Ubuntu | locked npm install, ESLint, TypeScript, 34 frontend tests, production build and npm audit |
+| Isolated Chrome purchase journeys | Windows | current Java artifact, verified portable PostgreSQL, disposable schema/servers, 23 Selenium cases including 138 multilingual accessibility/responsive samples, four merchant samples, marketplace onboarding and owner/employee fulfilment |
 
 The browser job starts only after the other three pass. Full browser tests run for each push/PR/manual trigger; the `purchase` tag is included only by the full launcher. No repository database/admin secrets are required: credentials and test data are generated on the runner and destroyed with the disposable environment. The normal local demo is not a test destination.
 
@@ -21,7 +21,7 @@ Run the equivalent local rehearsal on the prepared Windows workspace:
 ./scripts/Check-CI.ps1 -SkipBrowser
 ```
 
-The full command validates the workflow and source policy, scans for secrets, checks lint/types/dependencies, runs backend/frontend suites and starts the isolated Selenium application. It preserves the existing demo. A current backend JAR and installed npm dependencies are required; cloud steps install/build these from checkout. Application verification comprises 106 tests (54 backend, 30 frontend and 22 Selenium), plus repository/security-tool regressions. Accessibility-only mode is a separate six-case run and does not count old reports as a new full-suite pass. Workflow syntax, source scanning, lint and npm audit also passed. A local rehearsal is not proof of a successful GitHub-hosted run.
+The full command validates the workflow and source policy, scans for secrets, checks lint/types/dependencies, runs backend/frontend suites and starts the isolated Selenium application. It preserves the existing demo. A current backend JAR and installed npm dependencies are required; cloud steps install/build these from checkout. Application verification comprises 112 tests (55 backend, 34 frontend and 23 Selenium), plus repository/security-tool regressions. Accessibility-only mode is a separate six-case run and does not count old reports as a new full-suite pass. Workflow syntax, source scanning, lint and npm audit also passed. A local rehearsal is not proof of a successful GitHub-hosted run.
 
 Security scans have defined limits: Gitleaks checks known secret patterns, and npm audit reports registry-known dependency issues at execution time. `scripts/Audit-Java.ps1` checks resolved backend and automation dependencies with OSV, retains findings and fails on unreviewed findings or expired exact-version reviews. Two unused Spring rendering paths remain explicitly reviewed through 2026-11-27; see [dependency review](DEPENDENCY_SECURITY.md). Device/accessibility certification and production deployment review remain separate work.
 

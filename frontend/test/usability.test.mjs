@@ -4,7 +4,7 @@ const dom=new JSDOM('<!doctype html><html><body><div id="root"></div></body></ht
 for(const key of ['window','document','HTMLElement','HTMLInputElement','Event','MouseEvent','localStorage'])Object.defineProperty(globalThis,key,{value:dom.window[key],configurable:true});
 globalThis.IS_REACT_ACT_ENVIRONMENT=true;localStorage.setItem('maramigo.language','en');
 globalThis.ResizeObserver=class{observe(){}unobserve(){}disconnect(){}};
-const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration}=await import('../.test-build/ui.mjs');
+const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration,PageTools,HomeDiscovery}=await import('../.test-build/ui.mjs');
 let root;const host=document.getElementById('root');
 test.afterEach(async()=>{if(root)await act(async()=>root.unmount());root=null;});
 async function render(element){root=createRoot(host);await act(async()=>root.render(element));}
@@ -90,4 +90,47 @@ test('dashboard retains the last metrics and warns when a subsequent refresh fai
  const refresh=[...host.querySelectorAll('button')].find(b=>b.textContent==='Refresh now');
  await act(async()=>refresh.dispatchEvent(new MouseEvent('click',{bubbles:true})));
  assert.equal(reads,2);assert.equal(host.querySelector('[data-testid=dashboard-orders]').textContent,'2');assert.match(host.querySelector('[role=alert]').textContent,/Values may be outdated/);
+});
+test('page back follows the actual internal trail including revisited routes and has a home fallback',async()=>{
+ globalThis.fetch=async()=>response({},401);
+ const view=route=>React.createElement(I18nProvider,null,React.createElement(SessionProvider,null,React.createElement(PageTools,{route})));
+ await render(view('#join-business'));await act(async()=>host.querySelector('[data-testid=page-back]').click());assert.equal(window.location.hash,'#home');
+ for(const route of ['#home','#stores','#store/test','#stores']){window.location.hash=route;await act(async()=>root.render(view(route)));}
+ await act(async()=>host.querySelector('[data-testid=page-back]').click());assert.equal(window.location.hash,'#store/test');
+ await act(async()=>root.render(view('#store/test')));await act(async()=>host.querySelector('[data-testid=page-back]').click());assert.equal(window.location.hash,'#stores');
+});
+
+test('every signed-in role receives its own dashboard shortcut and guests receive sign-in',async()=>{
+ for(const [role,target] of [['ADMIN','#marketplace-admin'],['MERCHANT','#merchant'],['CUSTOMER','#account'],['EMPLOYEE','#staff-orders'],[null,'#login']]){
+  globalThis.fetch=async()=>role?response({id:1,email:'test@example.test',role}):response({},401);
+  await render(React.createElement(I18nProvider,null,React.createElement(SessionProvider,null,React.createElement(PageTools,{route:'#join-business'}))));
+  assert.equal(host.querySelector('[data-testid=personal-dashboard]').getAttribute('href'),target);
+  await act(async()=>root.unmount());root=null;
+ }
+});
+
+const demoCompanies=[{id:1,slug:'first-store',name:'First Store',description:'One',monogram:'FS',demo:true},{id:2,slug:'second-store',name:'Second Store',description:'Two',monogram:'SS',demo:true}];
+function discoveryFetch(path){if(path==='/api/products?size=4')return response({items:[{id:1,name:'Test item',price:10,companyId:1}]});if(path==='/api/discovery/announcements')return response([]);throw Error('Unexpected URL '+path);}
+function motionPreference(matches){window.matchMedia=()=>({matches,addEventListener(){},removeEventListener(){}});}
+test('reduced motion keeps discovery manual with working store links and previous/next controls',async()=>{
+ globalThis.fetch=async path=>discoveryFetch(path);motionPreference(true);
+ await render(React.createElement(I18nProvider,null,React.createElement(HomeDiscovery,{companies:demoCompanies})));
+ assert.equal(host.querySelector('[data-testid=home-discovery]').dataset.playing,'false');assert.equal(host.querySelector('[data-testid=discovery-pause]'),null);
+ assert.match(host.querySelector('[data-testid=discovery-slide]').textContent,/First Store/);
+ await act(async()=>host.querySelector('[data-testid=discovery-next]').click());assert.match(host.querySelector('[data-testid=discovery-slide]').textContent,/Second Store/);assert.equal(host.querySelector('[data-testid=discovery-slide] a').getAttribute('href'),'#store/second-store');
+ await act(async()=>host.querySelector('[data-testid=discovery-previous]').click());assert.match(host.querySelector('[data-testid=discovery-slide]').textContent,/First Store/);
+});
+test('automatic discovery advances and can be paused, resumed and paused by keyboard focus',async()=>{
+ globalThis.fetch=async path=>discoveryFetch(path);motionPreference(false);Object.defineProperty(document,'hidden',{value:false,configurable:true});const timers=new Map();let id=0;const originalSet=window.setInterval,originalClear=window.clearInterval;
+ window.setInterval=(fn,delay)=>{const key=++id;timers.set(key,{fn,delay});return key;};window.clearInterval=key=>timers.delete(key);
+ try{
+  await render(React.createElement(I18nProvider,null,React.createElement(HomeDiscovery,{companies:demoCompanies})));
+  const tick=()=>[...timers.values()].find(t=>t.delay===6000);
+  assert.ok(tick());await act(async()=>tick().fn());assert.match(host.querySelector('[data-testid=discovery-slide]').textContent,/Second Store/);
+  await act(async()=>host.querySelector('[data-testid=discovery-pause]').click());assert.equal(tick(),undefined);
+  await act(async()=>host.querySelector('[data-testid=discovery-pause]').click());assert.ok(tick());
+  const link=host.querySelector('[data-testid=discovery-slide] a');await act(async()=>link.dispatchEvent(new dom.window.FocusEvent('focusin',{bubbles:true})));assert.equal(tick(),undefined);
+  await act(async()=>link.dispatchEvent(new dom.window.FocusEvent('focusout',{bubbles:true,relatedTarget:null})));assert.ok(tick());
+  await act(async()=>root.unmount());root=null;
+ }finally{window.setInterval=originalSet;window.clearInterval=originalClear;delete document.hidden;}
 });

@@ -18,7 +18,7 @@ test('dynamic messages translate interpolation and product names safely',()=>{
 });
 test('all literal interface keys in deployed React pages have Hebrew and Arabic entries',()=>{
  const keys=new Set();const exempt=new Set(['m.','maramigo','Maramigo','Maram Abbas.']);
- const files=['Dashboard.tsx','AdminOrders.tsx','main.tsx','AuthPages.tsx','AdminProducts.tsx','OrderPages.tsx','Workspaces.tsx','Marketplace.tsx','cart/CartPage.tsx'];
+ const files=['Dashboard.tsx','AdminOrders.tsx','main.tsx','AuthPages.tsx','AdminProducts.tsx','OrderPages.tsx','Workspaces.tsx','Marketplace.tsx','Discovery.tsx','cart/CartPage.tsx'];
  const gather=n=>{if(ts.isConditionalExpression(n)){gather(n.whenTrue);gather(n.whenFalse);return;}if(ts.isStringLiteral(n)&&/[A-Za-z]/.test(n.text))keys.add(n.text.trim());if(ts.isTemplateExpression(n)){let value=n.head.text;n.templateSpans.forEach((s,i)=>value+='{'+i+'}'+s.literal.text);keys.add(value.trim());return;}ts.forEachChild(n,gather);};
  for(const file of files){const tree=ts.createSourceFile(file,readFileSync(new URL('../src/'+file,import.meta.url),'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);const scan=n=>{if(ts.isCallExpression(n)&&n.expression.getText(tree)==='t'&&n.arguments[0])gather(n.arguments[0]);ts.forEachChild(n,scan);};scan(tree);}
  const missing=[...keys].filter(key=>key&&!exempt.has(key)&&(!translations.he[key]||!translations.ar[key]));assert.deepEqual(missing,[]);
