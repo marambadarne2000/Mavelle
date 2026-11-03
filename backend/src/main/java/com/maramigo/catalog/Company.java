@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 @Entity @Table(name="companies")
 public class Company {
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
+    private java.util.UUID logoId;
+    public java.util.UUID getLogoId(){return logoId;}
     private String slug;
     private String name;
     private String description;

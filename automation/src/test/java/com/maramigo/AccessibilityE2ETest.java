@@ -56,6 +56,8 @@ class AccessibilityE2ETest extends BrowserTest {
   route("#forgot-password","[data-testid=account-recovery] form");audit("forgot-password");
   route("#verify-email/"+"A".repeat(43),"[data-testid=account-recovery] form");audit("verify-email-confirmation");
   route("#reset-password/"+"A".repeat(43),"[data-testid=account-recovery] form");audit("reset-password");
+  for(String info:List.of("#privacy","#terms","#accessibility","#help")){route(info,".portal-document");audit(info.substring(1));}
+  route("#two-step","[data-testid=mfa-code]");audit("two-step-challenge");
   route("#join-business","[data-testid=business-registration]");audit("business-registration");
   route("#owner-login","[data-testid=auth-email]");audit("owner-login");route("#staff-login","[data-testid=auth-email]");audit("employee-login");route("#staff-register","[data-testid=staff-registration]");audit("employee-registration");
   route("#basket",".basket-empty");audit("empty-basket");
@@ -65,7 +67,7 @@ class AccessibilityE2ETest extends BrowserTest {
   wait.until(ExpectedConditions.textToBePresentInElementLocated(Ui.id("basket-link"),"(1)"));route("#basket",".basket-item");audit("basket");
   new BasketPage(driver,wait).checkout();wait.until(ExpectedConditions.visibilityOfElementLocated(Ui.id("checkout-form")));audit("checkout");screenshot("checkout");
   Ui.click(driver,wait,Ui.id("shipping-fullName"));
-  for(String next:List.of("shipping-phone","shipping-address","shipping-city","shipping-postalCode","shipping-country","checkout-submit")){
+  for(String next:List.of("shipping-phone","shipping-address","shipping-city","shipping-postalCode","shipping-country","payment-simulation","checkout-submit")){
    driver.switchTo().activeElement().sendKeys(Keys.TAB);assertEquals(next,driver.switchTo().activeElement().getAttribute("data-testid"),"Checkout keyboard order");
   }
   var checkout=new CheckoutPage(driver,wait);checkout.shipping();String number=checkout.confirm();audit("order-confirmation");

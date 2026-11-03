@@ -16,22 +16,24 @@ import java.util.*;
 /** Atomic checkout, stable snapshots and per-user idempotency. @author Maram Abbas */
 @Service @Transactional(readOnly=true)
 public class OrderService {
-    private final JdbcTemplate jdbc; private final ProductRepository products; private final CompanyRepository companies; private final ObjectMapper json;
-    public OrderService(JdbcTemplate jdbc,ProductRepository products,CompanyRepository companies,ObjectMapper json){this.jdbc=jdbc;this.products=products;this.companies=companies;this.json=json;}
+    private final JdbcTemplate jdbc; private final ProductRepository products; private final CompanyRepository companies; private final ObjectMapper json; private final com.maramigo.marketplace.DemoCommerce commerce;
+    public OrderService(JdbcTemplate jdbc,ProductRepository products,CompanyRepository companies,ObjectMapper json,com.maramigo.marketplace.DemoCommerce commerce){this.jdbc=jdbc;this.products=products;this.companies=companies;this.json=json;this.commerce=commerce;}
     public record Item(Long productId,String sku,String name,String companyName,BigDecimal unitPrice,int quantity,BigDecimal lineTotal){}
     public record Summary(String orderNumber,String status,BigDecimal total,String currency,Instant createdAt){}
     public record View(String orderNumber,String status,BigDecimal total,String currency,Instant createdAt,OrderController.Shipping shipping,List<Item> items){}
     private record Stored(long id,long userId,String fingerprint,View view){}
     @Transactional public View checkout(Long userId,String key,OrderController.Checkout request){
+        if(jdbc.queryForList("SELECT id FROM users WHERE id=? AND enabled=true FOR UPDATE",userId).isEmpty())throw fail(HttpStatus.FORBIDDEN,"This account is no longer active.");
         var lines=request.items().stream().sorted(Comparator.comparing(OrderController.Line::productId)).toList();
         if(lines.stream().map(OrderController.Line::productId).distinct().count()!=lines.size())throw fail(HttpStatus.BAD_REQUEST,"Duplicate products are not allowed.");
-        String fingerprint=fingerprint(lines,request.shipping());
+        String fingerprint=fingerprint(lines,request.shipping(),request.demoPaymentOutcome());
         jdbc.queryForList("SELECT pg_advisory_xact_lock(hashtextextended(?,0))",userId+":"+key);
         var existing=jdbc.queryForList("SELECT order_number,request_fingerprint FROM orders WHERE user_id=? AND idempotency_key=?",userId,key);
         if(!existing.isEmpty()){
             if(!fingerprint.equals(existing.get(0).get("request_fingerprint")))throw fail(HttpStatus.CONFLICT,"This request key was already used for different order details.");
             return view((String)existing.get(0).get("order_number"),userId);
         }
+        if("DECLINED".equals(request.demoPaymentOutcome()))throw fail(HttpStatus.PAYMENT_REQUIRED,"Simulated payment declined. No order was placed and no stock was deducted.");
         List<Product> locked=new ArrayList<>(); BigDecimal total=BigDecimal.ZERO;
         for(var line:lines){
             var p=products.findLockedById(line.productId()).orElseThrow(()->fail(HttpStatus.CONFLICT,"A product is no longer available. Refresh your basket."));
@@ -40,6 +42,10 @@ public class OrderService {
             if(p.getPrice().compareTo(line.expectedPrice())!=0)throw fail(HttpStatus.CONFLICT,"Prices changed. Refresh your basket and confirm the updated prices.");
             if(p.getStockQuantity()<line.quantity())throw fail(HttpStatus.CONFLICT,"There is not enough stock. Refresh your basket.");
             total=total.add(p.getPrice().multiply(BigDecimal.valueOf(line.quantity()))); locked.add(p);
+        }
+        for(Long companyId:locked.stream().map(Product::getCompanyId).distinct().sorted().toList()){
+            String state=jdbc.queryForObject("SELECT status FROM companies WHERE id=? FOR UPDATE",String.class,companyId);
+            if(!"APPROVED".equals(state))throw fail(HttpStatus.CONFLICT,"This store is not currently accepting orders. Refresh your basket.");
         }
         String number="MG-"+UUID.randomUUID().toString().replace("-","");
         Long id=jdbc.queryForObject("INSERT INTO orders(order_number,user_id,total_price,status,shipping,idempotency_key,request_fingerprint) VALUES (?,?,?,'PENDING',?::jsonb,?,?) RETURNING id",Long.class,number,userId,total,encode(request.shipping()),key,fingerprint);
@@ -52,6 +58,7 @@ public class OrderService {
             jdbc.update("INSERT INTO inventory_movements(product_id,actor_id,quantity_delta,reason,order_id) VALUES (?,?,?,?,?)",p.getId(),userId,-line.quantity(),"Order "+number,id);
         }
         products.flush();
+        if("SUCCESS".equals(request.demoPaymentOutcome()))commerce.capture(id);
         return view(number,userId);
     }
     public List<Summary> list(Long userId,int page){return jdbc.query("SELECT order_number,status,total_price,currency,created_at FROM orders WHERE user_id=? ORDER BY created_at DESC,id DESC LIMIT 20 OFFSET ?",(r,n)->new Summary(r.getString(1),r.getString(2),r.getBigDecimal(3),r.getString(4),r.getTimestamp(5).toInstant()),userId,(long)page*20);}
@@ -62,8 +69,8 @@ public class OrderService {
         var items=jdbc.query("SELECT product_id,sku,name,company_name,unit_price,quantity FROM order_items WHERE order_id=? ORDER BY id",(r,n)->new Item(r.getLong(1),r.getString(2),r.getString(3),r.getString(4),r.getBigDecimal(5),r.getInt(6),r.getBigDecimal(5).multiply(BigDecimal.valueOf(r.getInt(6)))),row.id());
         return new View(v.orderNumber(),v.status(),v.total(),v.currency(),v.createdAt(),v.shipping(),items);
     }
-    private String fingerprint(List<OrderController.Line> lines,OrderController.Shipping shipping){
-        try {var canonical=new TreeMap<String,Object>();canonical.put("shipping",shipping);canonical.put("items",lines.stream().map(l->List.of(l.productId(),l.quantity(),l.expectedPrice().setScale(2).toPlainString())).toList());return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(encode(canonical).getBytes(StandardCharsets.UTF_8)));}catch(Exception e){throw new IllegalStateException("Could not prepare order request.",e);}
+    private String fingerprint(List<OrderController.Line> lines,OrderController.Shipping shipping,String outcome){
+        try {var canonical=new TreeMap<String,Object>();canonical.put("shipping",shipping);if(outcome!=null)canonical.put("demoPaymentOutcome",outcome);canonical.put("items",lines.stream().map(l->List.of(l.productId(),l.quantity(),l.expectedPrice().setScale(2).toPlainString())).toList());return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(encode(canonical).getBytes(StandardCharsets.UTF_8)));}catch(Exception e){throw new IllegalStateException("Could not prepare order request.",e);}
     }
     private String encode(Object value){try{return json.writeValueAsString(value);}catch(Exception e){throw new IllegalStateException("Could not serialize order.",e);}}
     private OrderController.Shipping decode(String value){try{return json.readValue(value,OrderController.Shipping.class);}catch(Exception e){throw new IllegalStateException("Could not read order.",e);}}

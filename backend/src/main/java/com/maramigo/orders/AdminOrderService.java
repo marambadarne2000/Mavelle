@@ -12,8 +12,8 @@ import java.util.List;
 /** Locked transitions, cancellation and stock restoration share one transaction. @author Maram Abbas */
 @Service @Transactional(readOnly=true)
 public class AdminOrderService {
-    private final JdbcTemplate jdbc;private final ProductRepository products;private final OrderService orders;
-    public AdminOrderService(JdbcTemplate jdbc,ProductRepository products,OrderService orders){this.jdbc=jdbc;this.products=products;this.orders=orders;}
+    private final JdbcTemplate jdbc;private final ProductRepository products;private final OrderService orders;private final com.maramigo.marketplace.DemoCommerce commerce;
+    public AdminOrderService(JdbcTemplate jdbc,ProductRepository products,OrderService orders,com.maramigo.marketplace.DemoCommerce commerce){this.jdbc=jdbc;this.products=products;this.orders=orders;this.commerce=commerce;}
     public record Page(List<OrderService.Summary> items,long total,int page,int size){}
     public record History(String fromStatus,String toStatus,String reason,long actorId,Instant occurredAt){}
     public record Detail(OrderService.View order,long version,List<History> history){}
@@ -46,7 +46,7 @@ public class AdminOrderService {
             || (row.status().equals("SHIPPED") && change.status().equals("DELIVERED"));
         if(!allowed)throw fail(HttpStatus.CONFLICT,"This order status transition is not allowed.");
         if(change.status().equals("CANCELLED")){
-            var items=jdbc.query("SELECT product_id,quantity FROM order_items WHERE order_id=? ORDER BY product_id",(r,n)->new long[]{r.getLong(1),r.getLong(2)},row.id());
+            var items=jdbc.query("SELECT i.product_id,i.quantity FROM order_items i JOIN merchant_orders m ON m.order_id=i.order_id AND m.company_id=i.company_id WHERE i.order_id=? AND m.status<>'CANCELLED' ORDER BY i.product_id",(r,n)->new long[]{r.getLong(1),r.getLong(2)},row.id());
             for(var item:items){
                 var product=products.findLockedById(item[0]).orElseThrow();
                 if((long)product.getStockQuantity()+item[1]>1000000)throw fail(HttpStatus.CONFLICT,"Restoring stock would exceed the inventory limit.");
@@ -54,10 +54,11 @@ public class AdminOrderService {
                 jdbc.update("INSERT INTO inventory_movements(product_id,actor_id,quantity_delta,reason,order_id) VALUES (?,?,?,?,?)",item[0],actorId,item[1],"Cancelled "+number,row.id());
             }
             products.flush();
+            for(Long company:jdbc.queryForList("SELECT company_id FROM merchant_orders WHERE order_id=? ORDER BY company_id",Long.class,row.id()))commerce.refundPart(row.id(),company);
         }
         jdbc.update("UPDATE orders SET status=?,version=version+1,updated_at=CURRENT_TIMESTAMP WHERE id=?",change.status(),row.id());
-        jdbc.update("INSERT INTO merchant_order_history(order_id,company_id,actor_id,from_status,to_status,reason) SELECT order_id,company_id,?,status,?,? FROM merchant_orders WHERE order_id=? AND status<>?",actorId,change.status(),change.reason(),row.id(),change.status());
-        jdbc.update("UPDATE merchant_orders SET status=?,version=version+1 WHERE order_id=? AND status<>?",change.status(),row.id(),change.status());
+        jdbc.update("INSERT INTO merchant_order_history(order_id,company_id,actor_id,from_status,to_status,reason) SELECT order_id,company_id,?,status,?,? FROM merchant_orders WHERE order_id=? AND status<>? AND status<>'CANCELLED'",actorId,change.status(),change.reason(),row.id(),change.status());
+        jdbc.update("UPDATE merchant_orders SET status=?,version=version+1 WHERE order_id=? AND status<>? AND status<>'CANCELLED'",change.status(),row.id(),change.status());
         jdbc.update("INSERT INTO order_status_history(order_id,actor_id,from_status,to_status,reason) VALUES (?,?,?,?,?)",row.id(),actorId,row.status(),change.status(),change.reason());
         return detail(number,new Header(row.id(),row.userId(),row.version()+1,change.status()));
     }

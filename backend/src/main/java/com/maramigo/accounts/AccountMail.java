@@ -48,7 +48,7 @@ public class AccountMail {
     public void available(){if(mode.equals("disabled"))throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,"Account email delivery is not configured.");}
     public void send(String email,String purpose,String token) {
         available();
-        String route=purpose.equals("RESET")?"reset-password":"verify-email";
+        String route=purpose.equals("RESET")?"reset-password":purpose.equals("EMAIL")?"confirm-email-change":"verify-email";
         String subject=purpose.equals("RESET")?"Maramigo — reset your password":"Maramigo — verify your email";
         String content="עברית / العربية / English\n\n"+subject+"\n\n"+base.replaceAll("/+$","")+"/#"+route+"/"+token
             +"\n\n"+(purpose.equals("RESET")?"Valid for 30 minutes. / בתוקף ל־30 דקות. / صالح لمدة 30 دقيقة.":"Valid for 24 hours. / בתוקף ל־24 שעות. / صالح لمدة 24 ساعة.")

@@ -18,10 +18,21 @@ services:
       DB_URL: jdbc:postgresql://database:5432/maramigo
       DB_USER: maramigo
       DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      ACCOUNT_PUBLIC_URL: ${ACCOUNT_PUBLIC_URL:-http://127.0.0.1:8088}
+      ACCOUNT_VERIFICATION_REQUIRED: ${ACCOUNT_VERIFICATION_REQUIRED:-false}
+      ACCOUNT_MAIL_MODE: ${ACCOUNT_MAIL_MODE:-file}
+      ACCOUNT_MAIL_HOST: ${ACCOUNT_MAIL_HOST:-}
+      ACCOUNT_MAIL_PORT: ${ACCOUNT_MAIL_PORT:-587}
+      ACCOUNT_MAIL_FROM: ${ACCOUNT_MAIL_FROM:-}
+      ACCOUNT_MAIL_USERNAME: ${ACCOUNT_MAIL_USERNAME:-}
+      ACCOUNT_MAIL_PASSWORD: ${ACCOUNT_MAIL_PASSWORD:-}
+      ACCOUNT_ENCRYPTION_KEY: ${ACCOUNT_ENCRYPTION_KEY:-}
       SPRING_PROFILES_ACTIVE: demo
       SESSION_COOKIE_SECURE: 'false'
       DEMO_ADMIN_EMAIL: ${DEMO_ADMIN_EMAIL:-}
       DEMO_ADMIN_PASSWORD: ${DEMO_ADMIN_PASSWORD:-}
+    volumes:
+      - account_mail_data:/app/.runtime/mail
     ports:
       - '127.0.0.1:8080:8080'
     depends_on:
@@ -35,3 +46,4 @@ services:
       - backend
 volumes:
   postgres_data:
+  account_mail_data:

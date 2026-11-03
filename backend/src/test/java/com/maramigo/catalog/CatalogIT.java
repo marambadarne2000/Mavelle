@@ -35,6 +35,10 @@ class CatalogIT {
              var statement = connection.createStatement()) {
             statement.execute("CREATE SCHEMA " + schema);
         }
+        properties.add("maramigo.mail.worker.enabled",()->"false");
+        properties.add("spring.datasource.hikari.connection-init-sql",()->"SET search_path TO "+schema);
+        properties.add("spring.datasource.hikari.maximum-pool-size",()->"4");
+        properties.add("spring.datasource.hikari.minimum-idle",()->"1");
         properties.add("spring.datasource.url", () -> url);
         properties.add("spring.datasource.username", () -> user);
         properties.add("spring.datasource.password", () -> password);

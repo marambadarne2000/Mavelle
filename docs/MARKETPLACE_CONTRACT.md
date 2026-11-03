@@ -1,3 +1,5 @@
+> Current completion additions: [connected portfolio contract](PORTFOLIO_RELEASE_HE.md) and [account/MFA security](ACCOUNT_SECURITY_HE.md). Earlier baseline sections below describe the original interfaces; new workflows and production boundaries are documented in those current references.
+
 # Marketplace contract — 30 October 2026
 
 This supersedes the single-merchant operating model in OWNER_STAFF_CONTRACT.md.

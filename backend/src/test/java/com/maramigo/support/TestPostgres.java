@@ -19,6 +19,9 @@ public final class TestPostgres implements AutoCloseable {
         try (var connection = DriverManager.getConnection(url, user, password); var sql = connection.createStatement()) {
             sql.execute("CREATE SCHEMA " + schema);
         }
+        properties.add("maramigo.mail.worker.enabled",()->"false");
+        properties.add("spring.datasource.hikari.maximum-pool-size",()->"4");
+        properties.add("spring.datasource.hikari.minimum-idle",()->"1");
         properties.add("spring.datasource.url", () -> url);
         properties.add("spring.datasource.username", () -> user);
         properties.add("spring.datasource.password", () -> password);

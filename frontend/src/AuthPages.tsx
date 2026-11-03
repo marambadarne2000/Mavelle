@@ -34,6 +34,7 @@ export function AuthPage({ register = false }: {
             }
             const response = await write('/api/auth/login', new URLSearchParams({ username: email.trim(), password }), 'application/x-www-form-urlencoded');
             await check(response);
+            if(response.status===202){setPassword('');window.location.hash='#two-step';return;}
             const user=await response.json() as SessionUser;
             const route = user.role==='ADMIN'?'#marketplace-admin':user.role==='MERCHANT'?'#merchant':user.role==='EMPLOYEE'?'#staff-orders':session.destination();
             session.signedIn(user);

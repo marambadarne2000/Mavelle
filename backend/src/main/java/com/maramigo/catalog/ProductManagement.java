@@ -19,8 +19,8 @@ public class ProductManagement {
     private final CompanyRepository companies;
     public ProductManagement(ProductRepository products, InventoryRepository movements, CompanyRepository companies) { this.products=products; this.movements=movements; this.companies=companies; }
     public record ProductView(Long id, String sku, String name, String description, String category,
-            BigDecimal price, int stockQuantity, boolean active, Long version, Long companyId) {
-        static ProductView of(Product p) { return new ProductView(p.getId(),p.getSku(),p.getName(),p.getDescription(),p.getCategory(),p.getPrice(),p.getStockQuantity(),p.isActive(),p.getVersion(),p.getCompanyId()); }
+            BigDecimal price, int stockQuantity, boolean active, Long version, Long companyId, java.util.UUID imageId) {
+        static ProductView of(Product p) { return new ProductView(p.getId(),p.getSku(),p.getName(),p.getDescription(),p.getCategory(),p.getPrice(),p.getStockQuantity(),p.isActive(),p.getVersion(),p.getCompanyId(),p.getImageId()); }
     }
     public record ProductPage(List<ProductView> items, long total, int page, int size) {}
     public record MovementView(Long id, Long productId, Long actorId, int delta, String reason, Instant occurredAt) {

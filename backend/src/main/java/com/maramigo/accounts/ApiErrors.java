@@ -4,7 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 
 /** @author Maram Abbas */
-@RestControllerAdvice(assignableTypes = {AuthController.class, StaffRegistration.class, OwnerController.class, AccountLifecycleController.class})
+@RestControllerAdvice(assignableTypes = {AuthController.class, StaffRegistration.class, OwnerController.class, AccountLifecycleController.class, MfaController.class, AccountSettings.class, com.maramigo.catalog.MediaController.class})
 public class ApiErrors {
     @ExceptionHandler({org.springframework.web.bind.MethodArgumentNotValidException.class, org.springframework.http.converter.HttpMessageNotReadableException.class})
     public ResponseEntity<ProblemDetail> invalid() {

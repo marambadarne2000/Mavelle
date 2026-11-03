@@ -1,3 +1,5 @@
+> Current checkout supports optional `demoPaymentOutcome: SUCCESS | DECLINED`. The storefront sends it; omitted values preserve legacy reservation-only requests. Decline creates no order/stock movement. Success records the order, stock and simulated capture together. A later simulated payment charges only still-active store parts. Returns, partial cancellation and finance snapshots: [connected portfolio contract](PORTFOLIO_RELEASE_HE.md).
+
 # Demo checkout and orders
 
 `POST /api/orders` requires an authenticated session, CSRF token and an `Idempotency-Key` (16–64 alphanumeric, underscore or hyphen characters). The JSON body contains 1–50 distinct `items` with `productId`, integer `quantity` (1–99), and `expectedPrice`, plus `shipping` (`fullName`, `phone`, `address`, `city`, `postalCode`, uppercase two-letter `country`). Server validation bounds all strings. No payment gateway or real charge exists.

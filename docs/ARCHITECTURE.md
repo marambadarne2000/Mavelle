@@ -92,3 +92,31 @@ The application remains one modular backend deployment, not independent microser
 ## Account lifecycle (V10)
 
 `users.email_verified` starts false for existing and new users; `auth_version` is compared on authenticated requests and increased on password reset. `account_tokens` stores only token hashes, user ownership, purpose, creation/expiry/consumption timestamps. Requests are queued with bounded in-memory workers; consumption and issuance share the user row lock. See [account security](ACCOUNT_SECURITY_HE.md) for API flows, non-durable queue limitations and SMTP/demo configuration.
+
+
+## Connected portfolio completion (V11–V16)
+
+```mermaid
+flowchart LR
+  Customer --> Checkout
+  Checkout --> InventoryLocks
+  Checkout --> DemoPayment
+  DemoPayment --> StoreLedger
+  Merchant --> Fulfilment
+  Customer --> CancellationOrReturn
+  CancellationOrReturn --> InventoryLocks
+  CancellationOrReturn --> RefundReversal
+  RefundReversal --> StoreLedger
+  PlatformOwner --> StoreApproval
+  PlatformOwner --> DemoPayout
+  DemoPayout --> StoreLedger
+  PlatformOwner --> PrivacyReview
+  Auth --> TOTPAndRecovery
+  Auth --> DurableMailJobs
+```
+
+Checkout locks the active buyer, products in ID order and then companies in ID order; locked store approval is rechecked before order creation. Closure locks the account/store before checking open orders. Returns and platform cancellation lock the parent order before products and company/finance updates. Unique request/event keys make stock restoration, journal reversals and payout retries safe.
+
+New tables: account_mfa, mfa_recovery_codes, privacy_requests, media_assets, demo_payments, return_requests, demo_ledger, demo_subscriptions, account_mail_jobs and demo_payouts. Secrets stay outside source; TOTP secrets are authenticated-encrypted and mail/auth tokens are hashed. Uploaded rasters live in PostgreSQL and are re-encoded before publication.
+
+[Current completion contract and boundaries](PORTFOLIO_RELEASE_HE.md). Payment/provider, legal identity and public hosting remain external integration work; the simulated ledger is never presented as real collected revenue.

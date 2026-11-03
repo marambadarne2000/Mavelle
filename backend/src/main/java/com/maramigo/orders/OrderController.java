@@ -20,7 +20,7 @@ public class OrderController {
     }
     public record Line(@NotNull @Positive Long productId,@NotNull @Min(1) @Max(99) Integer quantity,
         @NotNull @DecimalMin(value="0",inclusive=false) @Digits(integer=10,fraction=2) BigDecimal expectedPrice){}
-    public record Checkout(@NotNull @Size(min=1,max=50) List<@NotNull @Valid Line> items,@NotNull @Valid Shipping shipping){}
+    public record Checkout(@NotNull @Size(min=1,max=50) List<@NotNull @Valid Line> items,@NotNull @Valid Shipping shipping,@Pattern(regexp="SUCCESS|DECLINED") String demoPaymentOutcome){public Checkout(List<Line> items,Shipping shipping){this(items,shipping,null);}}
     @PostMapping public OrderService.View checkout(@Valid @RequestBody Checkout form,
         @RequestHeader("Idempotency-Key") @Pattern(regexp="[A-Za-z0-9_-]{16,64}") String key,
         @AuthenticationPrincipal AccountService.Principal user){return orders.checkout(user.id(),key,form);}

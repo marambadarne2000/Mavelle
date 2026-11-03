@@ -36,7 +36,7 @@ public class MerchantOrders {
   if(!(before.equals("PENDING")&&form.status().equals("SHIPPED")||before.equals("SHIPPED")&&form.status().equals("DELIVERED")))throw MarketplaceController.fail(HttpStatus.CONFLICT,"This order status transition is not allowed.");
   db.update("UPDATE merchant_orders SET status=?,version=version+1 WHERE order_id=? AND company_id=?",form.status(),id,company);
   db.update("INSERT INTO merchant_order_history(order_id,company_id,actor_id,from_status,to_status,reason) VALUES (?,?,?,?,?,?)",id,company,user.id(),before,form.status(),form.reason().trim());
-  var states=db.queryForList("SELECT status FROM merchant_orders WHERE order_id=?",String.class,id);
+  var states=db.queryForList("SELECT status FROM merchant_orders WHERE order_id=? AND status<>'CANCELLED'",String.class,id);
   String aggregate=states.stream().allMatch("DELIVERED"::equals)?"DELIVERED":states.stream().anyMatch(s->s.equals("SHIPPED")||s.equals("DELIVERED"))?"SHIPPED":"PENDING";
   db.update("UPDATE orders SET status=?,version=version+1,updated_at=CURRENT_TIMESTAMP WHERE id=?",aggregate,id);
   if(!aggregate.equals(parents.get(0).get("status")))db.update("INSERT INTO order_status_history(order_id,actor_id,from_status,to_status,reason) VALUES (?,?,?,?,?)",id,user.id(),parents.get(0).get("status"),aggregate,form.reason().trim());

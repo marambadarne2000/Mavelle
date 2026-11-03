@@ -1,38 +1,38 @@
 # Maramigo
 
-Account verification and password recovery: [Hebrew workflow and delivery limitations](docs/ACCOUNT_SECURITY_HE.md). Demo mail stays in private local files; real SMTP delivery and owner MFA remain launch work.
+A connected full-stack marketplace and QA automation portfolio by **Maram Abbas**.
 
-A luxury storefront and inventory/order-management portfolio project by **Maram Abbas**.
-Java Spring Boot · React · TypeScript · PostgreSQL · Selenium Java automation.
+**Java 17 · Spring Boot · React · TypeScript · PostgreSQL · Selenium WebDriver · JUnit · GitHub Actions**
 
-![Running local storefront](docs/screenshots/gold-clarity.png)
+Maramigo combines customer shopping, independent merchant workspaces, a sole platform-owner dashboard and invited fulfilment employees. The backend enforces tenant and role isolation; the UI supports Hebrew, Arabic and English with RTL/LTR, classic black/gold styling and responsive layouts.
 
-## Current build
+## What you can demonstrate
 
-[Current requirement-by-requirement audit and remaining work](REQUIREMENTS_AUDIT_HE.md). Home now rotates every 4.5 seconds; the audit also fixes repeated identical purchases, favorite capacity races and stale-role basket actions.
+- Merchant application/approval, private catalog and stock management, safe product-photo/logo upload, store search and pagination.
+- Login-before-basket, saved shipping details, declined/successful simulated checkout, inventory locking, stable price/store snapshots and idempotent requests.
+- Mixed-store fulfilment, customer cancellation/returns, merchant/owner decisions, exactly-once stock restoration and matching simulated refunds.
+- Demo subscriptions, 5% commission, per-store balances, an immutable transaction journal and idempotent simulated payouts. **No real card, bank transfer, tax invoice or payment-provider sandbox is connected.**
+- Email verification/recovery, authenticated password/email changes, owner TOTP/recovery codes, session revocation, scoped data export and reviewed account closure.
+- A durable local mail-request queue, explicit public announcements, customer favorites, private purchased-store conversations and delivered-order feedback.
 
+![Platform finance](docs/screenshots/portfolio-finance.png)
 
-Every page now includes Back and a role-aware personal dashboard shortcut. Home has a rotating store/collection spotlight, recommendations and explicitly public store announcements, with pause/resume and reduced-motion support. [Navigation/discovery contract](docs/DISCOVERY_NAVIGATION.md).
+## Review and run
 
-Maramigo is now a **multi-store marketplace**. Everyone uses **Sign in** (`#login`); the server role opens the customer account, merchant dashboard, platform management or employee fulfilment desk. **Join with your business** (`#join-business`) creates a pending merchant application. The sole platform owner approves/suspends stores in `#marketplace-admin`. Approved merchants manage only their own catalog, inventory, store order parts and announcements; customers have profiles, favorites, purchased-store messages, delivered-order feedback and a timed announcements feed. Existing data and the owner's credentials are preserved.
+- [Numbered Hebrew demo walkthrough](docs/DEMO_WALKTHROUGH_HE.md)
+- [Requirement matrix and honest remaining launch dependencies](REQUIREMENTS_AUDIT_HE.md)
+- [Connected workflow/API notes](docs/PORTFOLIO_RELEASE_HE.md)
+- [Account security and email-delivery configuration](docs/ACCOUNT_SECURITY_HE.md)
+- [CV description and interview walkthrough](docs/CV_PROJECT_EN.md)
+- [CI and evidence](docs/CI.md) · [Architecture](docs/ARCHITECTURE.md)
 
-The selected commercial model is **monthly subscription plus sales commission**. A non-charging draft plan proposes ILS 99/month and 5% commission (including applicable VAT, tax status unverified). Identity/bank/card verification, actual subscriptions, collection and split payouts are **not configured**; demo order values are not income. [Marketplace contract](docs/MARKETPLACE_CONTRACT.md) · [Numbered Hebrew scope](docs/MARKETPLACE_PLAN_HE.md).
+After setup, run `./scripts/Start-Local.ps1 -Restart` or double-click `RUN_LOCAL.cmd`. Open **http://127.0.0.1:5173/#home**. Use fictional information. Normal owner credentials and data are preserved; tests use isolated schemas.
 
-Implemented and locally verified: catalog API with search, categories, sorting and pagination; PostgreSQL migrations and demo data; storefront and product details; registration, session login/logout, CSRF and role enforcement; administrator product creation/editing/deactivation; audited stock adjustments and stale-update protection; a persistent browser basket with quantities, current prices, availability checks and same-origin tab synchronization. Original scalable CSS illustrations are used for products. Also implemented: Hebrew/Arabic/English with RTL/LTR layout, three fictional demo stores with separate catalogs, authentication before adding, transactional demo checkout, owned order history and printable confirmation.
+Source packaging: commit the reviewed code, then run `./scripts/Package-Portfolio.ps1`. The ZIP contains only tracked source from that commit, with no local users, keys, mail, uploaded media or tools.
 
-Also implemented: administrator order search/filter/detail, audited status changes and atomic cancellation with inventory restoration. See [the admin order contract](docs/ADMIN_ORDER_CONTRACT.md).
+The suite includes 87 backend cases (13 unit/MVC and 74 PostgreSQL/HTTP), 40 frontend cases and 26 Selenium cases. Read the completed reports for the exact revision; a count is not a coverage percentage or proof that every possible defect is absent.
 
-The administrator Dashboard now provides a Jerusalem-date-filtered order summary, daily Recharts graph, current low-stock alerts and automatic refresh with last-successful-update time. See [the dashboard contract](docs/DASHBOARD_CONTRACT.md).
-
-Implemented Selenium: seven public smoke cases, six purchase cases, six accessibility-matrix cases two owner/employee cases and two marketplace onboarding/fulfilment cases, with Page Objects, isolated customer/product fixtures, desktop/mobile checkout, price snapshots, last-unit protection and customer/admin browsers. Full runs create and remove a disposable schema and separate application. [Automation guide](automation/README.md) · [purchase verification](docs/PURCHASE_AUTOMATION.md). The [138-sample accessibility matrix](docs/ACCESSIBILITY_MATRIX.md) covers 23 rendered states in three languages at desktop/mobile widths; screen-reader, zoom and additional device review remain pending. The GitHub workflow validates source/workflow safety, Java/PostgreSQL, frontend lint/types/tests/build and isolated Chrome purchase journeys. [Live runs and artifacts](https://github.com/marambadarne2000/Maramigo/actions) · [CI guide](docs/CI.md). No payments are accepted. See [the numbered Hebrew plan](WORK_PLAN_HE.md), [architecture decisions](docs/ARCHITECTURE.md), [product-management API contract](docs/PRODUCT_ADMIN_CONTRACT.md) and [basket contract](docs/CART_CONTRACT.md).
-
-![Persistent basket](docs/screenshots/basket.png)
-
-Add products from the collection or product details and open **Basket**. Only IDs and quantities are stored locally (50 lines, 99 units per line). Current prices and stock come from the server; adding to a basket does not reserve inventory. Refresh flags price changes, insufficient stock, sold-out or deactivated products. The subtotal includes available lines only. Basket data survives reload and sign-in; adding while signed out opens the sign-in page and resumes the addition once after login. Checkout creates a demo order, deducts stock atomically and clears only purchased quantities after confirmation. See [the order contract](docs/ORDER_CONTRACT.md).
-
-![Administrator product management](docs/screenshots/product-management.png)
-
-For product management, use the general Sign in form with the generated platform-owner credentials, open **My account → Product management**. Product metadata and stock changes are separate actions; stock adjustments require a reason. The server rejects stale edits rather than overwriting another administrator's work. Products are deactivated, never hard-deleted.
+SMTP delivery, real payment/business onboarding, a public HTTPS deployment and production legal/security/operational acceptance remain external launch work. Docker Compose is prepared but has not been executed on this machine because Docker is unavailable.
 
 ## Windows without Docker (the verified local route)
 
@@ -73,9 +73,11 @@ From this directory in PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
-# Edit .env and set a local demo password before starting.
+# Edit .env: use unique demo DB/owner passwords; set ACCOUNT_ENCRYPTION_KEY for owner MFA.
 docker compose up --build
 ```
+
+Docker has not been run on the authoring machine. Its local mail volume is private; ACCOUNT_PUBLIC_URL defaults to the Docker storefront port 8088.
 
 Storefront: http://localhost:8088 · API: http://localhost:8080/api/products · Health: http://localhost:8080/actuator/health
 
@@ -109,6 +111,6 @@ npm run build
 
 Integration tests use a PostgreSQL container by default. Set `TEST_DB_URL`, `TEST_DB_USER` and `TEST_DB_PASSWORD` to use an explicitly authorized local test server instead. Each suite creates and drops its own randomly named schema and does not alter demo tables. `Check.ps1 -Integration` detects the project's portable local database automatically. Never point test credentials at production.
 
-Verified: 10 unit/MVC tests, 56 PostgreSQL/HTTP integration tests, 38 frontend model/localization/usability tests and 24 Chrome Selenium cases (128 total). Four additional English merchant overview/catalog axe samples cover desktop/mobile. Backend tests also cover tenant isolation, mixed-store fulfilment, favorites, messages and reviews. Backend tests cover roles/CSRF, invalid inputs, audit, stale versions, concurrent updates and bounded active-product lookup. Basket tests cover persistence validation, limits, stock checks, exact agorot arithmetic and malformed product data. Order tests cover atomic rollback, ownership, price snapshots, concurrent last-unit purchases, idempotency, stale order updates, allowed delivery transitions, concurrent cancellations and overflow rollback, dashboard date boundaries, empty dates, cancellation exclusion and stock adjustment competing with checkout. Browser checks include three-language switching, company isolation, login-before-add, completed checkout and basket add/merge/quantity/removal/clear, reload, two-tab synchronization, customer sign-in preservation, price changes, insufficient stock, zero stock and deactivation. Use `scripts/Smoke-Local.ps1` to verify the running proxy and demo administrator session. Both Selenium smoke and isolated purchase/customer/admin journeys have run locally. GitHub-hosted results are available on the Actions page; the Docker Compose demo has not been verified locally.
+Suite: 13 unit/MVC, 74 PostgreSQL/HTTP, 40 frontend and 26 Chrome Selenium cases (153 total); use current reports for pass/fail. Ten additional English merchant overview/catalog/returns and payment/finance axe samples cover desktop/mobile. Backend tests also cover tenant isolation, mixed-store fulfilment, favorites, messages and reviews. Backend tests cover roles/CSRF, invalid inputs, audit, stale versions, concurrent updates and bounded active-product lookup. Basket tests cover persistence validation, limits, stock checks, exact agorot arithmetic and malformed product data. Order tests cover atomic rollback, ownership, price snapshots, concurrent last-unit purchases, idempotency, stale order updates, allowed delivery transitions, concurrent cancellations and overflow rollback, dashboard date boundaries, empty dates, cancellation exclusion and stock adjustment competing with checkout. Browser checks include three-language switching, company isolation, login-before-add, completed checkout and basket add/merge/quantity/removal/clear, reload, two-tab synchronization, customer sign-in preservation, price changes, insufficient stock, zero stock and deactivation. Use `scripts/Smoke-Local.ps1` to verify the running proxy and demo administrator session. Both Selenium smoke and isolated purchase/customer/admin journeys have run locally. GitHub-hosted results are available on the Actions page; the Docker Compose demo has not been verified locally.
 
 See [verification status](docs/STATUS_HE.md) for what has actually run in the authoring environment. This is an initial build, not a completed application or a production deployment.

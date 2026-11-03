@@ -167,3 +167,15 @@ test('weak reset passwords are rejected locally and link routes reject malformed
  assert.match(host.querySelector('[role=alert]').textContent,/Passwords must match/);assert.equal(calls.includes('/api/auth/reset-password'),false);
  for(const kind of ['reset-password','verify-email']){assert.ok(knownRoute('#'+kind+'/'+'A'.repeat(43)));assert.equal(knownRoute('#'+kind+'/bad'),false);}
 });
+
+
+test('password-only owner login enters the challenge without treating the response as a signed-in user',async()=>{
+ window.location.hash='#login';globalThis.fetch=async(url,options)=>response(String(url).endsWith('/csrf')?{token:'csrf',headerName:'X-CSRF-TOKEN'}:String(url).endsWith('/login')?{mfaRequired:true}:null,String(url).endsWith('/me')?401:options?.method==='POST'?202:200);
+ await render(shell());await act(async()=>host.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));assert.equal(window.location.hash,'#two-step');assert.equal(host.querySelector('[role=alert]'),null);
+});
+
+test('email change confirmation uses its own purpose-bound endpoint',async()=>{
+ const calls=[];globalThis.fetch=async(url,options)=>{calls.push(String(url));return options?.method==='POST'?new Response(null,{status:204}):response(String(url).endsWith('/csrf')?{token:'csrf',headerName:'X-CSRF-TOKEN'}:{deliveryMode:'file',verificationRequired:false});};
+ await render(React.createElement(I18nProvider,null,React.createElement(AccountRecoveryPage,{kind:'email-change',token:'A'.repeat(43)})));
+ assert.equal(calls.includes('/api/auth/confirm-email-change'),false);await act(async()=>host.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));assert.ok(calls.includes('/api/auth/confirm-email-change'));
+});

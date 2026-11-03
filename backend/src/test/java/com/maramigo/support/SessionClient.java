@@ -34,6 +34,16 @@ public final class SessionClient {
         var response=http.send(request,HttpResponse.BodyHandlers.ofString());
         if (response.statusCode()!=200) throw new AssertionError("Test login failed with HTTP "+response.statusCode());
     }
+
+    public HttpResponse<String> upload(String path,byte[] bytes,boolean csrf) throws Exception {
+        String boundary="fixture-"+java.util.UUID.randomUUID();
+        var body=new java.io.ByteArrayOutputStream();
+        body.write(("--"+boundary+"\r\nContent-Disposition: form-data; name=\"file\"; filename=\"fixture.png\"\r\nContent-Type: image/png\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
+        body.write(bytes);body.write(("\r\n--"+boundary+"--\r\n").getBytes(StandardCharsets.US_ASCII));
+        var request=HttpRequest.newBuilder(URI.create(base+path)).header("Content-Type","multipart/form-data; boundary="+boundary).POST(HttpRequest.BodyPublishers.ofByteArray(body.toByteArray()));
+        if(csrf){var token=json.readTree(get("/api/auth/csrf").body());request.header(token.get("headerName").asText(),token.get("token").asText());}
+        return http.send(request.build(),HttpResponse.BodyHandlers.ofString());
+    }
     public HttpResponse<String> loginPortal(String email,String password,String portal)throws Exception{
         var token=json.readTree(get("/api/auth/csrf").body());
         return http.send(HttpRequest.newBuilder(URI.create(base+"/api/auth/login"))

@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
   jackson:
     deserialization:
       accept-float-as-int: false
@@ -34,6 +38,7 @@ server:
     include-stacktrace: never
 
 maramigo:
+  account-encryption-key: ${ACCOUNT_ENCRYPTION_KEY:}
   verification-required: ${ACCOUNT_VERIFICATION_REQUIRED:true}
   mail:
     mode: ${ACCOUNT_MAIL_MODE:disabled}

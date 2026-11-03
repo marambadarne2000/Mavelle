@@ -18,6 +18,25 @@ if (-not $config.PSObject.Properties['demoAdminPassword']) {
     $config | Add-Member -NotePropertyName demoAdminPassword -NotePropertyValue ([Convert]::ToHexString($randomBytes).ToLowerInvariant())
     $config | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $projectRoot '.runtime\local.json') -Encoding utf8
 }
+if (-not $config.PSObject.Properties['accountEncryptionKey']) {
+    $previousPgPassword=$env:PGPASSWORD
+    try {
+        $env:PGPASSWORD=$config.password
+        $psql=Join-Path $projectRoot '.tools/postgresql/pgsql/bin/psql.exe'
+        $exists=& $psql -w -h 127.0.0.1 -p $config.port -U $config.user -d $config.database -At -v ON_ERROR_STOP=1 -c "SELECT to_regclass('public.account_mfa') IS NOT NULL"
+        if($LASTEXITCODE -ne 0){throw 'Could not check account encryption state.'}
+        if(($exists -join '').Trim() -eq 't'){
+            $enrolled=& $psql -w -h 127.0.0.1 -p $config.port -U $config.user -d $config.database -At -v ON_ERROR_STOP=1 -c 'SELECT EXISTS(SELECT 1 FROM account_mfa WHERE enabled)'
+            if($LASTEXITCODE -ne 0){throw 'Could not check MFA enrollment.'}
+            if(($enrolled -join '').Trim() -eq 't'){throw 'Restore the original account encryption key before starting an enrolled MFA database. A replacement key will not be generated.'}
+        }
+    } finally {$env:PGPASSWORD=$previousPgPassword}
+    $mfaKey = New-Object byte[] 32
+    [System.Security.Cryptography.RandomNumberGenerator]::Fill($mfaKey)
+    $config | Add-Member -NotePropertyName accountEncryptionKey -NotePropertyValue ([Convert]::ToBase64String($mfaKey))
+    $config | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $projectRoot '.runtime/local.json') -Encoding utf8
+}
+$env:ACCOUNT_ENCRYPTION_KEY = $config.accountEncryptionKey
 $jar = Join-Path $projectRoot 'backend\target\maramigo-api-0.1.0.jar'
 if ($Build -or -not (Test-Path -LiteralPath $jar)) {
     $maven = Get-Command mvn.cmd -ErrorAction SilentlyContinue

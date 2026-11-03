@@ -90,3 +90,8 @@ the normal database/server is not stopped or redirected by the test.
 There is deliberately no automatic cutover to the recovered copy. A real
 incident needs an explicit decision about the destination, credentials, backup
 age and any writes since the backup before reconnecting an application.
+
+
+## MFA configuration
+
+PostgreSQL backups include encrypted MFA records and uploaded media, not the account encryption key from the private runtime configuration. Keep the original private configuration securely and separately; the source package deliberately excludes it. Start-Local refuses to silently replace a missing key for an enrolled MFA database. Restore verification uses the existing private configuration in memory and does not duplicate the key into another backup file.

@@ -21,10 +21,10 @@ public class CatalogController {
     private final ProductRepository products;
     public CatalogController(ProductRepository products) { this.products = products; }
     public record ProductView(Long id, String sku, String name, String description,
-                              String category, BigDecimal price, int stockQuantity, Long companyId) {
+                              String category, BigDecimal price, int stockQuantity, Long companyId, java.util.UUID imageId) {
         static ProductView of(Product p) {
             return new ProductView(p.getId(), p.getSku(), p.getName(), p.getDescription(),
-                    p.getCategory(), p.getPrice(), p.getStockQuantity(), p.getCompanyId());
+                    p.getCategory(), p.getPrice(), p.getStockQuantity(), p.getCompanyId(),p.getImageId());
         }
     }
     public record CatalogPage(List<ProductView> items, long total, int page, int size) {}

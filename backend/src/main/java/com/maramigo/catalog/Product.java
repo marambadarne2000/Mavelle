@@ -17,6 +17,8 @@ public class Product {
     private int stockQuantity;
     private boolean active;
     private Long companyId = 1L;
+    private java.util.UUID imageId;
+    public java.util.UUID getImageId(){return imageId;}
     @Version
     private Long version;
     protected Product() {}

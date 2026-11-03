@@ -23,5 +23,6 @@ public class AccountLifecycleController {
     @PostMapping("/forgot-password") @ResponseStatus(HttpStatus.ACCEPTED) public void forgot(@Valid @RequestBody Email form){requests.submit(form.email(),"RESET");}
     @PostMapping("/verification-request") @ResponseStatus(HttpStatus.ACCEPTED) public void verification(@Valid @RequestBody Email form){requests.submit(form.email(),"VERIFY");}
     @PostMapping("/reset-password") @ResponseStatus(HttpStatus.NO_CONTENT) public void reset(@Valid @RequestBody Reset form){lifecycle.consume(form.token(),"RESET",form.password());}
+    @PostMapping("/confirm-email-change") @ResponseStatus(HttpStatus.NO_CONTENT) public void email(@Valid @RequestBody Token form){lifecycle.consume(form.token(),"EMAIL",null);}
     @PostMapping("/verify-email") @ResponseStatus(HttpStatus.NO_CONTENT) public void verify(@Valid @RequestBody Token form){lifecycle.consume(form.token(),"VERIFY",null);}
 }

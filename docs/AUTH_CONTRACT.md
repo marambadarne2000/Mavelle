@@ -1,3 +1,5 @@
+> Current completion additions: [connected portfolio contract](PORTFOLIO_RELEASE_HE.md) and [account/MFA security](ACCOUNT_SECURITY_HE.md). Earlier baseline sections below describe the original interfaces; new workflows and production boundaries are documented in those current references.
+
 > Update, 30 October 2026: the marketplace model and unified visible sign-in supersede the earlier single-merchant/separate-portal description below. See [MARKETPLACE_CONTRACT.md](MARKETPLACE_CONTRACT.md). Existing employee permission boundaries and owner provisioning still apply.
 
 # Accounts and authorization — implementation contract
