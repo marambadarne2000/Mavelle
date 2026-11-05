@@ -8,6 +8,7 @@ Maramigo combines customer shopping, independent merchant workspaces, a sole pla
 
 ## What you can demonstrate
 
+- Five real manufacturer reference catalogs (Apple, Sony, Logitech, LEGO, IKEA), twenty actual product models, local matching photos, specifications and official source links. Prices/stock remain explicitly synthetic; no brand partnership is claimed. See [provenance and attribution](docs/catalog/README.md).
 - Merchant application/approval, private catalog and stock management, safe product-photo/logo upload, store search and pagination.
 - Login-before-basket, saved shipping details, declined/successful simulated checkout, inventory locking, stable price/store snapshots and idempotent requests.
 - Mixed-store fulfilment, customer cancellation/returns, merchant/owner decisions, exactly-once stock restoration and matching simulated refunds.
@@ -85,7 +86,7 @@ Stop: `docker compose down`. Database data remains in the named volume. **`docke
 
 ## Development
 
-Backend: JDK 17 and Maven 3.6.3+; PostgreSQL 17. Set `DB_URL`, `DB_USER`, `DB_PASSWORD` and optionally `SPRING_PROFILES_ACTIVE=demo`, then run `mvn spring-boot:run` from `backend/`.
+Backend: JDK 17 and Maven 3.6.3+; PostgreSQL 17. Set `DB_URL`, `DB_USER`, `DB_PASSWORD` and optionally `SPRING_PROFILES_ACTIVE=demo,real-catalog`, then run `mvn spring-boot:run` from `backend/`.
 
 Frontend: Node 22.13+ or 24+ for the complete pinned toolchain (including lint), with Node 22 used in CI. Windows can prepare the checksum-verified local runtime with `scripts/Setup-PortableNode.ps1`. From `frontend/`, install dependencies with `npm ci`, then `npm run dev`. The development proxy forwards `/api` to localhost:8080. The app does not invent fallback catalog data when the backend is unavailable.
 

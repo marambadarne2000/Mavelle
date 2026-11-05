@@ -2,62 +2,43 @@
 
 Java 17 · Selenium 4.51.0 · JUnit 5.12.2 · Page Objects · Chrome/Edge · headless by default.
 
-Start the application, then run from the project root:
+Start the application with `scripts/Start-Local.ps1`, which enables `demo,real-catalog`, then run from the project root:
 
 ```powershell
+# Ten read-only storefront/manufacturer cases against the local application:
 ./scripts/Test-Automation.ps1
-# Full purchase suite in a disposable schema and separate application:
+# Twenty-nine cases in a disposable schema and separate application:
 ./scripts/Test-Automation.ps1 -Full
-# Optional; Edge and visible mode have not been verified here:
+# Six accessibility matrix cases only:
+./scripts/Test-Automation.ps1 -Full -AccessibilityOnly
+# Optional; Edge and visible mode remain unverified:
 ./scripts/Test-Automation.ps1 -Browser edge
 ./scripts/Test-Automation.ps1 -Visible
 ```
 
-Direct Maven usage from this folder: `mvn test -DbaseUrl=http://127.0.0.1:5173 -Dbrowser=chrome -Dheadless=true`. The suite rejects non-loopback destinations. The wrapper puts the driver cache in ignored `.tools/selenium`, disables Selenium Manager statistics and uses portable Maven when present. Initial dependencies/driver downloads need internet; see [official Selenium Manager documentation](https://www.selenium.dev/documentation/selenium_manager/).
+Direct Maven: `mvn test -DbaseUrl=http://127.0.0.1:5173 -Dbrowser=chrome -Dheadless=true` from this folder. The default suite rejects non-loopback destinations and expects both demo profiles' seed data. The wrapper uses the ignored `.tools/selenium` driver cache, disables Selenium Manager statistics and uses portable Maven when present. Initial driver/dependency downloads need internet; see [official Selenium Manager documentation](https://www.selenium.dev/documentation/selenium_manager/).
 
-Six Chrome cases passed with no skipped tests:
+| Suite | Cases | Main assertions |
+|---|---:|---|
+| StorefrontTest | 7 | English/Hebrew/Arabic search and product dialog; focus wrap/Escape; store isolation; unknown-route recovery; login error; skip navigation; mobile back/discovery/reduced motion |
+| ManufacturerCatalogTest | 3 | Five real brand catalogs; twenty matching loaded photos; per-store filtering; source links/specifications; desktop and Hebrew/Arabic mobile; guest add redirects to login |
+| PurchaseE2ETest | 7 | Full checkout at two widths; last unit; price review; a fresh repeated purchase; unavailable products; administrative cancellation and stock restoration |
+| OwnerStaffE2ETest | 2 | Profile, invitation, employee activation, fulfilment without financial access, revocation and customer tracking |
+| MarketplaceE2ETest | 2 | Business application, approval, merchant products/announcements, favorites, purchase and fulfilment |
+| PortfolioE2ETest | 2 | Connected simulated payment, returns/refunds, private account workflows and portfolio views |
+| AccessibilityE2ETest | 6 | English/Hebrew/Arabic at 1280px and 390px; keyboard, focus and axe samples through shopping/account/order/admin states |
+| **Full suite** | **29** | **Ten read-only cases plus nineteen isolated workflow/matrix cases** |
 
-| Journey | Scope |
-|---|---|
-| Search, product details, keyboard wrap and Escape | English 1280×900; Hebrew and Arabic 390×844 |
-| Store catalog and unknown-page recovery | Noir Atelier isolation and route back home |
-| Invalid login | Unique synthetic nonexistent email, focused error, enabled retry |
-| Skip navigation | First Tab reaches skip; Enter focuses content without changing route |
+The full launcher uses a fresh PostgreSQL schema, randomized owner credentials, separate ports and an isolated account-encryption key. It never uses normal customer orders. The launcher removes the generated schema and stops its own processes in `finally`; abrupt host termination can interrupt cleanup. Diagnostic logs remain in ignored `.runtime/e2e_*` directories.
 
-Each smoke case uses a fresh browser profile and changes no products, orders or stock. Public checks assume seeded demo names and stores still exist. The full mode runs those six cases plus six isolated purchase cases and six accessibility matrix cases and two owner/employee cases (20 total). The purchase cases cover:
+Browser interactions use explicit waits and native WebDriver clicks, with no whole-test retries. Each test starts a fresh browser and quits it in teardown. Reduced motion is set through Chromium startup options; exact viewport dimensions and absence of horizontal overflow are asserted. Failure screenshots are captured before teardown, including setup failures, without saving passwords, cookies or page source.
 
-| Purchase journey | Assertions |
-|---|---|
-| Signup → anonymous add → login → basket → checkout → logout | 1280px and 390px; empty basket, exactly one resumed add, quantity/reload persistence, required shipping, server order number, totals, stock and protected order history |
-| Last-unit purchase with a stale second browser | First customer succeeds; second cannot add the now sold-out unit |
-| Price change before checkout | Refresh warns and uses the new price; a later product price change does not change the order snapshot |
-| Sold-out and deactivated product | Checkout is blocked; an unavailable item remains removable |
-| Customer/admin browsers | Manager opens the list before purchase, refreshes to see the order, cancels it, and customer sees cancellation; original stock is restored |
+Reports: `target/surefire-reports/` for public smoke, `target/full-reports/` for full mode, `target/accessibility-reports/` for targeted accessibility. Screenshots and axe results are in ignored `target/screenshots/` and `target/accessibility/`. The six matrix cases sample 31 states each, with additional merchant/portfolio samples; see [coverage and limitations](../docs/ACCESSIBILITY_MATRIX.md). Targeted mode certifies only the selected cases. No E2E coverage percentage or full WCAG certification is claimed.
 
-Full mode requires the prepared local PostgreSQL runtime, npm dependencies and a current backend JAR. Rebuild a stale JAR with `Start-Local.ps1 -Restart -Build`. The launcher creates an `e2e_<random UUID>` PostgreSQL schema, selects free loopback ports and starts a separate backend/frontend with a dedicated Vite cache. JDBC currentSchema, Hibernate schema and Flyway schema all point to that namespace. A schema-specific administrator bootstrap check completes before tests begin. Its higher login limit applies only to that disposable backend.
+Verified browser: Chrome 156 with matching ChromeDriver 156. Selenium warns that its nearest typed CDP module is 155; the raw viewport commands and WebDriver journeys are checked by the suite. Edge remains unverified. Hosted results on the private repository's Actions page must match the current commit.
 
-`FixtureApi` uses normal authenticated/CSRF-protected APIs to create uniquely named products and synthetic customers. Test shipping is synthetic. No reset endpoint exists. Full tests require an isolated-launcher marker and generated administrator credentials; the normal demo administrator is not used. Finally, the launcher stops only its own child processes, drops only its validated generated schema, and restores environment variables. Logs/cache remain in ignored `.runtime/e2e_*` folders for diagnosis. Abrupt host termination can interrupt normal cleanup; no cleanup guarantee is claimed after power loss or forced process termination.
-
-Page Objects encapsulate selectors. The base class uses explicit waits, never fixed sleeps, and always quits WebDriver. Clicks are native WebDriver clicks. Reduced-motion preference is supplied as a Chromium startup switch and asserted with matchMedia, avoiding an early renderer-dependent CDP media command. Chromium device metrics set exact viewport widths, which tests assert along with absence of horizontal overflow. Dynamic text uses locator-based expected conditions or a narrowly scoped refreshed condition so React rerenders do not leave stale element handles. No whole-test retry hides a failed scenario.
-
-Smoke reports: `target/surefire-reports/`; full reports: `target/full-reports/`. Failure screenshots and selected successful evidence: `target/screenshots/`. These are ignored by Git. Failure capture runs before teardown and covers fixture setup failures too; custom diagnostics do not save passwords, cookies or page source.
-
-An opt-in diagnostic deliberately fails to verify screenshot capture; it is outside the normal `*Test` suite:
+An opt-in screenshot-capture diagnostic, outside the ordinary `*Test` selection:
 
 ```powershell
 mvn -Dtest=DiagnosticsProbe -DreportDirectory=target/diagnostic-probe test
 ```
-
-Only this command is expected to return nonzero and create `deliberateFailureProducesScreenshot-*.png`. It was verified, followed by a passing normal suite. Its report is isolated from normal reports.
-
-Verified: Chrome 156 with matching ChromeDriver 156. Selenium emits a warning that its nearest typed CDP module is 155; these WebDriver tests and raw viewport commands passed. Edge remains unverified. Hosted checks and artifacts are recorded on the private repository's Actions page; inspect the current head rather than assuming a previous run covers new code.
-
-Full purchase flow uses language-independent selectors. The accessibility matrix also completes checkout and visits account, order and administrator views in English, Hebrew and Arabic at 1280px and 390px. It adds six cases with 23 sampled views each. Run only that matrix using `Test-Automation.ps1 -Full -AccessibilityOnly`; its JUnit reports use `target/accessibility-reports/`, while per-view axe results use `target/accessibility/`. See [matrix coverage and limits](../docs/ACCESSIBILITY_MATRIX.md). Targeted mode does not certify a new run of the other 16 cases. No E2E coverage percentage or full WCAG certification is claimed.
-
-OwnerStaffE2ETest adds desktop/mobile business-profile save, invitation activation, employee fulfilment without financial fields, customer tracking and employee revocation. All fixtures remain isolated. Public smoke also verifies owner and employee entry links on the normal sign-in page.
-
-MarketplaceE2ETest adds two isolated desktop/mobile cases: public business registration, pending store, owner approval through the UI, merchant catalog creation, announcements, customer favorites/purchase, timed-feed visibility and per-store shipping/delivery. It also runs four English merchant overview/catalog axe samples. The full suite now contains 22 cases.
-
-Navigation/discovery update: the full suite has 23 cases (seven public smoke). A new mobile case covers direct-page Back fallback, carousel next/previous, reduced motion, store navigation and return. Marketplace tests explicitly opt in a public announcement and verify its Home display.
-
-Audit regression: the full suite is now 24 cases. A fresh identical purchase must create a different order and deduct stock again; uncertain retries remain idempotent. Merchant routes reject customer basket/checkout/order screens.

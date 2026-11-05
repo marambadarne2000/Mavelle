@@ -21,17 +21,19 @@ public class CatalogController {
     private final ProductRepository products;
     public CatalogController(ProductRepository products) { this.products = products; }
     public record ProductView(Long id, String sku, String name, String description,
-                              String category, BigDecimal price, int stockQuantity, Long companyId, java.util.UUID imageId) {
+                              String category, BigDecimal price, int stockQuantity, Long companyId, java.util.UUID imageId,
+                              String sourceUrl, String referenceImageUrl, java.util.Map<String,String> specifications, java.time.LocalDate sourceCheckedOn) {
         static ProductView of(Product p) {
             return new ProductView(p.getId(), p.getSku(), p.getName(), p.getDescription(),
-                    p.getCategory(), p.getPrice(), p.getStockQuantity(), p.getCompanyId(),p.getImageId());
+                    p.getCategory(), p.getPrice(), p.getStockQuantity(), p.getCompanyId(),p.getImageId(),
+                    p.getSourceUrl(),p.getReferenceImageUrl(),p.getSpecifications(),p.getSourceCheckedOn());
         }
     }
     public record CatalogPage(List<ProductView> items, long total, int page, int size) {}
     @GetMapping
     public CatalogPage list(@RequestParam(defaultValue = "") @Size(max = 100) String search,
             @RequestParam(required=false) @Positive Long companyId,
-            @RequestParam(defaultValue = "") @Pattern(regexp="|Living|Wear|Accessories|Wellness|Makeup|Games|Other") String category,
+            @RequestParam(defaultValue = "") @Pattern(regexp="|Living|Wear|Accessories|Wellness|Makeup|Games|Electronics|Other") String category,
             @RequestParam(defaultValue = "featured") @Pattern(regexp="featured|price-asc|price-desc|name") String sort,
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "12") @Min(1) @Max(48) int size) {
@@ -39,7 +41,7 @@ public class CatalogController {
             case "price-asc" -> Sort.by("price").and(Sort.by("id"));
             case "price-desc" -> Sort.by(Sort.Direction.DESC,"price").and(Sort.by("id"));
             case "name" -> Sort.by("name").and(Sort.by("id"));
-            default -> Sort.by("id");
+            default -> Sort.by("featuredRank").and(Sort.by("id"));
         };
         var pagination = PageRequest.of(page, size, ordering);
         var result = companyId != null ? products.findCompanyCatalog(companyId,search.trim(),category,pagination) : category.isEmpty()

@@ -4,7 +4,7 @@ const dom=new JSDOM('<!doctype html><html><body><div id="root"></div></body></ht
 for(const key of ['window','document','HTMLElement','HTMLInputElement','Event','MouseEvent','localStorage'])Object.defineProperty(globalThis,key,{value:dom.window[key],configurable:true});
 globalThis.IS_REACT_ACT_ENVIRONMENT=true;localStorage.setItem('maramigo.language','en');
 globalThis.ResizeObserver=class{observe(){}unobserve(){}disconnect(){}};
-const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration,PageTools,HomeDiscovery,CartProvider,CartProbe,AccountRecoveryPage}=await import('../.test-build/ui.mjs');
+const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration,PageTools,HomeDiscovery,CartProvider,CartProbe,AccountRecoveryPage,ManufacturerDetails,ManufacturerPhoto}=await import('../.test-build/ui.mjs');
 let root;const host=document.getElementById('root');
 test.afterEach(async()=>{if(root)await act(async()=>root.unmount());root=null;});
 async function render(element){root=createRoot(host);await act(async()=>root.render(element));}
@@ -178,4 +178,20 @@ test('email change confirmation uses its own purpose-bound endpoint',async()=>{
  const calls=[];globalThis.fetch=async(url,options)=>{calls.push(String(url));return options?.method==='POST'?new Response(null,{status:204}):response(String(url).endsWith('/csrf')?{token:'csrf',headerName:'X-CSRF-TOKEN'}:{deliveryMode:'file',verificationRequired:false});};
  await render(React.createElement(I18nProvider,null,React.createElement(AccountRecoveryPage,{kind:'email-change',token:'A'.repeat(43)})));
  assert.equal(calls.includes('/api/auth/confirm-email-change'),false);await act(async()=>host.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));assert.ok(calls.includes('/api/auth/confirm-email-change'));
+});
+
+
+test('manufacturer details distinguish real specifications from demo offers and retain source links',async()=>{
+ const product={name:'LEGO Orchid',sourceUrl:'https://www.lego.com/en-us/product/orchid-10311',referenceImageUrl:'/catalog/ref-le-10311.jpg',specifications:{Model:'10311',Pieces:'608'},sourceCheckedOn:'2026-11-05'};
+ await render(React.createElement(I18nProvider,null,React.createElement(ManufacturerDetails,{product})));
+ assert.match(host.textContent,/not an official store or partnership/);assert.match(host.textContent,/Demo price and stock/);
+ assert.equal(host.querySelector('a').href,product.sourceUrl);assert.equal(host.querySelector('a').rel,'noreferrer');
+ assert.equal(host.querySelectorAll('dl>div').length,2);assert.equal(host.querySelector('time').dateTime,'2026-11-05');
+ assert.equal(host.querySelector('img').alt,'LEGO Orchid');
+});
+
+test('a failed manufacturer photo falls back to the product name without a broken image',async()=>{
+ await render(React.createElement(ManufacturerPhoto,{src:'/catalog/missing.jpg',name:'Source product'}));
+ await act(async()=>host.querySelector('img').dispatchEvent(new Event('error')));
+ assert.equal(host.querySelector('img'),null);assert.equal(host.textContent,'Source product');
 });

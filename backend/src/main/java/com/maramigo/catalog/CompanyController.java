@@ -7,6 +7,6 @@ import java.util.List;
 public class CompanyController {
     private final CompanyRepository companies;
     public CompanyController(CompanyRepository companies){this.companies=companies;}
-    public record View(Long id,String slug,String name,String description,String monogram,boolean demo,java.util.UUID logoId){}
-    @GetMapping public List<View> list(){return companies.findAll(Sort.by("id")).stream().filter(c->"APPROVED".equals(c.getStatus())).map(c->new View(c.getId(),c.getSlug(),c.getName(),c.getDescription(),c.getMonogram(),c.isDemo(),c.getLogoId())).toList();}
+    public record View(Long id,String slug,String name,String description,String monogram,boolean demo,java.util.UUID logoId,String sourceUrl){}
+    @GetMapping public List<View> list(){return companies.findAll(Sort.by("id")).stream().filter(c->"APPROVED".equals(c.getStatus())).map(c->new View(c.getId(),c.getSlug(),c.getName(),c.getDescription(),c.getMonogram(),c.isDemo(),c.getLogoId(),c.getSourceUrl())).toList();}
 }

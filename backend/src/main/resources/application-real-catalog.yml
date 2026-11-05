@@ -1,0 +1,4 @@
+# Opt-in curated demo dataset; never a live merchant or stock integration.
+spring:
+  flyway:
+    locations: classpath:db/migration,classpath:db/demo,classpath:db/real-catalog

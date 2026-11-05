@@ -18,6 +18,17 @@ public class Product {
     private boolean active;
     private Long companyId = 1L;
     private java.util.UUID imageId;
+    private String sourceUrl;
+    @org.hibernate.annotations.Formula("case when source_url is not null then 0 else 1 end")
+    private int featuredRank;
+    private String referenceImageUrl;
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    private java.util.Map<String,String> specifications = java.util.Map.of();
+    private java.time.LocalDate sourceCheckedOn;
+    public String getSourceUrl(){return sourceUrl;}
+    public String getReferenceImageUrl(){return referenceImageUrl;}
+    public java.util.Map<String,String> getSpecifications(){return specifications;}
+    public java.time.LocalDate getSourceCheckedOn(){return sourceCheckedOn;}
     public java.util.UUID getImageId(){return imageId;}
     @Version
     private Long version;

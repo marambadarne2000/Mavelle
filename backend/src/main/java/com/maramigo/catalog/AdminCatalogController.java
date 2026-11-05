@@ -21,7 +21,7 @@ public class AdminCatalogController {
             @NotBlank @Pattern(regexp="[A-Z0-9][A-Z0-9_-]{1,79}") String sku,
             @NotBlank @Size(max=160) String name,
             @NotBlank @Size(max=4000) String description,
-            @NotNull @Pattern(regexp="Living|Wear|Accessories|Wellness|Makeup|Games|Other") String category,
+            @NotNull @Pattern(regexp="Living|Wear|Accessories|Wellness|Makeup|Games|Electronics|Other") String category,
             @NotNull @DecimalMin(value="0.00", inclusive=false) @Digits(integer=10, fraction=2) BigDecimal price,
             @NotNull Boolean active, @Positive Long companyId) {
         public ProductData {

@@ -50,7 +50,7 @@ if ($Build -or -not (Test-Path -LiteralPath $jar)) {
 $env:DB_URL = "jdbc:postgresql://127.0.0.1:$($config.port)/$($config.database)"
 $env:DB_USER = $config.user
 $env:DB_PASSWORD = $config.password
-$env:SPRING_PROFILES_ACTIVE = 'demo'
+$env:SPRING_PROFILES_ACTIVE = 'demo,real-catalog'
 $env:SERVER_ADDRESS = '127.0.0.1'
 $env:SESSION_COOKIE_SECURE = 'false'
 $env:DEMO_ADMIN_EMAIL = $config.demoAdminEmail

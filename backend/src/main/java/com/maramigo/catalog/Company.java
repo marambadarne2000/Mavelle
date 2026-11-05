@@ -13,6 +13,8 @@ public class Company {
     private String monogram;
     private boolean demo;
     private String status;
+    private String sourceUrl;
+    public String getSourceUrl(){return sourceUrl;}
     public String getStatus(){return status;}
     protected Company() {}
     public Long getId(){return id;}
