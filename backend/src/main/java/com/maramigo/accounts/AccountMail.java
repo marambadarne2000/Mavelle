@@ -53,6 +53,14 @@ public class AccountMail {
         String content="עברית / العربية / English\n\n"+subject+"\n\n"+base.replaceAll("/+$","")+"/#"+route+"/"+token
             +"\n\n"+(purpose.equals("RESET")?"Valid for 30 minutes. / בתוקף ל־30 דקות. / صالح لمدة 30 دقيقة.":"Valid for 24 hours. / בתוקף ל־24 שעות. / صالح لمدة 24 ساعة.")
             +"\nIf you did not request this, ignore this message.\nאם לא ביקשת זאת, התעלמי מההודעה.\nإذا لم تطلبي ذلك، تجاهلي الرسالة.\n";
+        deliver(email,subject,content);
+    }
+    public void sendOrder(String email,String number,String summary) {
+        available();
+        deliver(email,"Mavelle — order confirmation / אישור הזמנה / تأكيد الطلب",summary+"\n\n"+base.replaceAll("/+$","")+"/#order/"+number
+            +"\n\nDemo order confirmation. This is not a tax invoice. No payment was collected.\nאישור הזמנה להדגמה בלבד. זו אינה חשבונית מס ולא נגבה תשלום.\nتأكيد طلب تجريبي فقط. ليس فاتورة ضريبية ولم يتم تحصيل أي مبلغ.\n");
+    }
+    private void deliver(String email,String subject,String content) {
         try {
             if(mode.equals("file")){
                 Files.createDirectories(directory);

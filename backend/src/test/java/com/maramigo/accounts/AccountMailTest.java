@@ -21,6 +21,10 @@ class AccountMailTest {
   for(String url:java.util.List.of("http://example.test","https://example.test/#fragment","https://name@example.test","https://example.test/?q=1"))
    assertThatThrownBy(()->create(demo(),"disabled",url)).isInstanceOf(IllegalArgumentException.class);
  }
+ @Test void orderConfirmationContainsOrderDetailsAndClearlyIdentifiesDemo()throws Exception{
+  create(demo(),"file","http://127.0.0.1:5173").sendOrder("synthetic@example.test","MG-test","Headphones × 2 — 20.00 ILS");
+  try(var files=Files.list(directory)){String text=Files.readString(files.findFirst().orElseThrow());assertThat(text).contains("To: synthetic@example.test","Headphones × 2","/#order/MG-test","not a tax invoice","לא נגבה תשלום");}
+ }
  @Test void missingDeliveryFailsClosedAndIncompleteSmtpCannotStart(){
   assertThatThrownBy(()->create(new MockEnvironment(),"disabled","https://example.test").available()).isInstanceOf(ResponseStatusException.class);
   assertThatThrownBy(()->create(demo(),"smtp","https://example.test")).isInstanceOf(IllegalArgumentException.class);

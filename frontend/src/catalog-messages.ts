@@ -1,4 +1,9 @@
 export const catalogRows:string[][]=[
+ ['Order confirmation accepted by the email provider. Check your inbox and spam folder.','ספק הדואר קיבל את אישור ההזמנה לשליחה. בדקי את תיבת הדואר והספאם.','قبل مزود البريد تأكيد الطلب للإرسال. تحققي من البريد الوارد والبريد العشوائي.'],
+ ['Order confirmation saved locally. Email delivery is not connected.','אישור ההזמנה נשמר במחשב. שליחת דואר עדיין אינה מחוברת.','تم حفظ تأكيد الطلب محليًا. إرسال البريد غير متصل بعد.'],
+ ['Order confirmation email failed. Your order is still saved.','שליחת אישור ההזמנה נכשלה. ההזמנה שלך שמורה במערכת.','فشل إرسال تأكيد الطلب. طلبك ما زال محفوظًا.'],
+ ['This older order has no email confirmation queued.','להזמנה קודמת זו אין אישור שממתין לשליחה.','هذا الطلب السابق ليس له تأكيد في قائمة الإرسال.'],
+ ['Order confirmation is queued for delivery.','אישור ההזמנה ממתין בתור לשליחה.','تأكيد الطلب في قائمة انتظار الإرسال.'],
  ['No product photo','אין תמונת מוצר','لا تتوفر صورة للمنتج'],
  ['Electronics','אלקטרוניקה','إلكترونيات'],
  ['Real product references and independent demonstration stores.','דגמים אמיתיים לצד חנויות הדגמה עצמאיות.','منتجات حقيقية إلى جانب متاجر مستقلة تجريبية.'],

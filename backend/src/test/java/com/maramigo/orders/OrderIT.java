@@ -36,6 +36,15 @@ class OrderIT {
   assertThat(response.statusCode()).isEqualTo(200);return json.readTree(response.body()).get("orderNumber").asText();
  }
  Map<String,Object> change(String status,long version){return Map.of("status",status,"version",version,"reason","Synthetic fulfilment test");}
+ @Test void checkoutQueuesExactlyOnePrivateConfirmationEvenOnIdempotentReplay()throws Exception{
+  var user=customer();long id=product(3);String key=UUID.randomUUID().toString();var payload=payload(List.of(line(id,1,"10.00")));
+  var first=user.send("POST","/api/orders",payload,true,key);assertThat(first.statusCode()).isEqualTo(200);
+  String number=json.readTree(first.body()).get("orderNumber").asText();assertThat(user.send("POST","/api/orders",payload,true,key).statusCode()).isEqualTo(200);
+  assertThat(jdbc.queryForObject("SELECT count(*) FROM order_mail_jobs j JOIN orders o ON o.id=j.order_id WHERE o.order_number=?",Integer.class,number)).isEqualTo(1);
+  var status=user.get("/api/orders/"+number+"/email");assertThat(status.statusCode()).isEqualTo(200);assertThat(status.body()).contains("PENDING").doesNotContain("@example.test");
+  assertThat(customer().get("/api/orders/"+number+"/email").statusCode()).isEqualTo(404);
+  assertThat(new SessionClient(port,json).get("/api/orders/"+number+"/email").statusCode()).isEqualTo(401);
+ }
  @Test void administratorTransitionsAreAuditedAndStaleUpdatesAreRejected()throws Exception{
   var user=customer();var manager=admin();long id=product(4);String number=placed(user,id,1);String path="/api/admin/orders/"+number;
   assertThat(json.readTree(manager.get(path).body()).get("version").asLong()).isZero();

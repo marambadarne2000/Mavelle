@@ -59,6 +59,7 @@ public class OrderService {
         }
         products.flush();
         if("SUCCESS".equals(request.demoPaymentOutcome()))commerce.capture(id);
+        jdbc.update("INSERT INTO order_mail_jobs(order_id,recipient) SELECT ?,email FROM users WHERE id=?",id,userId);
         return view(number,userId);
     }
     public List<Summary> list(Long userId,int page){return jdbc.query("SELECT order_number,status,total_price,currency,created_at FROM orders WHERE user_id=? ORDER BY created_at DESC,id DESC LIMIT 20 OFFSET ?",(r,n)->new Summary(r.getString(1),r.getString(2),r.getBigDecimal(3),r.getString(4),r.getTimestamp(5).toInstant()),userId,(long)page*20);}

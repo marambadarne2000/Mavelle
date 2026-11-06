@@ -10,8 +10,8 @@ import java.util.List;
 /** @author Maram Abbas */
 @RestController @RequestMapping("/api/orders")
 public class OrderController {
-    private final OrderService orders;
-    public OrderController(OrderService orders){this.orders=orders;}
+    private final OrderService orders;private final OrderMail mail;
+    public OrderController(OrderService orders,OrderMail mail){this.orders=orders;this.mail=mail;}
     public record Shipping(@NotBlank @Size(max=120) String fullName,@NotBlank @Size(max=40) String phone,
         @NotBlank @Size(max=240) String address,@NotBlank @Size(max=100) String city,
         @NotBlank @Size(max=20) String postalCode,@NotNull @Pattern(regexp="[A-Z]{2}") String country) {
@@ -27,4 +27,5 @@ public class OrderController {
     @GetMapping public List<OrderService.Summary> mine(@AuthenticationPrincipal AccountService.Principal user,
         @RequestParam(defaultValue="0") @Min(0) int page){return orders.list(user.id(),page);}
     @GetMapping("/{number}") public OrderService.View detail(@PathVariable String number,@AuthenticationPrincipal AccountService.Principal user){return orders.view(number,user.id());}
+    @GetMapping("/{number}/email") public OrderMail.Status email(@PathVariable String number,@AuthenticationPrincipal AccountService.Principal user){orders.view(number,user.id());return mail.status(user.id(),number);}
 }

@@ -35,6 +35,7 @@ public class AccountSettings {
    db.queryForList("SELECT c.id FROM companies c JOIN merchant_stores s ON s.company_id=c.id WHERE s.user_id=? ORDER BY c.id FOR UPDATE OF c",user);
    if(db.queryForObject("SELECT count(*) FROM orders WHERE user_id=? AND status IN ('PENDING','SHIPPED')",Long.class,user)>0||db.queryForObject("SELECT count(*) FROM merchant_orders m JOIN merchant_stores s ON s.company_id=m.company_id WHERE s.user_id=? AND m.status IN ('PENDING','SHIPPED')",Long.class,user)>0)throw fail(HttpStatus.CONFLICT,"Complete open orders before closing this account.");
    db.update("DELETE FROM account_mail_jobs WHERE email IN (SELECT email FROM users WHERE id=? UNION SELECT pending_email FROM users WHERE id=?)",user,user);
+   db.update("DELETE FROM order_mail_jobs WHERE order_id IN (SELECT id FROM orders WHERE user_id=?)",user);
    db.update("UPDATE users SET email=?,pending_email=NULL,password_hash=?,enabled=false,email_verified=false,auth_version=auth_version+1 WHERE id=? AND role IN ('CUSTOMER','MERCHANT')","closed-"+user+"@example.invalid",passwords.encode(UUID.randomUUID().toString()),user);
    db.update("DELETE FROM notification_reads WHERE user_id=?",user);
    db.update("UPDATE support_messages SET body='[Content removed after account closure]' WHERE ticket_id IN (SELECT id FROM support_tickets WHERE requester_id=?) OR sender_id=?",user,user);

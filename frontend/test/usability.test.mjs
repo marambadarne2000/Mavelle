@@ -4,7 +4,7 @@ const dom=new JSDOM('<!doctype html><html><body><div id="root"></div></body></ht
 for(const key of ['window','document','HTMLElement','HTMLInputElement','Event','MouseEvent','localStorage'])Object.defineProperty(globalThis,key,{value:dom.window[key],configurable:true});
 globalThis.IS_REACT_ACT_ENVIRONMENT=true;localStorage.setItem('maramigo.language','en');
 globalThis.ResizeObserver=class{observe(){}unobserve(){}disconnect(){}};
-const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration,PageTools,HomeDiscovery,CartProvider,CartProbe,AccountRecoveryPage,ManufacturerDetails,ManufacturerPhoto,SupportPage,UpdatesPage,NotificationLink,CartPage,CartProductImage}=await import('../.test-build/ui.mjs');
+const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration,PageTools,HomeDiscovery,CartProvider,CartProbe,AccountRecoveryPage,ManufacturerDetails,ManufacturerPhoto,SupportPage,UpdatesPage,NotificationLink,CartPage,CartProductImage,OrderEmail}=await import('../.test-build/ui.mjs');
 let root;const host=document.getElementById('root');
 test.afterEach(async()=>{if(root)await act(async()=>root.unmount());root=null;});
 async function render(element){root=createRoot(host);await act(async()=>root.render(element));}
@@ -250,5 +250,14 @@ test('original demo products retain their distinct catalog illustrations while p
   await act(async()=>root.render(React.createElement(CartProductImage,{product:{...product,referenceImageUrl:'/catalog/reference.png'}})));
   assert.equal(host.querySelector('img').getAttribute('src'),'/catalog/reference.png');
   assert.equal(host.querySelector('.product-shape'),null);
+ }
+});
+
+test('order mail status distinguishes local files, provider acceptance and failure',async()=>{
+ for(const [status,deliveryMode,text] of [['COMPLETED','file','saved locally'],['COMPLETED','smtp','accepted by the email provider'],['FAILED',null,'email failed']]){
+  globalThis.fetch=async()=>response({status,deliveryMode});
+  await render(React.createElement(I18nProvider,null,React.createElement(OrderEmail,{number:'MG-test'})));
+  assert.match(host.querySelector('[data-testid=order-email-status]').textContent,new RegExp(text));
+  await act(async()=>root.unmount());root=null;
  }
 });
