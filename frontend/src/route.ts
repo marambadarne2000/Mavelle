@@ -1,7 +1,8 @@
 export function knownRoute(route:string):boolean{
- return ['#privacy','#terms','#accessibility','#help','#two-step','#forgot-password','#reset-password','#verify-email','','#home','#collection','#stores','#story','#login','#register','#account','#basket','#checkout','#orders','#admin','#admin-orders','#dashboard','#owner-login','#staff-login','#staff-register','#owner','#staff-orders','#join-business','#merchant','#marketplace-admin'].includes(route)
+ return ['#updates','#support','#privacy','#terms','#accessibility','#help','#two-step','#forgot-password','#reset-password','#verify-email','','#home','#collection','#stores','#story','#login','#register','#account','#basket','#checkout','#orders','#admin','#admin-orders','#dashboard','#owner-login','#staff-login','#staff-register','#owner','#staff-orders','#join-business','#merchant','#marketplace-admin'].includes(route)
   || /^#(?:reset-password|verify-email|confirm-email-change)\/[A-Za-z0-9_-]{43}$/.test(route)
   || /^#staff-register\/[A-Za-z0-9_-]{43}$/.test(route)
+  || /^#support\/[1-9][0-9]{0,17}$/.test(route)
   || /^#store\/[a-z0-9-]+$/.test(route) || /^#order\/MG-[a-zA-Z0-9-]+$/.test(route);
 }
 

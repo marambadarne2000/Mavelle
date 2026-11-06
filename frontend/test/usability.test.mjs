@@ -4,7 +4,7 @@ const dom=new JSDOM('<!doctype html><html><body><div id="root"></div></body></ht
 for(const key of ['window','document','HTMLElement','HTMLInputElement','Event','MouseEvent','localStorage'])Object.defineProperty(globalThis,key,{value:dom.window[key],configurable:true});
 globalThis.IS_REACT_ACT_ENVIRONMENT=true;localStorage.setItem('maramigo.language','en');
 globalThis.ResizeObserver=class{observe(){}unobserve(){}disconnect(){}};
-const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration,PageTools,HomeDiscovery,CartProvider,CartProbe,AccountRecoveryPage,ManufacturerDetails,ManufacturerPhoto}=await import('../.test-build/ui.mjs');
+const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration,PageTools,HomeDiscovery,CartProvider,CartProbe,AccountRecoveryPage,ManufacturerDetails,ManufacturerPhoto,SupportPage,UpdatesPage,NotificationLink}=await import('../.test-build/ui.mjs');
 let root;const host=document.getElementById('root');
 test.afterEach(async()=>{if(root)await act(async()=>root.unmount());root=null;});
 async function render(element){root=createRoot(host);await act(async()=>root.render(element));}
@@ -194,4 +194,26 @@ test('a failed manufacturer photo falls back to the product name without a broke
  await render(React.createElement(ManufacturerPhoto,{src:'/catalog/missing.jpg',name:'Source product'}));
  await act(async()=>host.querySelector('img').dispatchEvent(new Event('error')));
  assert.equal(host.querySelector('img'),null);assert.equal(host.textContent,'Source product');
+});
+
+
+test('guest support uses the normal sign-in and support routes reject invalid IDs',async()=>{
+ globalThis.fetch=async()=>response(null,401);window.location.hash='#support';
+ await render(React.createElement(I18nProvider,null,React.createElement(SessionProvider,null,React.createElement(SupportPage))));
+ assert.match(host.textContent,/Sign in to continue/);await act(async()=>host.querySelector('button').click());assert.equal(window.location.hash,'#login');
+ for(const route of ['#updates','#support','#support/1','#support/12345'])assert.ok(knownRoute(route));
+ for(const route of ['#support/0','#support/-1','#support/001','#support/bad','#support/1/extra'])assert.equal(knownRoute(route),false);
+});
+
+test('update acknowledgements include only the displayed unread keys',async()=>{
+ const calls=[];let read=false;globalThis.fetch=async(url,options)=>{const p=String(url);if(p.endsWith('/me'))return response({id:51,email:'customer@example.test',role:'CUSTOMER'});if(p.endsWith('/csrf'))return response({token:'csrf',headerName:'X-CSRF-TOKEN'});if(p.endsWith('/read')){calls.push(JSON.parse(options.body));read=true;}return response({items:[{key:'reply:42',title:'New support message',reference:'SUP-9',target:'#support/9',occurredAt:'2026-11-05T10:00:00Z',state:null,read}],unread:read?0:1,retentionDays:90,limit:100});};
+ await render(React.createElement(I18nProvider,null,React.createElement(SessionProvider,null,React.createElement(UpdatesPage))));
+ const button=[...host.querySelectorAll('button')].find(b=>b.textContent==='Mark displayed updates as read');await act(async()=>button.click());
+ assert.deepEqual(calls,[{keys:['reply:42']}]);assert.equal(host.querySelector('a[href="#support/9"]').textContent,'Open details');assert.equal(host.querySelectorAll('.notice.unread').length,0);
+});
+
+test('resolved private support keeps message content as text and offers explicit reopening',async()=>{
+ globalThis.fetch=async(url)=>response(String(url).endsWith('/me')?{id:51,email:'customer@example.test',role:'CUSTOMER'}:{ticket:{id:9,subject:'Private help',category:'TECHNICAL',status:'RESOLVED',version:2,createdAt:'2026-11-05T10:00:00Z',updatedAt:'2026-11-05T10:00:00Z',requesterRole:'CUSTOMER',ownTicket:true},messages:[{id:1,body:'<img src=x onerror=alert(1)>',senderRole:'ADMIN',mine:false,createdAt:'2026-11-05T10:00:00Z'}],hasOlder:false});
+ await render(React.createElement(I18nProvider,null,React.createElement(SessionProvider,null,React.createElement(SupportPage,{id:'9'}))));
+ assert.equal(host.querySelector('img'),null);assert.match(host.textContent,/<img src=x/);assert.equal(host.querySelector('[data-testid=support-reply]'),null);assert.ok([...host.querySelectorAll('button')].some(b=>b.textContent==='Reopen request'));
 });

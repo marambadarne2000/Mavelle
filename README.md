@@ -6,8 +6,12 @@ A connected full-stack marketplace and QA automation portfolio by **Maram Abbas*
 
 Maramigo combines customer shopping, independent merchant workspaces, a sole platform-owner dashboard and invited fulfilment employees. The backend enforces tenant and role isolation; the UI supports Hebrew, Arabic and English with RTL/LTR, classic black/gold styling and responsive layouts.
 
+[Full system inventory and pre-launch audit (Hebrew)](SYSTEM_AUDIT_HE.md)
+
 ## What you can demonstrate
 
+- Private platform support for customers, merchants and employees: owner replies, resolution/reopening, paged threads, quotas, scoped export and closure redaction.
+- An account-scoped updates inbox for order, delivery, store, message and support records, with persistent read receipts and visible-page refresh.
 - Five real manufacturer reference catalogs (Apple, Sony, Logitech, LEGO, IKEA), twenty actual product models, local matching photos, specifications and official source links. Prices/stock remain explicitly synthetic; no brand partnership is claimed. See [provenance and attribution](docs/catalog/README.md).
 - Merchant application/approval, private catalog and stock management, safe product-photo/logo upload, store search and pagination.
 - Login-before-basket, saved shipping details, declined/successful simulated checkout, inventory locking, stable price/store snapshots and idempotent requests.

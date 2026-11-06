@@ -1,8 +1,9 @@
-param([ValidateSet('chrome','edge')][string]$Browser='chrome',[switch]$Visible,[switch]$Full,[switch]$AccessibilityOnly)
+param([ValidateSet('chrome','edge')][string]$Browser='chrome',[switch]$Visible,[switch]$Full,[switch]$AccessibilityOnly,[switch]$SupportOnly)
 $ErrorActionPreference='Stop'
 $projectRoot=Split-Path -Parent $PSScriptRoot
-if($AccessibilityOnly -and !$Full){throw 'Accessibility matrix requires the isolated -Full launcher.'}
-if($Full){& (Join-Path $PSScriptRoot 'Test-FullAutomation.ps1') -Browser $Browser -Visible:$Visible -AccessibilityOnly:$AccessibilityOnly;return}
+if(($AccessibilityOnly -or $SupportOnly) -and !$Full){throw 'Targeted workflow suites require the isolated -Full launcher.'}
+if($AccessibilityOnly -and $SupportOnly){throw 'Choose one targeted suite.'}
+if($Full){& (Join-Path $PSScriptRoot 'Test-FullAutomation.ps1') -Browser $Browser -Visible:$Visible -AccessibilityOnly:$AccessibilityOnly -SupportOnly:$SupportOnly;return}
 $env:SE_CACHE_PATH=Join-Path $projectRoot '.tools/selenium'
 $env:SE_AVOID_STATS='true'
 $maven=Join-Path $projectRoot '.tools/apache-maven-3.9.9/bin/mvn.cmd'

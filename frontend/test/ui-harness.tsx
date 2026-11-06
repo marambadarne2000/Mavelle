@@ -14,3 +14,5 @@ export function CartProbe(){const cart=useCart();return <div><button data-testid
 export {AccountRecoveryPage} from '../src/AccountSecurity';
 
 export {ManufacturerDetails,ManufacturerPhoto} from '../src/ManufacturerCatalog';
+
+export {SupportPage,UpdatesPage,NotificationLink} from '../src/Engagement';

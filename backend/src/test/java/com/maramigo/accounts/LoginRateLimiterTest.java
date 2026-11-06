@@ -7,11 +7,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 /** @author Maram Abbas */
 class LoginRateLimiterTest {
     @Test void throttledHttpRequestsReturnRetryAfterInsteadOfReachingAuthentication() throws Exception {
-        for(String path:java.util.List.of("/api/auth/login","/api/auth/forgot-password","/api/auth/verification-request","/api/auth/reset-password","/api/auth/verify-email")){
+        for(String path:java.util.List.of("/api/auth/register","/api/auth/business-register","/api/auth/staff-register","/api/auth/login","/api/auth/forgot-password","/api/auth/verification-request","/api/auth/reset-password","/api/auth/verify-email")){
         var limiter = new LoginRateLimiter(Clock.systemUTC(), 1);
         for (int i=0; i<2; i++) {
             var request = new org.springframework.mock.web.MockHttpServletRequest("POST", path);
             request.setServletPath(path); request.setRemoteAddr("127.0.0.1");
+            request.addHeader("X-Forwarded-For", "198.51.100." + i);
             var response = new org.springframework.mock.web.MockHttpServletResponse();
             final boolean[] called = {false};
             limiter.doFilter(request, response, (req, res) -> called[0] = true);

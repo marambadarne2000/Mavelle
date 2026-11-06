@@ -5,6 +5,7 @@
 - Built a multi-store marketplace with server-enforced customer, merchant, platform-owner and employee permissions, isolated business dashboards, catalog management and order fulfilment.
 - Implemented transactional checkout, inventory locking, idempotent requests, mixed-store cancellation/returns and a simulated payment, commission, subscription and payout journal with exact integer monetary amounts.
 - Developed account verification/recovery, owner TOTP authentication with encrypted secrets and single-use recovery codes, session revocation, scoped data exports and reviewed account closure.
+- Implemented private platform support and account-scoped activity feeds with persistent read receipts, concurrency checks, abuse quotas and account-closure redaction.
 - Created Java Selenium automation with Page Objects, PostgreSQL integration and concurrency tests, multilingual responsive/accessibility checks and CI workflows.
 
 Use the final CI reports for any test-count claim. Do not describe the demo as live payment processing, legal tax invoicing, microservices, measured 85% E2E coverage, a security certification or a production deployment. This is a personal portfolio project, not an employment position or registered company.

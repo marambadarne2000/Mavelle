@@ -1,5 +1,6 @@
-param([ValidateSet('chrome','edge')][string]$Browser='chrome',[switch]$Visible,[switch]$AccessibilityOnly)
+param([ValidateSet('chrome','edge')][string]$Browser='chrome',[switch]$Visible,[switch]$AccessibilityOnly,[switch]$SupportOnly)
 $ErrorActionPreference='Stop'
+if($AccessibilityOnly -and $SupportOnly){throw 'Choose one targeted suite.'}
 $projectRoot=Split-Path -Parent $PSScriptRoot
 . (Join-Path $PSScriptRoot 'Node-Runtime.ps1')
 Enable-ProjectNode
@@ -47,11 +48,13 @@ try{
  $headless=if($Visible){'false'}else{'true'}
  [string[]]$selection=@()
  if($AccessibilityOnly){$selection=@('-Dtest=AccessibilityE2ETest')}
- $reportDirectory=if($AccessibilityOnly){'target/accessibility-reports'}else{'target/full-reports'}
+ if($SupportOnly){$selection=@('-Dtest=SupportE2ETest')}
+ $reportDirectory=if($AccessibilityOnly){'target/accessibility-reports'}elseif($SupportOnly){'target/support-reports'}else{'target/full-reports'}
  Push-Location (Join-Path $projectRoot 'automation')
  try{& $maven '-Dmaven.repo.local=../.tools/repository' '-Pfull-e2e' "-DreportDirectory=$reportDirectory" "-DbaseUrl=http://127.0.0.1:$webPort" "-Dbrowser=$Browser" "-Dheadless=$headless" @selection test;$result=$LASTEXITCODE}finally{Pop-Location}
  if($result -ne 0){throw "Isolated E2E failed. See automation/$reportDirectory, target/accessibility and target/screenshots."}
  if($AccessibilityOnly){Write-Host 'PASS: isolated accessibility matrix only. Other suites were not selected.'}
+ elseif($SupportOnly){Write-Host 'PASS: isolated support workflows only. Other suites were not selected.'}
  else{Write-Host 'PASS: isolated full E2E. The normal demo application and data were not used.'}
 }finally{
  foreach($process in @($frontend,$backend)){if($null -ne $process -and !$process.HasExited){Stop-Process -Id $process.Id -ErrorAction SilentlyContinue;$null=$process.WaitForExit(10000)}}

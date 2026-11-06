@@ -25,7 +25,7 @@ public class LoginRateLimiter extends OncePerRequestFilter {
         return 0;
     }
     @Override protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !"POST".equals(request.getMethod()) || !java.util.Set.of("/api/auth/login", "/api/auth/forgot-password", "/api/auth/verification-request", "/api/auth/reset-password", "/api/auth/verify-email", "/api/auth/confirm-email-change", "/api/account/password", "/api/account/email", "/api/account/privacy", "/api/auth/mfa/verify", "/api/auth/mfa/setup", "/api/auth/mfa/confirm", "/api/auth/mfa/disable", "/api/auth/mfa/recovery-codes").contains(request.getServletPath());
+        return !"POST".equals(request.getMethod()) || !java.util.Set.of("/api/auth/register", "/api/auth/business-register", "/api/auth/staff-register", "/api/auth/login", "/api/auth/forgot-password", "/api/auth/verification-request", "/api/auth/reset-password", "/api/auth/verify-email", "/api/auth/confirm-email-change", "/api/account/password", "/api/account/email", "/api/account/privacy", "/api/auth/mfa/verify", "/api/auth/mfa/setup", "/api/auth/mfa/confirm", "/api/auth/mfa/disable", "/api/auth/mfa/recovery-codes").contains(request.getServletPath());
     }
     @Override protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         long seconds = retryAfter(request.getRemoteAddr());
