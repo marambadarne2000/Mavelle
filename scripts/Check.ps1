@@ -3,6 +3,10 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 . (Join-Path $PSScriptRoot 'Node-Runtime.ps1')
 Enable-ProjectNode
+$testMailSettings=@{ACCOUNT_MAIL_MODE='file';ACCOUNT_MAIL_DIRECTORY=(Join-Path $projectRoot '.runtime/test-mail');ACCOUNT_PUBLIC_URL='http://127.0.0.1:5173';ACCOUNT_MAIL_HOST='';ACCOUNT_MAIL_FROM='';ACCOUNT_MAIL_USERNAME='';ACCOUNT_MAIL_PASSWORD=''}
+$previousTestMailSettings=@{}
+foreach($setting in $testMailSettings.Keys){$previousTestMailSettings[$setting]=[Environment]::GetEnvironmentVariable($setting,'Process');[Environment]::SetEnvironmentVariable($setting,[string]$testMailSettings[$setting],'Process')}
+try {
 $mavenCommand = Get-Command mvn.cmd -ErrorAction SilentlyContinue
 $localMaven = Join-Path $projectRoot '.tools\apache-maven-3.9.9\bin\mvn.cmd'
 if ($mavenCommand) { $mavenPath = $mavenCommand.Source }
@@ -33,3 +37,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Frontend verification failed.' }
 } finally { Pop-Location }
 if($Automation){ & (Join-Path $PSScriptRoot 'Test-Automation.ps1') }
+
+} finally {
+ foreach($setting in $previousTestMailSettings.Keys){[Environment]::SetEnvironmentVariable($setting,$previousTestMailSettings[$setting],'Process')}
+}

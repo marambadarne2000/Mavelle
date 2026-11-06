@@ -56,7 +56,16 @@ $env:SESSION_COOKIE_SECURE = 'false'
 $env:DEMO_ADMIN_EMAIL = $config.demoAdminEmail
 $env:DEMO_ADMIN_PASSWORD = $config.demoAdminPassword
 $runtimePath = Join-Path $projectRoot '.runtime'
-$backend = Start-Process -FilePath (Get-Command java.exe).Source -ArgumentList @('-jar', $jar) -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $runtimePath 'backend.log') -RedirectStandardError (Join-Path $runtimePath 'backend-error.log')
+. (Join-Path $PSScriptRoot 'Mail-Settings.ps1')
+$mailEnvironment=Get-MavelleMailEnvironment
+$previousMailEnvironment=@{}
+try {
+    foreach($setting in $mailEnvironment.Keys){$previousMailEnvironment[$setting]=[Environment]::GetEnvironmentVariable($setting,'Process');[Environment]::SetEnvironmentVariable($setting,[string]$mailEnvironment[$setting],'Process')}
+    $backend = Start-Process -FilePath (Get-Command java.exe).Source -ArgumentList @('-jar', $jar) -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $runtimePath 'backend.log') -RedirectStandardError (Join-Path $runtimePath 'backend-error.log')
+} finally {
+    foreach($setting in $previousMailEnvironment.Keys){[Environment]::SetEnvironmentVariable($setting,$previousMailEnvironment[$setting],'Process')}
+    $mailEnvironment.Clear()
+}
 $backend.Id | Set-Content -LiteralPath (Join-Path $runtimePath 'backend.pid')
 $ready = $false
 for ($attempt = 0; $attempt -lt 60; $attempt++) {

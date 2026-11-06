@@ -63,6 +63,8 @@ ROLLBACK;
  $listener=[Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0)
  $listener.Start();$port=$listener.LocalEndpoint.Port;$listener.Stop()
  $changes=@{ACCOUNT_ENCRYPTION_KEY=$context.config.accountEncryptionKey;DB_URL="jdbc:postgresql://127.0.0.1:$($context.config.port)/$database";DB_USER=$context.config.user;DB_PASSWORD=$context.config.password;SERVER_PORT=[string]$port;SERVER_ADDRESS='127.0.0.1';SPRING_PROFILES_ACTIVE='demo,real-catalog';SPRING_APPLICATION_JSON='{}';SESSION_COOKIE_SECURE='false';DEMO_ADMIN_EMAIL=$context.config.demoAdminEmail;DEMO_ADMIN_PASSWORD=$context.config.demoAdminPassword}
+ $changes['ACCOUNT_MAIL_MODE']='file';$changes['ACCOUNT_MAIL_DIRECTORY']=Join-Path $run 'mail';$changes['ACCOUNT_PUBLIC_URL']="http://127.0.0.1:$port"
+ foreach($mailSecret in @('ACCOUNT_MAIL_HOST','ACCOUNT_MAIL_FROM','ACCOUNT_MAIL_USERNAME','ACCOUNT_MAIL_PASSWORD')){$changes[$mailSecret]=''}
  foreach($key in $changes.Keys){$savedEnvironment[$key]=[Environment]::GetEnvironmentVariable($key,'Process');[Environment]::SetEnvironmentVariable($key,[string]$changes[$key],'Process')}
  $backend=Start-Process -FilePath (Get-Command java.exe).Source -ArgumentList @('-jar',$jar) -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $run 'backend.log') -RedirectStandardError (Join-Path $run 'backend-error.log')
  $healthy=$false
