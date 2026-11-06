@@ -32,8 +32,8 @@ class CartImagesTest extends BrowserTest {
    assertEquals(product.get("referenceImageUrl").asText(),URI.create(image.getAttribute("src")).getPath());assertEquals("contain",image.getCssValue("object-fit"));
   }
   var noPhoto=driver.findElement(By.cssSelector("[data-testid=basket-item]:has([data-product-id='"+selected.get(3).get("id").asLong()+"'])"));
-  assertEquals(0,noPhoto.findElements(By.tagName("img")).size());assertEquals(1,noPhoto.findElements(By.cssSelector(".basket-photo-missing")).size());
-  assertEquals(0,driver.findElements(By.cssSelector(".basket-art .product-shape")).size());assertEquals(true,js("return document.documentElement.scrollWidth<=innerWidth"));
+  assertEquals(0,noPhoto.findElements(By.tagName("img")).size());assertEquals(1,noPhoto.findElements(By.cssSelector(".art-living .product-shape[role=img]")).size());
+  assertEquals(1,driver.findElements(By.cssSelector(".basket-art .product-shape")).size());assertEquals(true,js("return document.documentElement.scrollWidth<=innerWidth"));
   js("document.querySelector('.basket-items').scrollIntoView({block:'start',behavior:'instant'})");
   var folder=Path.of("target","screenshots");Files.createDirectories(folder);Files.write(folder.resolve("basket-product-photos-"+language+"-"+width+".png"),((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES));
  }

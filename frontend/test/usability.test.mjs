@@ -240,3 +240,15 @@ test('uploaded basket photos take precedence, failed photos fall back and a new 
  await act(async()=>host.querySelector('img').dispatchEvent(new Event('error')));assert.equal(host.querySelector('img'),null);assert.match(host.textContent,/No product photo/);
  await act(async()=>root.render(React.createElement(CartProductImage,{product:{...product,imageId:null}})));assert.equal(host.querySelector('img').getAttribute('src'),'/catalog/reference.png');
 });
+
+test('original demo products retain their distinct catalog illustrations while photos still take priority',async()=>{
+ for(const [sku,category] of [['MG-001','living'],['MG-002','wear'],['MG-003','accessories'],['MG-004','wellness']]){
+  const product={id:1,sku,name:'Original demo product',description:'',category,price:10,stockQuantity:1};
+  await render(React.createElement(CartProductImage,{product}));
+  assert.ok(host.querySelector('.art-'+category+' .product-shape[role="img"]'));
+  assert.equal(host.querySelector('.basket-photo-missing'),null);
+  await act(async()=>root.render(React.createElement(CartProductImage,{product:{...product,referenceImageUrl:'/catalog/reference.png'}})));
+  assert.equal(host.querySelector('img').getAttribute('src'),'/catalog/reference.png');
+  assert.equal(host.querySelector('.product-shape'),null);
+ }
+});
