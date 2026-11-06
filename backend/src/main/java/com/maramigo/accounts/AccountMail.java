@@ -49,7 +49,7 @@ public class AccountMail {
     public void send(String email,String purpose,String token) {
         available();
         String route=purpose.equals("RESET")?"reset-password":purpose.equals("EMAIL")?"confirm-email-change":"verify-email";
-        String subject=purpose.equals("RESET")?"Maramigo — reset your password":"Maramigo — verify your email";
+        String subject=purpose.equals("RESET")?"Mavelle — reset your password":"Mavelle — verify your email";
         String content="עברית / العربية / English\n\n"+subject+"\n\n"+base.replaceAll("/+$","")+"/#"+route+"/"+token
             +"\n\n"+(purpose.equals("RESET")?"Valid for 30 minutes. / בתוקף ל־30 דקות. / صالح لمدة 30 دقيقة.":"Valid for 24 hours. / בתוקף ל־24 שעות. / صالح لمدة 24 ساعة.")
             +"\nIf you did not request this, ignore this message.\nאם לא ביקשת זאת, התעלמי מההודעה.\nإذا لم تطلبي ذلك، تجاهلي الرسالة.\n";

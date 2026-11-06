@@ -3,7 +3,7 @@ export const workspaceRows:[string,string,string][]=[
  ['Choose your sign-in area','בחירת אזור כניסה','اختيار منطقة تسجيل الدخول'],
  ['Customers','לקוחות','الزبائن'],['Employees','עובדים','الموظفون'],['Site owner','בעלת האתר','مالكة الموقع'],
  ['Shop and track your orders','קניות ומעקב אחר ההזמנות שלך','التسوق ومتابعة طلباتك'],['Orders and deliveries only','הזמנות ומשלוחים בלבד','الطلبات والتوصيل فقط'],['One owner. Full business control.','בעלים יחיד. שליטה מלאה בעסק.','مالكة واحدة. إدارة كاملة للأعمال.'],
- ['Owner sign-in','כניסת בעלת האתר','دخول مالكة الموقع'],['Employee sign-in','כניסת עובדים','دخول الموظفين'],['MARAMIGO / OWNER','MARAMIGO / בעלת האתר','MARAMIGO / مالكة الموقع'],['MARAMIGO / TEAM','MARAMIGO / צוות','MARAMIGO / الفريق'],
+ ['Owner sign-in','כניסת בעלת האתר','دخول مالكة الموقع'],['Employee sign-in','כניסת עובדים','دخول الموظفين'],['MAVELLE / OWNER','MAVELLE / בעלת האתר','MAVELLE / مالكة الموقع'],['MAVELLE / TEAM','MAVELLE / צוות','MAVELLE / الفريق'],
  ['The owner account is configured once. Public registration cannot create another owner.','חשבון בעלת האתר מוגדר פעם אחת. הרשמה ציבורית אינה מאפשרת יצירת בעלים נוספים.','يُنشأ حساب المالكة مرة واحدة. التسجيل العام لا يسمح بإنشاء مالكة إضافية.'],
  ['Use your invited work account for orders and deliveries.','היכנסי עם חשבון העבודה שהוזמנת אליו לטיפול בהזמנות ובמשלוחים.','ادخلي بحساب العمل المدعو لإدارة الطلبات والتوصيل.'],
  ['Have an invitation? Activate your work account','קיבלת הזמנה? להפעלת חשבון עובד','لديك دعوة؟ فعّلي حساب العمل'],

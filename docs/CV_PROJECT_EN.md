@@ -1,4 +1,4 @@
-# Maramigo — CV project
+# Mavelle — CV project
 
 **Full-Stack Development & QA Automation | Java, Spring Boot, React, TypeScript, PostgreSQL, Selenium WebDriver, JUnit, GitHub Actions**
 

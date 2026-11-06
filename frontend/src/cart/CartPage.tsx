@@ -85,7 +85,7 @@ export function CartPage() {
     const resolved = checked ? resolveCart(basket.items, products) : null;
     const unitCount = basket.items.reduce((sum, item) => sum + item.quantity, 0);
     return <main className="basket-page" id="basket">
-    <div className="basket-heading"><div><p className="eyebrow">{t("MARAMIGO / YOUR SELECTION")}</p><h1>{t("Your basket.")}</h1><p>{t("A few little things to make the everyday feel special.")}</p></div><a href="#collection">{t("Continue exploring \u2197")}</a></div>
+    <div className="basket-heading"><div><p className="eyebrow">{t("MAVELLE / YOUR SELECTION")}</p><h1>{t("Your basket.")}</h1><p>{t("A few little things to make the everyday feel special.")}</p></div><a href="#collection">{t("Continue exploring \u2197")}</a></div>
     {basket.items.length === 0 ? <section className="basket-empty"><span aria-hidden="true">{t("\u25C7")}</span><h2>{t("Room for something lovely.")}</h2><p>{t("Your basket is empty. Find your next everyday essential.")}</p><a className="button" href="#collection">{t("Explore the collection \u2197")}</a></section> : <>
       <div className="basket-toolbar"><span>{basket.items.length} · {unitCount}</span><div><button data-testid="cart-refresh" disabled={loading} onClick={() => setRefresh(n => n + 1)}>{t("Refresh prices & availability")}</button><button data-testid="cart-clear" onClick={basket.clear}>{t("Clear basket")}</button></div></div>
       {checking && <p className="status" role="status">{t("Checking current prices and availability\u2026")}</p>}

@@ -1,4 +1,4 @@
-# Maramigo Selenium automation
+# Mavelle Selenium automation
 
 Java 17 · Selenium 4.51.0 · JUnit 5.12.2 · Page Objects · Chrome/Edge · headless by default.
 

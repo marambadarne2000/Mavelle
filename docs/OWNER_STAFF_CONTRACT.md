@@ -6,7 +6,7 @@
 
 ## Operating model
 
-Maramigo is one merchant's store with brand catalogs, not a marketplace that
+Mavelle is one merchant's store with brand catalogs, not a marketplace that
 registers independent merchant owners. There is exactly one privileged owner
 slot. Legacy role `ADMIN` now means the sole site owner; a PostgreSQL partial
 unique index enforces this across the application. Public registration always

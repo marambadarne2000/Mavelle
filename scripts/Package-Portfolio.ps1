@@ -1,4 +1,4 @@
-param([string]$OutputName='maramigo-portfolio-source.zip')
+param([string]$OutputName='mavelle-portfolio-source.zip')
 $ErrorActionPreference='Stop'
 $root=Split-Path -Parent $PSScriptRoot
 if($OutputName -notmatch '^[A-Za-z0-9_-]+\.zip$'){throw 'Choose a plain .zip filename.'}

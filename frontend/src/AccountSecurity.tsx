@@ -22,7 +22,7 @@ export function AccountRecoveryPage({kind,token,onReset}:{kind:'reset'|'verify'|
    if(token)window.history.replaceState(null,'',kind==='reset'?'#reset-password':'#verify-email');
   }catch(e){setError(e instanceof Error?e.message:'Please try again.');}finally{submitting.current=false;setBusy(false);}
  }
- return <main className="auth-page" data-testid="account-recovery"><section className="auth-intro"><p className="eyebrow">MARAMIGO / {t('Account security')}</p><h1>{t(kind==='reset'?'Reset your password':'Verify your email')}</h1><p>{t('Links are single use and expire. Never share them with anyone.')}</p></section>
+ return <main className="auth-page" data-testid="account-recovery"><section className="auth-intro"><p className="eyebrow">MAVELLE / {t('Account security')}</p><h1>{t(kind==='reset'?'Reset your password':'Verify your email')}</h1><p>{t('Links are single use and expire. Never share them with anyone.')}</p></section>
  <section className="auth-card"><h2>{t(token?(kind==='reset'?'Choose a new password':'Confirm your email address'):'Request a secure link')}</h2>
  {options?.deliveryMode==='file'&&<p role="note">{t('Local demo: messages are saved privately on this computer, not sent to an email inbox.')}</p>}
  {done?<p role="status">{t(token?(kind==='reset'?'Password updated. Sign in again with your new password.':'Email verified. You can now sign in.'):'If this address belongs to an eligible account, a link will be prepared. You can request another after one minute.')}</p>:

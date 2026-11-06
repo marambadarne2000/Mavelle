@@ -1,10 +1,10 @@
-# Maramigo
+# Mavelle
 
 A connected full-stack marketplace and QA automation portfolio by **Maram Abbas**.
 
 **Java 17 · Spring Boot · React · TypeScript · PostgreSQL · Selenium WebDriver · JUnit · GitHub Actions**
 
-Maramigo combines customer shopping, independent merchant workspaces, a sole platform-owner dashboard and invited fulfilment employees. The backend enforces tenant and role isolation; the UI supports Hebrew, Arabic and English with RTL/LTR, classic black/gold styling and responsive layouts.
+Mavelle combines customer shopping, independent merchant workspaces, a sole platform-owner dashboard and invited fulfilment employees. The backend enforces tenant and role isolation; the UI supports Hebrew, Arabic and English with RTL/LTR, classic black/gold styling and responsive layouts.
 
 [Full system inventory and pre-launch audit (Hebrew)](SYSTEM_AUDIT_HE.md)
 

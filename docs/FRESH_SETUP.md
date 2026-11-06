@@ -22,7 +22,7 @@ your GitHub access.
 
 ```powershell
 git clone --branch codex/maramigo https://github.com/marambadarne2000/Maramigo.git
-cd Maramigo
+cd Mavelle
 ./scripts/Setup-PortableNode.ps1
 . ./scripts/Node-Runtime.ps1
 Enable-ProjectNode

@@ -100,7 +100,7 @@ export const portfolioRows:string[][]=[
  ['Accessibility','נגישות','إمكانية الوصول'],
  ['Help & contact','עזרה ויצירת קשר','المساعدة والتواصل'],
  ['Information','מידע','معلومات'],
- ['Maramigo is a portfolio marketplace by Maram Abbas. This environment uses simulated commerce and accepts no real payments.','Maramigo היא זירת מסחר לתיק העבודות של Maram Abbas. הסביבה מדמה מסחר ואינה מקבלת תשלומים אמיתיים.','Maramigo منصّة تسوّق ضمن معرض أعمال Maram Abbas. تحاكي هذه البيئة التجارة ولا تقبل مدفوعات حقيقية.'],
+ ['Mavelle is a portfolio marketplace by Maram Abbas. This environment uses simulated commerce and accepts no real payments.','Mavelle היא זירת מסחר לתיק העבודות של Maram Abbas. הסביבה מדמה מסחר ואינה מקבלת תשלומים אמיתיים.','Mavelle منصّة تسوّق ضمن معرض أعمال Maram Abbas. تحاكي هذه البيئة التجارة ولا تقبل مدفوعات حقيقية.'],
  ['What is stored','איזה מידע נשמר','ما البيانات المحفوظة'],
  ['Account email, password hashes, profile and shipping details, orders, favorites, messages and reviews are stored to support the demo workflows. Use fictional data.','לצורך תהליכי ההדגמה נשמרים כתובת האימייל של החשבון, סיסמאות כגיבובים מוגנים, פרטי פרופיל ומשלוח, הזמנות, מועדפים, הודעות ומשוב. השתמשי בנתונים פיקטיביים.','يُحفظ بريد الحساب وتجزئات كلمات المرور المحمية وبيانات الملف الشخصي والشحن والطلبات والمفضّلة والرسائل والتقييمات لدعم عمليات المحاكاة. استخدمي بيانات وهمية.'],
  ['Your choices','האפשרויות שלך','خياراتكِ'],

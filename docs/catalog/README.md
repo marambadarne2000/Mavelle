@@ -14,7 +14,7 @@ Verified on 2026-11-05: **5 brands, 20 actual product models**, four per brand:
 
 ## Demo commerce versus real identity
 
-These brands have **not joined Maramigo**. Their pages are manufacturer reference catalogs, not official stores, authorized dealer claims, paid advertisements or commercial partnerships. The UI labels them accordingly in English, Hebrew and Arabic. All ILS prices and quantities are synthetic demonstration values. There is no live price, availability, delivery, warranty or payment integration with these companies. Checkout continues to use the existing simulated commerce workflow.
+These brands have **not joined Mavelle**. Their pages are manufacturer reference catalogs, not official stores, authorized dealer claims, paid advertisements or commercial partnerships. The UI labels them accordingly in English, Hebrew and Arabic. All ILS prices and quantities are synthetic demonstration values. There is no live price, availability, delivery, warranty or payment integration with these companies. Checkout continues to use the existing simulated commerce workflow.
 
 ## Running and preserving data
 
@@ -34,7 +34,7 @@ The files under `frontend/public/catalog` are matching manufacturer product phot
 - LEGO photos and trademarks © The LEGO Group.
 - IKEA photos and trademarks © Inter IKEA Systems B.V.
 
-These are third-party assets, not original Maramigo artwork or assets licensed under any project code license. Attribution does not grant an open reuse license; none was established during this task. The current project remains a private local portfolio demonstration. Obtain appropriate image/brand permissions or replace assets with licensed alternatives before commercial redistribution or public marketing.
+These are third-party assets, not original Mavelle artwork or assets licensed under any project code license. Attribution does not grant an open reuse license; none was established during this task. The current project remains a private local portfolio demonstration. Obtain appropriate image/brand permissions or replace assets with licensed alternatives before commercial redistribution or public marketing.
 
 ## Verification
 

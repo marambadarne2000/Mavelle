@@ -241,7 +241,7 @@ export function AdminProducts({ onCatalogChanged }: {
     if (access === 'denied')
         return <main className="admin-shell"><h1>{t("Administrator access required.")}</h1><p>{t("Sign in with an administrator account using the account button above.")}</p>{error && <p role="alert">{t(error)}</p>}<a className="button" href="#home">{t("Return to the storefront")}</a></main>;
     return <main className="admin-shell">
-    <div className="admin-heading"><div><p className="eyebrow">{t("MARAMIGO / CONTROL CENTER")}</p><h1>{t("Welcome back, ")}<em>{t("Maram Abbas.")}</em></h1><p>{t("Chief Executive Officer \u00B7 Products & inventory")}</p></div><a href="#collection" className="admin-back">{t("View storefront \u2197")}</a></div>
+    <div className="admin-heading"><div><p className="eyebrow">{t("MAVELLE / CONTROL CENTER")}</p><h1>{t("Welcome back, ")}<em>{t("Maram Abbas.")}</em></h1><p>{t("Chief Executive Officer \u00B7 Products & inventory")}</p></div><a href="#collection" className="admin-back">{t("View storefront \u2197")}</a></div>
     <div className="admin-toolbar"><div><h2>{t("Product library")}</h2><p>{data?.total ?? 0}</p></div><button className="admin-primary" disabled={working} onClick={() => { setSelected(null); setFields(emptyFields); setEditing(true); setInitialStock('0'); setError(''); setNotice(''); }}>{t("+ Add product")}</button></div>
     {error && <div className="admin-alert" role="alert">{t(error)} {selected && <button disabled={working} onClick={() => load(selected.id)}>{t("Reload product (discard edits)")}</button>}</div>}
     {notice && <p className="admin-notice" role="status">{t(notice)}</p>}

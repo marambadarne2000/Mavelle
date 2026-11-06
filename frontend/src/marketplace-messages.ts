@@ -14,7 +14,7 @@ export const marketplaceRows:[string,string,string][]=[
 ['Join with your business','הצטרפות עם העסק שלך','انضم بمتجرك'],
 ['Independent stores. One destination.','חנויות עצמאיות. כתובת אחת.','متاجر مستقلة. وجهة واحدة.'],
 ['INDEPENDENT STORE','חנות עצמאית','متجر مستقل'],
-['Bring your business to Maramigo.','העסק שלך, ב־Maramigo.','متجرك في Maramigo.'],
+['Bring your business to Mavelle.','העסק שלך, ב־Mavelle.','متجرك في Mavelle.'],
 ['Your store, your catalog, your dashboard. One marketplace for everyone.','החנות שלך, הקטלוג שלך, לוח הבקרה שלך. זירת מסחר לכולם.','متجرك وكتالوجك ولوحتك الخاصة. سوق للجميع.'],
 ['Business owner full name','שם מלא של בעל העסק','الاسم الكامل لصاحب العمل'],
 ['Business email','דוא״ל העסק','البريد الإلكتروني للعمل'],
