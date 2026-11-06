@@ -4,7 +4,7 @@ const dom=new JSDOM('<!doctype html><html><body><div id="root"></div></body></ht
 for(const key of ['window','document','HTMLElement','HTMLInputElement','Event','MouseEvent','localStorage'])Object.defineProperty(globalThis,key,{value:dom.window[key],configurable:true});
 globalThis.IS_REACT_ACT_ENVIRONMENT=true;localStorage.setItem('maramigo.language','en');
 globalThis.ResizeObserver=class{observe(){}unobserve(){}disconnect(){}};
-const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration,PageTools,HomeDiscovery,CartProvider,CartProbe,AccountRecoveryPage,ManufacturerDetails,ManufacturerPhoto,SupportPage,UpdatesPage,NotificationLink}=await import('../.test-build/ui.mjs');
+const {AuthPage,SessionProvider,I18nProvider,FormFeedback,Dashboard,trapDialogTab,CustomerCenter,BusinessRegistration,PageTools,HomeDiscovery,CartProvider,CartProbe,AccountRecoveryPage,ManufacturerDetails,ManufacturerPhoto,SupportPage,UpdatesPage,NotificationLink,CartPage,CartProductImage}=await import('../.test-build/ui.mjs');
 let root;const host=document.getElementById('root');
 test.afterEach(async()=>{if(root)await act(async()=>root.unmount());root=null;});
 async function render(element){root=createRoot(host);await act(async()=>root.render(element));}
@@ -216,4 +216,27 @@ test('resolved private support keeps message content as text and offers explicit
  globalThis.fetch=async(url)=>response(String(url).endsWith('/me')?{id:51,email:'customer@example.test',role:'CUSTOMER'}:{ticket:{id:9,subject:'Private help',category:'TECHNICAL',status:'RESOLVED',version:2,createdAt:'2026-11-05T10:00:00Z',updatedAt:'2026-11-05T10:00:00Z',requesterRole:'CUSTOMER',ownTicket:true},messages:[{id:1,body:'<img src=x onerror=alert(1)>',senderRole:'ADMIN',mine:false,createdAt:'2026-11-05T10:00:00Z'}],hasOlder:false});
  await render(React.createElement(I18nProvider,null,React.createElement(SessionProvider,null,React.createElement(SupportPage,{id:'9'}))));
  assert.equal(host.querySelector('img'),null);assert.match(host.textContent,/<img src=x/);assert.equal(host.querySelector('[data-testid=support-reply]'),null);assert.ok([...host.querySelectorAll('button')].some(b=>b.textContent==='Reopen request'));
+});
+
+
+test('basket rows display each matched product photo even when lookup order differs from basket order',async()=>{
+ localStorage.setItem('maramigo.cart.v1',JSON.stringify({version:1,items:[{productId:101,quantity:1},{productId:102,quantity:1},{productId:103,quantity:1},{productId:104,quantity:1}]}));
+ const products=[{id:103,name:'Sony headphones',referenceImageUrl:'/catalog/ref-so-wh-ch720n.jpg'},{id:101,name:'Apple iPad',referenceImageUrl:'/catalog/ref-ap-ipad10.png'},{id:104,name:'Product without photo'},{id:102,name:'Apple AirPods',referenceImageUrl:'/catalog/ref-ap-airpods2.png'}].map(p=>({...p,sku:'PHOTO-'+p.id,description:'Synthetic fixture',category:'Electronics',price:10,stockQuantity:5}));
+ globalThis.fetch=async(url)=>response(String(url).includes('/products/lookup')?products:{id:51,email:'customer@example.test',role:'CUSTOMER'});
+ try{
+  await render(React.createElement(I18nProvider,null,React.createElement(SessionProvider,null,React.createElement(CartProvider,null,React.createElement(CartPage)))));
+  const rows=[...host.querySelectorAll('[data-testid=basket-item]')];assert.equal(rows.length,4);
+  assert.equal(rows[0].querySelector('img').getAttribute('src'),'/catalog/ref-ap-ipad10.png');
+  assert.equal(rows[1].querySelector('img').getAttribute('src'),'/catalog/ref-ap-airpods2.png');
+  assert.equal(rows[2].querySelector('img').getAttribute('src'),'/catalog/ref-so-wh-ch720n.jpg');
+  assert.equal(rows[3].querySelector('img'),null);assert.match(rows[3].textContent,/No product photo/);
+  assert.equal(host.querySelectorAll('.basket-art .product-shape').length,0);
+ }finally{localStorage.removeItem('maramigo.cart.v1');}
+});
+
+test('uploaded basket photos take precedence, failed photos fall back and a new source can load',async()=>{
+ const product={id:1,sku:'PHOTO-1',name:'Uploaded product',description:'',category:'Living',price:10,stockQuantity:1,imageId:'12345678-1234-1234-1234-123456789abc',referenceImageUrl:'/catalog/reference.png'};
+ await render(React.createElement(CartProductImage,{product}));assert.equal(host.querySelector('img').getAttribute('src'),'/api/media/'+product.imageId);
+ await act(async()=>host.querySelector('img').dispatchEvent(new Event('error')));assert.equal(host.querySelector('img'),null);assert.match(host.textContent,/No product photo/);
+ await act(async()=>root.render(React.createElement(CartProductImage,{product:{...product,imageId:null}})));assert.equal(host.querySelector('img').getAttribute('src'),'/catalog/reference.png');
 });

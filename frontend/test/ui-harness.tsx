@@ -16,3 +16,6 @@ export {AccountRecoveryPage} from '../src/AccountSecurity';
 export {ManufacturerDetails,ManufacturerPhoto} from '../src/ManufacturerCatalog';
 
 export {SupportPage,UpdatesPage,NotificationLink} from '../src/Engagement';
+
+export {CartPage} from '../src/cart/CartPage';
+export {CartProductImage} from '../src/cart/CartProductImage';

@@ -5,6 +5,7 @@ import { check } from '../api';
 import { useCart } from './CartContext';
 import { isCartProduct, resolveCart, type CartItem, type CartProduct } from './model';
 import './cart.css';
+import {CartProductImage} from './CartProductImage';
 const money = { format: formatMoney };
 const clock = { format: formatTime };
 function QuantityEditor({ item, product }: {
@@ -92,7 +93,7 @@ export function CartPage() {
       {error && <div className="basket-error" role="alert"><p>{t(error)}</p><p>{t("Your saved items are still in the basket. Prices have not been confirmed.")}</p><button onClick={() => setRefresh(n => n + 1)}>{t("Try again")}</button></div>}
       {checked && resolved && <div className="basket-columns"><section aria-label={t("Basket items")} className="basket-items">
         {resolved.rows.map(row => <article className="basket-item" key={row.productId} data-testid="basket-item">
-          <div className={`basket-art art-${row.product?.category.toLowerCase() ?? 'unavailable'}`} aria-hidden="true"><span className="product-shape"/></div>
+          <CartProductImage product={row.product}/>
           <div className="basket-item-details"><p className="eyebrow">{t(row.product?.category ?? 'Unavailable')}</p><h2>{t(row.product?.name ?? 'Unavailable product')}</h2>
             {row.product && <p className="basket-unit-price">{money.format(row.product.price)}{t(" per unit")}</p>}
             {changedPrices.includes(row.productId) && <p className="basket-price-update">{t("Price updated. Please review.")}</p>}

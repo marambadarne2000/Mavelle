@@ -8,6 +8,8 @@ export type CartProduct = {
   category: string;
   price: number;
   stockQuantity: number;
+  imageId?: string | null;
+  referenceImageUrl?: string | null;
 };
 export type CartIssue = 'invalid' | 'unavailable' | 'limit' | 'full' | null;
 export type CartChange = { items: CartItem[]; issue: CartIssue };

@@ -1,4 +1,5 @@
 export const catalogRows:string[][]=[
+ ['No product photo','אין תמונת מוצר','لا تتوفر صورة للمنتج'],
  ['Electronics','אלקטרוניקה','إلكترونيات'],
  ['Real product references and independent demonstration stores.','דגמים אמיתיים לצד חנויות הדגמה עצמאיות.','منتجات حقيقية إلى جانب متاجر مستقلة تجريبية.'],
  ['BRAND CATALOG · DEMO','קטלוג מותג · הדגמה','كتالوج علامة تجارية · تجريبي'],

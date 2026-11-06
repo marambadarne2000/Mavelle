@@ -5,9 +5,9 @@ Java 17 · Selenium 4.51.0 · JUnit 5.12.2 · Page Objects · Chrome/Edge · hea
 Start the application with `scripts/Start-Local.ps1`, which enables `demo,real-catalog`, then run from the project root:
 
 ```powershell
-# Ten read-only storefront/manufacturer cases against the local application:
+# Thirteen read-only storefront/manufacturer/basket cases against the local application:
 ./scripts/Test-Automation.ps1
-# Thirty-two cases in a disposable schema and separate application:
+# Thirty-five cases in a disposable schema and separate application:
 ./scripts/Test-Automation.ps1 -Full
 # Six accessibility matrix cases only:
 ./scripts/Test-Automation.ps1 -Full -AccessibilityOnly
@@ -30,7 +30,8 @@ Direct Maven: `mvn test -DbaseUrl=http://127.0.0.1:5173 -Dbrowser=chrome -Dheadl
 | PortfolioE2ETest | 2 | Connected simulated payment, returns/refunds, private account workflows and portfolio views |
 | AccessibilityE2ETest | 6 | English/Hebrew/Arabic at 1280px and 390px; keyboard, focus and axe samples through shopping/account/order/admin states |
 | SupportE2ETest | 3 | Customer ticket, owner review/reply in a second browser, private notifications, read receipts and resolution in English/Hebrew/Arabic |
-| **Full suite** | **32** | **Ten read-only cases plus twenty-two isolated workflow/matrix cases** |
+| CartImagesTest | 3 | Distinct loaded basket photos, server lookup matching, contain layout and an honest missing-photo state at desktop/Hebrew/Arabic mobile |
+| **Full suite** | **35** | **Thirteen read-only cases plus twenty-two isolated workflow/matrix cases** |
 
 The full launcher uses a fresh PostgreSQL schema, randomized owner credentials, separate ports and an isolated account-encryption key. It never uses normal customer orders. The launcher removes the generated schema and stops its own processes in `finally`; abrupt host termination can interrupt cleanup. Diagnostic logs remain in ignored `.runtime/e2e_*` directories.
 
