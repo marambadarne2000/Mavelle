@@ -1,0 +1,31 @@
+package com.maramigo.accounts;
+import com.maramigo.support.*;
+import com.fasterxml.jackson.databind.*;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.*;
+import org.springframework.jdbc.core.JdbcTemplate;
+import java.util.*;
+import java.util.concurrent.*;
+import static org.assertj.core.api.Assertions.*;
+/** Restricted password-only sessions and transactional recovery, isolated owner only. @author Maram Abbas */
+@ActiveProfiles("demo")
+@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT,properties={"server.servlet.session.cookie.secure=false","maramigo.login-limit=500","DEMO_ADMIN_EMAIL=mfa-owner@example.test","DEMO_ADMIN_PASSWORD=Mfa-owner-password-2026"})
+class MfaIT {
+ static final TestPostgres db=new TestPostgres();
+ @DynamicPropertySource static void configure(DynamicPropertyRegistry p)throws Exception{db.configure(p);byte[] key=new byte[32];Arrays.fill(key,(byte)7);p.add("maramigo.account-encryption-key",()->Base64.getEncoder().encodeToString(key));}
+ @AfterAll static void cleanup()throws Exception{db.close();}
+ @LocalServerPort int port;@Autowired ObjectMapper json;@Autowired JdbcTemplate jdbc;
+ @BeforeEach void reset(){jdbc.update("DELETE FROM mfa_recovery_codes");jdbc.update("DELETE FROM account_mfa");}
+ SessionClient client(){return new SessionClient(port,json);}
+ SessionClient owner()throws Exception{var c=client();c.login("mfa-owner@example.test","Mfa-owner-password-2026");return c;}
+ List<String> enable()throws Exception{var c=owner();var r=c.send("POST","/api/auth/mfa/setup",Map.of("password","Mfa-owner-password-2026"),true);assertThat(r.statusCode()).as(r.body()).isEqualTo(200);String secret=json.readTree(r.body()).get("secret").asText();assertThat(jdbc.queryForObject("SELECT pending_cipher FROM account_mfa",String.class)).doesNotContain(secret);var confirmed=c.send("POST","/api/auth/mfa/confirm",Map.of("code",Totp.code(secret,System.currentTimeMillis()/30000)),true);assertThat(confirmed.statusCode()).as(confirmed.body()).isEqualTo(200);assertThat(c.get("/api/auth/me").statusCode()).isEqualTo(401);return json.convertValue(json.readTree(confirmed.body()).get("recoveryCodes"),json.getTypeFactory().constructCollectionType(List.class,String.class));}
+ SessionClient challenge()throws Exception{var c=client();assertThat(c.loginPortal("mfa-owner@example.test","Mfa-owner-password-2026","").statusCode()).isEqualTo(202);return c;}
+ @Test void passwordOnlySessionCannotReadOrMutateProtectedResources()throws Exception{var codes=enable();var c=challenge();for(String path:List.of("/api/admin/identity","/api/admin/stores","/api/account/export","/api/auth/security","/api/auth/mfa"))assertThat(c.get(path).statusCode()).isEqualTo(403);assertThat(c.get("/api/auth/me").statusCode()).isEqualTo(401);assertThat(c.get("/api/products").statusCode()).isEqualTo(200);assertThat(c.send("POST","/api/auth/mfa/verify",Map.of("code",codes.get(0)),true).statusCode()).isEqualTo(200);assertThat(c.get("/api/admin/identity").statusCode()).isEqualTo(200);assertThat(challenge().send("POST","/api/auth/mfa/verify",Map.of("code",codes.get(0)),true).statusCode()).isEqualTo(400);}
+ @Test void fiveFailedAttemptsExpireTheChallenge()throws Exception{var codes=enable();var c=challenge();for(int i=0;i<5;i++)assertThat(c.send("POST","/api/auth/mfa/verify",Map.of("code","invalid"),true).statusCode()).isEqualTo(400);assertThat(c.send("POST","/api/auth/mfa/verify",Map.of("code",codes.get(0)),true).statusCode()).isEqualTo(401);assertThat(c.get("/api/admin/identity").statusCode()).isEqualTo(401);}
+ @Test void simultaneousRecoveryUseHasOneWinner()throws Exception{var codes=enable();var a=challenge();var b=challenge();var pool=Executors.newFixedThreadPool(2);try{var start=new CountDownLatch(1);var x=pool.submit(()->{start.await();return a.send("POST","/api/auth/mfa/verify",Map.of("code",codes.get(0)),true).statusCode();});var y=pool.submit(()->{start.await();return b.send("POST","/api/auth/mfa/verify",Map.of("code",codes.get(0)),true).statusCode();});start.countDown();assertThat(List.of(x.get(20,TimeUnit.SECONDS),y.get(20,TimeUnit.SECONDS))).containsExactlyInAnyOrder(200,400);}finally{pool.shutdownNow();}}
+ @Test void resetRetainsProtectionAndDisableNeedsReauthentication()throws Exception{var codes=enable();var c=challenge();c.send("POST","/api/auth/mfa/verify",Map.of("code",codes.get(0)),true);String reset=Base64.getUrlEncoder().withoutPadding().encodeToString(new byte[32]);jdbc.update("INSERT INTO account_tokens(token_hash,user_id,purpose,expires_at) SELECT ?,id,'RESET',CURRENT_TIMESTAMP+INTERVAL '30 minutes' FROM users WHERE email='mfa-owner@example.test'",OwnerController.hash(reset));assertThat(client().send("POST","/api/auth/reset-password",Map.of("token",reset,"password","Mfa-owner-password-2026"),true).statusCode()).isEqualTo(204);assertThat(c.get("/api/auth/me").statusCode()).isEqualTo(401);c=challenge();assertThat(c.send("POST","/api/auth/mfa/verify",Map.of("code",codes.get(2)),true).statusCode()).isEqualTo(200);assertThat(c.send("POST","/api/auth/mfa/disable",Map.of("password","wrong","code",codes.get(1)),true).statusCode()).isEqualTo(400);assertThat(c.send("POST","/api/auth/mfa/disable",Map.of("password","Mfa-owner-password-2026","code",codes.get(1)),true).statusCode()).isEqualTo(200);assertThat(c.get("/api/auth/me").statusCode()).isEqualTo(401);owner();}
+ @Test void setupRequiresPasswordAndConfirmationBeforeEnabling()throws Exception{var c=owner();assertThat(c.send("POST","/api/auth/mfa/setup",Map.of("password","wrong"),true).statusCode()).isEqualTo(400);var r=c.send("POST","/api/auth/mfa/setup",Map.of("password","Mfa-owner-password-2026"),true);assertThat(r.statusCode()).isEqualTo(200);assertThat(jdbc.queryForObject("SELECT enabled FROM account_mfa",Boolean.class)).isFalse();jdbc.update("UPDATE account_mfa SET pending_expires=CURRENT_TIMESTAMP-INTERVAL '1 second'");assertThat(c.send("POST","/api/auth/mfa/confirm",Map.of("code","123456"),true).statusCode()).isEqualTo(400);var guest=client();assertThat(guest.send("POST","/api/auth/mfa/verify",Map.of("code","123456"),true).statusCode()).isEqualTo(401);}
+}

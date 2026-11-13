@@ -1,0 +1,9 @@
+CREATE TABLE account_mail_jobs (
+ id UUID PRIMARY KEY, email VARCHAR(254) NOT NULL,
+ purpose VARCHAR(10) NOT NULL CHECK(purpose IN ('VERIFY','RESET','EMAIL')),
+ status VARCHAR(12) NOT NULL DEFAULT 'PENDING' CHECK(status IN ('PENDING','RUNNING','COMPLETED','FAILED')),
+ attempts INTEGER NOT NULL DEFAULT 0,
+ next_attempt TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ claimed_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP, completed_at TIMESTAMPTZ
+);
+CREATE INDEX account_mail_jobs_pending ON account_mail_jobs(status,next_attempt);

@@ -1,0 +1,434 @@
+{
+  "checkedOn": "2026-11-05",
+  "brands": [
+    {
+      "slug": "apple",
+      "name": "Apple",
+      "monogram": "AP",
+      "sourceUrl": "https://www.apple.com/",
+      "description": "Computers, phones and personal audio."
+    },
+    {
+      "slug": "sony",
+      "name": "Sony",
+      "monogram": "SO",
+      "sourceUrl": "https://www.sony.com/",
+      "description": "Headphones and portable audio."
+    },
+    {
+      "slug": "logitech",
+      "name": "Logitech",
+      "monogram": "LO",
+      "sourceUrl": "https://www.logitech.com/",
+      "description": "Tools for a connected workspace."
+    },
+    {
+      "slug": "lego",
+      "name": "LEGO",
+      "monogram": "LE",
+      "sourceUrl": "https://www.lego.com/",
+      "description": "Building sets for creative moments."
+    },
+    {
+      "slug": "ikea",
+      "name": "IKEA",
+      "monogram": "IK",
+      "sourceUrl": "https://www.ikea.com/il/he/",
+      "description": "Furniture and everyday home essentials."
+    }
+  ],
+  "products": [
+    {
+      "brand": "apple",
+      "sku": "REF-AP-IP15",
+      "name": "Apple iPhone 15 · 128GB",
+      "category": "Electronics",
+      "price": 2799,
+      "stock": 12,
+      "description": "A 6.1-inch OLED phone with Dynamic Island, A16 Bionic and a 48MP main camera.",
+      "sourceUrl": "https://support.apple.com/en-us/111831",
+      "imageSourceUrl": "https://cdsassets.apple.com/live/7WUAS350/images/tech-specs/iphone_15_hero.png",
+      "specifications": {
+        "Model": "iPhone 15",
+        "Display": "6.1-inch Super Retina XDR OLED",
+        "Chip": "A16 Bionic",
+        "Storage": "128GB",
+        "Camera": "48MP main + 12MP ultra wide",
+        "Connection": "USB-C"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-ap-ip15.png"
+    },
+    {
+      "brand": "apple",
+      "sku": "REF-AP-MBA-M3",
+      "name": "Apple MacBook Air 13 · M3 · 8GB / 256GB",
+      "category": "Electronics",
+      "price": 3999,
+      "stock": 12,
+      "description": "A 2024 MacBook Air with a 13.6-inch Liquid Retina display and MagSafe charging.",
+      "sourceUrl": "https://support.apple.com/en-us/118551",
+      "imageSourceUrl": "https://cdsassets.apple.com/live/7WUAS350/images/tech-specs/mba_13_m3_2024_hero.png",
+      "specifications": {
+        "Model": "MacBook Air 13-inch, M3, 2024",
+        "Display": "13.6-inch, 2560 × 1664",
+        "Chip": "Apple M3, 8-core CPU",
+        "Memory": "8GB unified memory",
+        "Storage": "256GB SSD",
+        "Weight": "1.24 kg"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-ap-mba-m3.png"
+    },
+    {
+      "brand": "apple",
+      "sku": "REF-AP-IPAD10",
+      "name": "Apple iPad · 10th generation · Wi-Fi 64GB",
+      "category": "Electronics",
+      "price": 1399,
+      "stock": 12,
+      "description": "A 10.9-inch iPad with A14 Bionic, USB-C and Touch ID in the top button.",
+      "sourceUrl": "https://support.apple.com/en-us/111840",
+      "imageSourceUrl": "https://cdsassets.apple.com/live/SZLF0YNV/images/sp/111840_sp884-ipad-10gen-960.png",
+      "specifications": {
+        "Model": "iPad, 10th generation, 2022",
+        "Display": "10.9-inch Liquid Retina",
+        "Chip": "A14 Bionic",
+        "Storage": "64GB",
+        "Connection": "Wi-Fi / USB-C",
+        "Weight": "477 g (Wi-Fi model)"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-ap-ipad10.png"
+    },
+    {
+      "brand": "apple",
+      "sku": "REF-AP-AIRPODS2",
+      "name": "Apple AirPods Pro 2 · USB-C",
+      "category": "Electronics",
+      "price": 899,
+      "stock": 12,
+      "description": "In-ear headphones with active noise cancellation and a USB-C MagSafe charging case.",
+      "sourceUrl": "https://support.apple.com/en-gb/111834",
+      "imageSourceUrl": "https://cdsassets.apple.com/live/7WUAS350/images/tech-specs/airpods-pro-2.png",
+      "specifications": {
+        "Model": "AirPods Pro 2, USB-C case",
+        "Chip": "Apple H2",
+        "Battery": "Up to 6 hours listening per charge; varies with settings",
+        "Protection": "IP54 earbuds and case",
+        "Connection": "Bluetooth / USB-C charging"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-ap-airpods2.png"
+    },
+    {
+      "brand": "sony",
+      "sku": "REF-SO-WH-1000XM5",
+      "name": "Sony WH-1000XM5",
+      "category": "Electronics",
+      "price": 1099,
+      "stock": 12,
+      "description": "Over-ear wireless headphones with active noise cancellation.",
+      "sourceUrl": "https://www.sony.jp/headphone/products/WH-1000XM5/",
+      "imageSourceUrl": "https://www.sony.jp/products/picture/WH-1000XM5.jpg",
+      "specifications": {
+        "Model": "WH-1000XM5",
+        "Connection": "Bluetooth",
+        "Battery": "Up to 30 hours with noise cancellation on",
+        "Battery note": "Manufacturer maximum; actual use varies with settings and volume"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-so-wh-1000xm5.jpg"
+    },
+    {
+      "brand": "sony",
+      "sku": "REF-SO-WF-1000XM5",
+      "name": "Sony WF-1000XM5",
+      "category": "Electronics",
+      "price": 899,
+      "stock": 12,
+      "description": "True wireless in-ear headphones with active noise cancellation.",
+      "sourceUrl": "https://www.sony.jp/headphone/products/WF-1000XM5/",
+      "imageSourceUrl": "https://www.sony.jp/products/picture/WF-1000XM5.jpg",
+      "specifications": {
+        "Model": "WF-1000XM5",
+        "Connection": "Bluetooth",
+        "Battery": "Up to 8 hours with noise cancellation on",
+        "Battery note": "Manufacturer maximum; actual use varies with settings and volume"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-so-wf-1000xm5.jpg"
+    },
+    {
+      "brand": "sony",
+      "sku": "REF-SO-WH-CH720N",
+      "name": "Sony WH-CH720N",
+      "category": "Electronics",
+      "price": 399,
+      "stock": 12,
+      "description": "Wireless over-ear headphones with noise cancellation and ambient sound mode.",
+      "sourceUrl": "https://www.sony.jp/headphone/products/WH-CH720N/",
+      "imageSourceUrl": "https://www.sony.jp/products/picture/WH-CH720N.jpg",
+      "specifications": {
+        "Model": "WH-CH720N",
+        "Connection": "Bluetooth",
+        "Battery": "Up to 35 hours with noise cancellation on",
+        "Battery note": "Manufacturer maximum; actual use varies with settings and volume"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-so-wh-ch720n.jpg"
+    },
+    {
+      "brand": "sony",
+      "sku": "REF-SO-SRS-XB100",
+      "name": "Sony SRS-XB100",
+      "category": "Electronics",
+      "price": 229,
+      "stock": 12,
+      "description": "A compact portable wireless speaker with a carrying strap.",
+      "sourceUrl": "https://www.sony.jp/active-speaker/products/SRS-XB100/",
+      "imageSourceUrl": "https://sony.scene7.com/is/image/sonyglobalsolutions/SRS-XB100?$S7Product$",
+      "specifications": {
+        "Model": "SRS-XB100",
+        "Connection": "Bluetooth",
+        "Protection": "IP67 dust and water resistance",
+        "Battery note": "Manufacturer maximum; actual use varies with settings and volume"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-so-srs-xb100.jpg"
+    },
+    {
+      "brand": "logitech",
+      "sku": "REF-LO-MX3S",
+      "name": "Logitech MX Master 3S · Bluetooth Edition",
+      "category": "Electronics",
+      "price": 419,
+      "stock": 12,
+      "description": "An ergonomic wireless mouse with quiet clicks, MagSpeed scrolling and an 8,000 DPI sensor.",
+      "sourceUrl": "https://www.logitech.com/en-us/shop/p/mx-master-3s",
+      "imageSourceUrl": "https://resource.logitech.com/c_fill,q_auto,f_png,w_900,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/mice/mx-master-3s/2025-update/mx-master-3s-bluetooth-edition-top-view-graphite-new-1.png",
+      "specifications": {
+        "Model": "MX Master 3S Bluetooth Edition",
+        "Sensor": "Up to 8,000 DPI",
+        "Connection": "Bluetooth",
+        "Charging": "USB-C",
+        "Scroll wheel": "MagSpeed electromagnetic scrolling"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-lo-mx3s.png"
+    },
+    {
+      "brand": "logitech",
+      "sku": "REF-LO-MXKEYS",
+      "name": "Logitech MX Keys S · Graphite · US layout",
+      "category": "Electronics",
+      "price": 499,
+      "stock": 12,
+      "description": "A wireless backlit keyboard with Easy-Switch support for up to three devices.",
+      "sourceUrl": "https://www.logitech.com/en-us/shop/p/mx-keys-s",
+      "imageSourceUrl": "https://resource.logitech.com/c_fill,q_auto,f_png,w_900,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/keyboards/mx-keys-s/migration-assets-for-delorean-2025/gallery/mx-keys-s-top-view-graphite-us.png",
+      "specifications": {
+        "Model": "MX Keys S",
+        "Layout": "US English",
+        "Connection": "Bluetooth / Logi Bolt",
+        "Devices": "Up to 3 with Easy-Switch",
+        "Charging": "USB-C",
+        "Lighting": "Backlit keys"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-lo-mxkeys.png"
+    },
+    {
+      "brand": "logitech",
+      "sku": "REF-LO-LIFT",
+      "name": "Logitech Lift · Graphite · Right-handed",
+      "category": "Electronics",
+      "price": 279,
+      "stock": 12,
+      "description": "A vertical ergonomic mouse with a 57-degree angle, designed for small to medium hands.",
+      "sourceUrl": "https://www.logitech.com/en-gb/shop/p/lift-vertical-ergonomic-mouse",
+      "imageSourceUrl": "https://resource.logitech.com/c_fill,q_auto,f_png,w_900,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/mice/lift-vertical-ergonomic-mouse/2026-update/gallery/graphite/lift-mouse-top-angle-graphite-gallery-1.png",
+      "specifications": {
+        "Model": "Lift, right-handed",
+        "Design": "57-degree vertical angle",
+        "Sensor": "Up to 4,000 DPI",
+        "Battery": "1 × AA",
+        "Connection": "Bluetooth / Logi Bolt"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-lo-lift.png"
+    },
+    {
+      "brand": "logitech",
+      "sku": "REF-LO-BRIO500",
+      "name": "Logitech Brio 500 · Graphite",
+      "category": "Electronics",
+      "price": 399,
+      "stock": 12,
+      "description": "A Full HD webcam with HDR and Show Mode for sharing items on your desk.",
+      "sourceUrl": "https://www.logitech.com/en-us/shop/p/brio-500-webcam",
+      "imageSourceUrl": "https://resource.logitech.com/c_fill,q_auto,f_png,w_900,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/webcams/brio-500/gallery/brio-500-gallery-graphite-1.png",
+      "specifications": {
+        "Model": "Brio 500",
+        "Video": "1080p at 30 fps / 720p at 60 fps",
+        "Field of view": "90° diagonal",
+        "Connection": "USB-C",
+        "Features": "HDR / Show Mode / privacy shutter"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-lo-brio500.png"
+    },
+    {
+      "brand": "lego",
+      "sku": "REF-LE-10313",
+      "name": "LEGO Wildflower Bouquet · 10313",
+      "category": "Games",
+      "price": 279,
+      "stock": 12,
+      "description": "A botanical building set for an adult creative project and home display.",
+      "sourceUrl": "https://www.lego.com/en-us/product/wildflower-bouquet-10313",
+      "imageSourceUrl": "https://www.lego.com/cdn/cs/set/assets/bltc4a6c2103a34f22e/10313_alt2.png?width=900&height=900&fit=bounds&format=jpg&quality=85",
+      "specifications": {
+        "Model": "10313",
+        "Pieces": "939",
+        "Age": "18+",
+        "Features": "16 adjustable stems; vase not included"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-le-10313.jpg"
+    },
+    {
+      "brand": "lego",
+      "sku": "REF-LE-10311",
+      "name": "LEGO Orchid · 10311",
+      "category": "Games",
+      "price": 229,
+      "stock": 12,
+      "description": "A botanical building set for an adult creative project and home display.",
+      "sourceUrl": "https://www.lego.com/en-us/product/orchid-10311",
+      "imageSourceUrl": "https://www.lego.com/cdn/cs/set/assets/blt08ea230311e717b8/10311.png?width=900&height=900&fit=bounds&format=jpg&quality=85",
+      "specifications": {
+        "Model": "10311",
+        "Pieces": "608",
+        "Age": "18+",
+        "Features": "Buildable blue vase; over 39 cm high"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-le-10311.jpg"
+    },
+    {
+      "brand": "lego",
+      "sku": "REF-LE-10281",
+      "name": "LEGO Bonsai Tree · 10281",
+      "category": "Games",
+      "price": 229,
+      "stock": 12,
+      "description": "A botanical building set for an adult creative project and home display.",
+      "sourceUrl": "https://www.lego.com/en-us/product/bonsai-tree-10281",
+      "imageSourceUrl": "https://www.lego.com/cdn/cs/set/assets/blt4fa1e0206e541309/10281_Prod.png?width=900&height=900&fit=bounds&format=jpg&quality=85",
+      "specifications": {
+        "Model": "10281",
+        "Pieces": "878",
+        "Age": "18+",
+        "Features": "Interchangeable green foliage and pink blossoms"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-le-10281.jpg"
+    },
+    {
+      "brand": "lego",
+      "sku": "REF-LE-10329",
+      "name": "LEGO Tiny Plants · 10329",
+      "category": "Games",
+      "price": 229,
+      "stock": 12,
+      "description": "A botanical building set for an adult creative project and home display.",
+      "sourceUrl": "https://www.lego.com/en-us/product/tiny-plants-10329",
+      "imageSourceUrl": "https://www.lego.com/cdn/cs/set/assets/bltb2f845ffd52a25b0/10329.png?width=900&height=900&fit=bounds&format=jpg&quality=85",
+      "specifications": {
+        "Model": "10329",
+        "Pieces": "758",
+        "Age": "18+",
+        "Features": "Nine miniature plants in buildable pots"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-le-10329.jpg"
+    },
+    {
+      "brand": "ikea",
+      "sku": "REF-IK-20522046",
+      "name": "IKEA BILLY · Bookcase · White",
+      "category": "Living",
+      "price": 349,
+      "stock": 12,
+      "description": "A home furnishing in the exact finish and configuration listed in the specifications.",
+      "sourceUrl": "https://www.ikea.com/il/he/p/billy-bookcase-white-20522046/",
+      "imageSourceUrl": "https://www.ikea.com/il/he/images/products/billy-bookcase-white__1590272_pe1038911_s5.jpg",
+      "specifications": {
+        "Model": "BILLY",
+        "Article number": "205.220.46",
+        "Dimensions": "80 × 28 × 202 cm",
+        "Features": "One fixed and four adjustable shelves; wall anchoring required"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-ik-20522046.jpg"
+    },
+    {
+      "brand": "ikea",
+      "sku": "REF-IK-20275814",
+      "name": "IKEA KALLAX · Shelving unit · White",
+      "category": "Living",
+      "price": 249,
+      "stock": 12,
+      "description": "A home furnishing in the exact finish and configuration listed in the specifications.",
+      "sourceUrl": "https://www.ikea.com/il/he/p/kallax-shelving-unit-white-20275814/",
+      "imageSourceUrl": "https://www.ikea.com/il/he/images/products/kallax-shelving-unit-white__0644753_pe702937_s5.jpg",
+      "specifications": {
+        "Model": "KALLAX",
+        "Article number": "202.758.14",
+        "Dimensions": "76.5 × 39 × 76.5 cm",
+        "Features": "Marketed as 77 × 77 cm; wall anchoring safety requirements apply"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-ik-20275814.jpg"
+    },
+    {
+      "brand": "ikea",
+      "sku": "REF-IK-30449908",
+      "name": "IKEA LACK · Side table · White",
+      "category": "Living",
+      "price": 49,
+      "stock": 12,
+      "description": "A home furnishing in the exact finish and configuration listed in the specifications.",
+      "sourceUrl": "https://www.ikea.com/il/he/p/lack-side-table-white-30449908/",
+      "imageSourceUrl": "https://www.ikea.com/il/he/images/products/lack-side-table-white__0702210_pe724345_s5.jpg",
+      "specifications": {
+        "Model": "LACK",
+        "Article number": "304.499.08",
+        "Dimensions": "55 × 55 × 45 cm",
+        "Features": "Maximum load 10 kg"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-ik-30449908.jpg"
+    },
+    {
+      "brand": "ikea",
+      "sku": "REF-IK-39240787",
+      "name": "IKEA POÄNG · Armchair · Birch / Knisa light beige",
+      "category": "Living",
+      "price": 599,
+      "stock": 12,
+      "description": "A home furnishing in the exact finish and configuration listed in the specifications.",
+      "sourceUrl": "https://www.ikea.com/il/he/p/poaeng-armchair-birch-veneer-knisa-light-beige-s39240787/",
+      "imageSourceUrl": "https://www.ikea.com/il/he/images/products/poaeng-armchair-birch-veneer-knisa-light-beige__0571500_pe666933_s5.jpg",
+      "specifications": {
+        "Model": "POÄNG",
+        "Article number": "392.407.87",
+        "Dimensions": "68 × 82 × 100 cm",
+        "Features": "Seat height 42 cm; polyester cushion fabric"
+      },
+      "checkedOn": "2026-11-05",
+      "assetPath": "/catalog/ref-ik-39240787.jpg"
+    }
+  ]
+}

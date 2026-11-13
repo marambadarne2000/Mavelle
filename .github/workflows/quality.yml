@@ -1,0 +1,166 @@
+name: Application quality gate
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  security:
+    name: Workflow and source safety
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install checksum-verified validation tools
+        run: ./scripts/Setup-QualityTools.ps1
+      - name: Validate workflow syntax and expressions
+        run: |
+          & ./.tools/quality/actionlint/actionlint -color
+          if ($LASTEXITCODE -ne 0) { throw 'Workflow validation failed.' }
+      - name: Check publishable paths and policy regressions
+        run: |
+          python scripts/check_repository.py
+          if ($LASTEXITCODE -ne 0) { throw 'Private/generated files included in sources.' }
+          python scripts/test_repository_policy.py
+          if ($LASTEXITCODE -ne 0) { throw 'Repository policy tests failed.' }
+          ./scripts/Test-RecoveryGuards.ps1
+      - name: Scan source for secrets with redacted output
+        run: |
+          New-Item -ItemType Directory -Path artifacts/security -Force | Out-Null
+          & ./.tools/quality/gitleaks/gitleaks dir . --config .gitleaks.toml --redact=100 --report-format=json --report-path=artifacts/security/gitleaks.json
+          if ($LASTEXITCODE -ne 0) { throw 'Secret scan failed; inspect the redacted report.' }
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: security-report
+          path: artifacts/security/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  backend:
+    name: Java and PostgreSQL integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Unit and real PostgreSQL tests
+        run: mvn -B verify -Pintegration
+        working-directory: backend
+      - name: Java dependency audit and scanner regressions
+        shell: pwsh
+        run: |
+          python scripts/test_java_audit.py
+          if ($LASTEXITCODE -ne 0) { throw 'Dependency scanner regressions failed.' }
+          ./scripts/Audit-Java.ps1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: backend-reports
+          path: |
+            backend/target/surefire-reports/
+            backend/target/failsafe-reports/
+            artifacts/security/java-osv.json
+          retention-days: 7
+
+  frontend:
+    name: TypeScript, lint and usability
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --registry=https://registry.npmjs.org --no-audit --no-fund
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm audit --registry=https://registry.npmjs.org --audit-level=moderate
+
+  e2e:
+    name: Isolated Chrome purchase journeys
+    needs: [security, backend, frontend]
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .tools/repository
+          key: ${{ runner.os }}-e2e-maven-${{ hashFiles('backend/pom.xml', 'automation/pom.xml') }}
+          restore-keys: ${{ runner.os }}-e2e-maven-
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .tools/postgresql.zip
+          key: windows-postgresql-17.11-4b8db0930c38f6ef
+      - name: Install frontend dependencies
+        run: npm --prefix frontend ci --registry=https://registry.npmjs.org --no-audit --no-fund
+      - name: Build current backend artifact
+        working-directory: backend
+        run: |
+          mvn -B '-Dmaven.repo.local=../.tools/repository' -DskipTests package
+          if ($LASTEXITCODE -ne 0) { throw 'Backend build failed.' }
+      - name: Prepare verified portable PostgreSQL
+        run: ./scripts/Setup-PortablePostgres.ps1
+      - name: Run full isolated Selenium suite
+        run: ./scripts/Test-Automation.ps1 -Full
+      - name: Save test summary
+        if: always()
+        run: ./scripts/Write-TestSummary.ps1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: selenium-reports-and-screenshots
+          path: |
+            automation/target/full-reports/
+            automation/target/accessibility/
+            automation/target/screenshots/
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Stop local database and owned processes
+        if: always()
+        run: ./scripts/Stop-Local.ps1
+
