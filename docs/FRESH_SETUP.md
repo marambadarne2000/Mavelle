@@ -16,12 +16,11 @@ route, but required for the default Testcontainers integration route in Linux CI
 
 ## Source to running local demo
 
-Until PR #1 is merged, the full application is on `codex/maramigo`; `main` only
-contains the initial repository setup. The repository is private and requires
-your GitHub access.
+Clone the public portfolio source from the default `main` branch. Private local
+configuration, user data and credentials are generated on your own computer.
 
 ```powershell
-git clone --branch codex/maramigo https://github.com/marambadarne2000/Maramigo.git
+git clone https://github.com/marambadarne2000/Mavelle.git
 cd Mavelle
 ./scripts/Setup-PortableNode.ps1
 . ./scripts/Node-Runtime.ps1
@@ -84,7 +83,7 @@ local restore check; neither certifies production operations.
 | Frontend unavailable | Inspect `.runtime/frontend*.log`; run npm ci if dependencies are absent. |
 | Stale JAR before full Selenium | Rebuild with Start-Local -Restart -Build, including after pom.xml changes. |
 | Recovery comparison inconclusive | Retry while no user places orders or edits products; see RECOVERY.md. |
-| Private GitHub clone denied | Verify account access to the private repository; do not make it public as a workaround. |
+| GitHub clone fails | Check connectivity and use the public Mavelle URL shown above. |
 
 Docker Compose remains a separate documented demo route in README. It has not
 been verified on the authoring machine and is not the production deployment plan.

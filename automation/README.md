@@ -39,7 +39,7 @@ Browser interactions use explicit waits and native WebDriver clicks, with no who
 
 Reports: `target/surefire-reports/` for public smoke, `target/full-reports/` for full mode, `target/accessibility-reports/` for targeted accessibility, `target/support-reports/` for targeted support. Screenshots and axe results are in ignored `target/screenshots/` and `target/accessibility/`. The six matrix cases sample 31 states each, with additional merchant/portfolio samples; see [coverage and limitations](../docs/ACCESSIBILITY_MATRIX.md). Targeted mode certifies only the selected cases. No E2E coverage percentage or full WCAG certification is claimed.
 
-Verified browser: Chrome 156 with matching ChromeDriver 156. Selenium warns that its nearest typed CDP module is 155; the raw viewport commands and WebDriver journeys are checked by the suite. Edge remains unverified. Hosted results on the private repository's Actions page must match the current commit.
+Verified browser: Chrome 156 with matching ChromeDriver 156. Selenium warns that its nearest typed CDP module is 155; the raw viewport commands and WebDriver journeys are checked by the suite. Edge remains unverified. Hosted results on the repository's Actions page must match the current commit.
 
 An opt-in screenshot-capture diagnostic, outside the ordinary `*Test` selection:
 

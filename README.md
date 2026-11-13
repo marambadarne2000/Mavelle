@@ -1,10 +1,14 @@
 # Mavelle
 
+[![Application quality gate](https://github.com/marambadarne2000/Mavelle/actions/workflows/quality.yml/badge.svg)](https://github.com/marambadarne2000/Mavelle/actions/workflows/quality.yml)
+
 A connected full-stack marketplace and QA automation portfolio by **Maram Abbas**.
 
 **Java 17 · Spring Boot · React · TypeScript · PostgreSQL · Selenium WebDriver · JUnit · GitHub Actions**
 
 Mavelle combines customer shopping, independent merchant workspaces, a sole platform-owner dashboard and invited fulfilment employees. The backend enforces tenant and role isolation; the UI supports Hebrew, Arabic and English with RTL/LTR, classic black/gold styling and responsive layouts.
+
+This repository contains the application source, PostgreSQL schema migrations, Selenium Page Objects and tests, CI workflows, screenshots and setup documentation. It is a portfolio demonstration; publishing the source does not deploy a live shopping website.
 
 [Full system inventory and pre-launch audit (Hebrew)](SYSTEM_AUDIT_HE.md)
 
@@ -19,8 +23,22 @@ Mavelle combines customer shopping, independent merchant workspaces, a sole plat
 - Demo subscriptions, 5% commission, per-store balances, an immutable transaction journal and idempotent simulated payouts. **No real card, bank transfer, tax invoice or payment-provider sandbox is connected.**
 - Email verification/recovery, authenticated password/email changes, owner TOTP/recovery codes, session revocation, scoped data export and reviewed account closure.
 - A durable local mail-request queue, explicit public announcements, customer favorites, private purchased-store conversations and delivered-order feedback.
+- Database-backed order-confirmation email jobs, bounded delivery retries and a customer-visible status that distinguishes local files from SMTP acceptance.
+
+![Manufacturer catalog](docs/screenshots/manufacturer-catalog.png)
 
 ![Platform finance](docs/screenshots/portfolio-finance.png)
+
+## Project structure
+
+```text
+backend/       Spring Boot REST API, role/tenant isolation and Flyway migrations
+frontend/      React + TypeScript storefront and role-specific dashboards
+automation/    Java Selenium WebDriver + JUnit, Page Objects and browser journeys
+scripts/       Local setup, verification, backup and source packaging
+docs/          Architecture, screenshots, walkthroughs and integration limits
+.github/       GitHub Actions quality workflow
+```
 
 ## Review and run
 
@@ -28,6 +46,7 @@ Mavelle combines customer shopping, independent merchant workspaces, a sole plat
 - [Requirement matrix and honest remaining launch dependencies](REQUIREMENTS_AUDIT_HE.md)
 - [Connected workflow/API notes](docs/PORTFOLIO_RELEASE_HE.md)
 - [Account security and email-delivery configuration](docs/ACCOUNT_SECURITY_HE.md)
+- [Order-confirmation delivery and password recovery (Hebrew)](docs/ORDER_EMAIL_HE.md)
 - [CV description and interview walkthrough](docs/CV_PROJECT_EN.md)
 - [CI and evidence](docs/CI.md) · [Architecture](docs/ARCHITECTURE.md)
 
@@ -35,7 +54,7 @@ After setup, run `./scripts/Start-Local.ps1 -Restart` or double-click `RUN_LOCAL
 
 Source packaging: commit the reviewed code, then run `./scripts/Package-Portfolio.ps1`. The ZIP contains only tracked source from that commit, with no local users, keys, mail, uploaded media or tools.
 
-The suite includes 87 backend cases (13 unit/MVC and 74 PostgreSQL/HTTP), 40 frontend cases and 26 Selenium cases. Read the completed reports for the exact revision; a count is not a coverage percentage or proof that every possible defect is absent.
+Tests cover Java unit/MVC behavior, real PostgreSQL and HTTP integration, frontend state/usability/localization and Selenium browser journeys. Read the completed [GitHub Actions reports](https://github.com/marambadarne2000/Mavelle/actions) for the exact revision; a count is not a coverage percentage or proof that every possible defect is absent.
 
 SMTP delivery, real payment/business onboarding, a public HTTPS deployment and production legal/security/operational acceptance remain external launch work. Docker Compose is prepared but has not been executed on this machine because Docker is unavailable.
 
@@ -116,6 +135,10 @@ npm run build
 
 Integration tests use a PostgreSQL container by default. Set `TEST_DB_URL`, `TEST_DB_USER` and `TEST_DB_PASSWORD` to use an explicitly authorized local test server instead. Each suite creates and drops its own randomly named schema and does not alter demo tables. `Check.ps1 -Integration` detects the project's portable local database automatically. Never point test credentials at production.
 
-Suite: 13 unit/MVC, 74 PostgreSQL/HTTP, 40 frontend and 26 Chrome Selenium cases (153 total); use current reports for pass/fail. Ten additional English merchant overview/catalog/returns and payment/finance axe samples cover desktop/mobile. Backend tests also cover tenant isolation, mixed-store fulfilment, favorites, messages and reviews. Backend tests cover roles/CSRF, invalid inputs, audit, stale versions, concurrent updates and bounded active-product lookup. Basket tests cover persistence validation, limits, stock checks, exact agorot arithmetic and malformed product data. Order tests cover atomic rollback, ownership, price snapshots, concurrent last-unit purchases, idempotency, stale order updates, allowed delivery transitions, concurrent cancellations and overflow rollback, dashboard date boundaries, empty dates, cancellation exclusion and stock adjustment competing with checkout. Browser checks include three-language switching, company isolation, login-before-add, completed checkout and basket add/merge/quantity/removal/clear, reload, two-tab synchronization, customer sign-in preservation, price changes, insufficient stock, zero stock and deactivation. Use `scripts/Smoke-Local.ps1` to verify the running proxy and demo administrator session. Both Selenium smoke and isolated purchase/customer/admin journeys have run locally. GitHub-hosted results are available on the Actions page; the Docker Compose demo has not been verified locally.
+Backend tests cover tenant isolation, roles/CSRF, mixed-store fulfilment, favorites, messages, reviews, atomic checkout, concurrent last-unit purchases, idempotency, refunds, password recovery and durable email delivery. Frontend and browser checks cover three-language switching, company isolation, login-before-add, matching product images, checkout, basket persistence and availability changes. Use `scripts/Smoke-Local.ps1` to verify the running proxy and demo administrator session. GitHub-hosted results are available on the Actions page; the Docker Compose demo has not been verified locally.
 
-See [verification status](docs/STATUS_HE.md) for what has actually run in the authoring environment. This is an initial build, not a completed application or a production deployment.
+See [verification status](docs/STATUS_HE.md) for the dated authoring history. This is a portfolio application, not a production deployment. Internal package names and local persistence keys retain `maramigo` for compatibility; the product and repository are named Mavelle.
+
+## Third-party assets
+
+Manufacturer photographs and trademarks remain the property of their respective owners; they are not original Mavelle artwork or licensed as project code. See the [source and attribution manifest](docs/catalog/README.md). No manufacturer partnership, live stock integration or real payment processing is claimed.

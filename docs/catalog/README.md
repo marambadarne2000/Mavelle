@@ -34,7 +34,7 @@ The files under `frontend/public/catalog` are matching manufacturer product phot
 - LEGO photos and trademarks © The LEGO Group.
 - IKEA photos and trademarks © Inter IKEA Systems B.V.
 
-These are third-party assets, not original Mavelle artwork or assets licensed under any project code license. Attribution does not grant an open reuse license; none was established during this task. The current project remains a private local portfolio demonstration. Obtain appropriate image/brand permissions or replace assets with licensed alternatives before commercial redistribution or public marketing.
+These are third-party assets, not original Mavelle artwork or assets licensed under any project code license. Attribution does not grant an open reuse license; none was established during this task. The public source repository demonstrates catalog integration and links to the official source manifest. No rights to these photographs or trademarks are granted by this repository. Obtain appropriate image/brand permissions or replace assets with licensed alternatives before commercial redistribution or public marketing.
 
 ## Verification
 
