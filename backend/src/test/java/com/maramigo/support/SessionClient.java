@@ -12,6 +12,9 @@ public final class SessionClient {
     private final HttpClient http=HttpClient.newBuilder().cookieHandler(new CookieManager(null,CookiePolicy.ACCEPT_ALL)).build();
     public SessionClient(int port, ObjectMapper json) { this.base="http://127.0.0.1:"+port; this.json=json; }
     public HttpResponse<String> get(String path) throws Exception { return http.send(HttpRequest.newBuilder(URI.create(base+path)).GET().build(),HttpResponse.BodyHandlers.ofString()); }
+    // Spring creates its session token lazily after login. Serialize only token acquisition,
+    // so concurrent test mutations share a fully established session but still race at the API.
+    private synchronized JsonNode csrfToken() throws Exception { return json.readTree(get("/api/auth/csrf").body()); }
     public HttpResponse<String> send(String method, String path, Object data, boolean csrf) throws Exception {
         return send(method,path,data,csrf,null);
     }
@@ -20,13 +23,13 @@ public final class SessionClient {
             .method(method,HttpRequest.BodyPublishers.ofString(json.writeValueAsString(data)));
         if(requestKey!=null)request.header("Idempotency-Key",requestKey);
         if (csrf) {
-            var token=json.readTree(get("/api/auth/csrf").body());
+            var token=csrfToken();
             request.header(token.get("headerName").asText(),token.get("token").asText());
         }
         return http.send(request.build(),HttpResponse.BodyHandlers.ofString());
     }
     public void login(String email,String password) throws Exception {
-        var token=json.readTree(get("/api/auth/csrf").body());
+        var token=csrfToken();
         var request=HttpRequest.newBuilder(URI.create(base+"/api/auth/login"))
             .header("Content-Type","application/x-www-form-urlencoded")
             .header(token.get("headerName").asText(),token.get("token").asText())
@@ -45,7 +48,7 @@ public final class SessionClient {
         return http.send(request.build(),HttpResponse.BodyHandlers.ofString());
     }
     public HttpResponse<String> loginPortal(String email,String password,String portal)throws Exception{
-        var token=json.readTree(get("/api/auth/csrf").body());
+        var token=csrfToken();
         return http.send(HttpRequest.newBuilder(URI.create(base+"/api/auth/login"))
             .header("Content-Type","application/x-www-form-urlencoded")
             .header(token.get("headerName").asText(),token.get("token").asText())
